@@ -1,0 +1,19 @@
+{
+    "name": "topi/topi",
+    "description": "PHP Framework",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require-dev": {
+
+    },
+    "autoload": {
+        "psr-4": {
+            "Topi\\": "src/Topi"
+        }
+    },
+    "require": {
+        "twig/twig": "^2.0",
+        "willdurand/negotiation": "^3.0@dev"
+    }
+}

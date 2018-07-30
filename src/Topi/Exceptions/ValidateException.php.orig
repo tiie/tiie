@@ -1,0 +1,22 @@
+<?php
+namespace Topi\Exceptions;
+
+class ValidateException extends \Exception
+{
+    private $errors;
+    // protected $code;
+
+    public function __construct($errors = null, \Exception $previous = null)
+    {
+        parent::__construct("Validate Exception", 0, $previous);
+
+        $this->errors = $errors;
+        // $this->code = $code;
+    }
+
+    public function errors()
+    {
+        return $this->errors;
+    }
+}
+

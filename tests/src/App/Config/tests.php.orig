@@ -1,0 +1,14 @@
+<?php
+return array(
+    'topi' => array(
+        'router' => array(
+            'routes' => array(
+                'api' => array(
+                    'urn' => '/api',
+                    'dir' => './src/App/Actions',
+                    'namespace' => "\\App\\Actions",
+                )
+            )
+        )
+    )
+);
