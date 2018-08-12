@@ -5,6 +5,8 @@ use Topi\Data\Model\Record;
 use Topi\Data\Model\Records;
 use Topi\Data\Model\RecordInterface;
 use Topi\Data\Model\ModelInterface;
+use Topi\Data\Model\CreatorInterface;
+use Topi\Data\Model\Creator;
 
 abstract class Model implements ModelInterface
 {
@@ -95,6 +97,11 @@ abstract class Model implements ModelInterface
     public function validate(RecordInterface $record, string $process, array $params = array()) : ?array
     {
         return null;
+    }
+
+    public function creator() : CreatorInterface
+    {
+        return new Creator($this);
     }
 
     public function save(RecordInterface $record, array $params = array()) : ModelInterface

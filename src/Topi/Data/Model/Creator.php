@@ -1,13 +1,60 @@
 <?php
 namespace Topi\Data\Model;
 
-class Records
-{
-    private $records = array();
-    private $adapter;
+use Topi\Data\Model\Model;
+use Topi\Data\Model\CreatorInterface;
 
-    function __construct($adapter)
+class Creator implements CreatorInterface
+{
+    private $model;
+    private $data = array();
+    private $record = null;
+
+    function __construct(ModelInterface $model)
     {
-        $this->adapter = $adapter;
+        $this->model = $model;
+    }
+
+    public function create(array $params = array()) : string
+    {
+        if (is_null($this->record)) {
+            $this->record = $this->model->createRecord($this->data);
+        }
+
+        return $this->model->create($this->record, $params);
+    }
+
+    public function data(array $data, int $merge = 1) : CreatorInterface
+    {
+        if ($merge) {
+            $this->data = array_merge($this->data, $data);
+        } else {
+            $this->data = $data;
+        }
+
+        return $this;
+    }
+
+    public function set(string $name, $value) : CreatorInterface
+    {
+        $this->data[$name] = $value;
+
+        $this->record = null;
+
+        return $this;
+    }
+
+    public function get(string $name)
+    {
+        return array_key_exists($name, $this->data) ? $this->data[$name] : null;
+    }
+
+    public function validate(array $params = array()) : ?array
+    {
+        if (is_null($this->record)) {
+            $this->record = $this->model->createRecord($this->data);
+        }
+
+        return $this->model->validate($this->record, 'creating', $params);
     }
 }

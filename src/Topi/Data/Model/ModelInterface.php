@@ -1,11 +1,17 @@
 <?php
 namespace Topi\Data\Model;
 
+use Topi\Data\Model\CreatorInterface;
+
 interface ModelInterface
 {
+    const PROCESS_CREATING = 'creating';
+    const PROCESS_SAVING = 'saving';
+    const PROCESS_REMOVING = 'removing';
+
     /**
      * Find and return records.
-     * 
+     *
      * @param array $params
      * @return Records
      */
@@ -21,16 +27,16 @@ interface ModelInterface
 
     /**
      * Fetch data by id.
-     * 
+     *
      * @param string $id
      * @param array $params
      * @return array|NULL
      */
     public function fetchById(string $id, array $params = array()) : ?array;
-    
+
     /**
      * Fetch data by ids.
-     * 
+     *
      * @param array $ids
      * @param array $params
      * @return array|NULL
@@ -39,7 +45,7 @@ interface ModelInterface
 
     /**
      * Run command on given record.
-     * 
+     *
      * @param RecordInterface $record
      * @param string $command
      * @param array $params
@@ -67,6 +73,8 @@ interface ModelInterface
      * @return string
      */
     public function create(RecordInterface $record, array $params = array()) : string;
+
+    public function creator() : CreatorInterface;
 
     /**
      * Remove record from source.
