@@ -5,7 +5,7 @@ use Topi\Data\Model\Records;
 use Topi\Data\Model\RecordInterface;
 use Topi\Data\Model\ModelInterface;
 
-class Records
+class Records implements \Countable
 {
     private $model;
     private $items = array(
@@ -26,7 +26,7 @@ class Records
         $this->fieldId = $fieldId;
     }
 
-    public function count()
+    public function count() : int
     {
         return count($this->items);
     }
@@ -107,6 +107,34 @@ class Records
                 }
             }
         }
+    }
+
+    public function first() : RecordInterface
+    {
+        if (count($this->items) == 0) {
+            return null;
+        }
+
+        if (!array_key_exists('record', $this->items[0])) {
+            $this->items[0]['record'] = $this->model->record($this->items[0][$this->fieldId]);
+        }
+
+        return $this->items[0]['record'];
+    }
+
+    public function last() : RecordInterface
+    {
+        if (count($this->items) == 0) {
+            return null;
+        }
+
+        $i = array_pop(array_keys($this->items));
+
+        if (!array_key_exists('record', $this->items[$i])) {
+            $this->items[$i]['record'] = $this->model->record($this->items[$i][$this->fieldId]);
+        }
+
+        return $this->items[$i]['record'];
     }
 
     public function toArray(array $params = array()) : array
