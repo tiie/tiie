@@ -29,6 +29,13 @@ class Insert extends \Topi\Data\Adapters\Commands\Command
         }
     }
 
+    public function value(string $name, $value) : Insert
+    {
+        $this->values[] = array($name, $value);
+
+        return $this;
+    }
+
     public function values($values = null)
     {
         if (!is_null($values)) {
