@@ -75,6 +75,10 @@ interface RecordInterface
      */
     public function export(array $params = array()) : array;
 
+    public function data(int $modyfied = 1) : array;
+
+    public function setted(string $name, int $modyfied = 1) : int;
+
     /**
      * Export record to array.
      *

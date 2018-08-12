@@ -77,6 +77,26 @@ class Record implements RecordInterface
         return $this;
     }
 
+    public function setted(string $name, int $modyfied = 1) : int
+    {
+        if ($modyfied) {
+            if (array_key_exists($name, $this->modyfied)) {
+                return 1;
+            }
+        }
+
+        return array_key_exists($name, $this->data);
+    }
+
+    public function data(int $modyfied = 1) : array
+    {
+        if ($modyfied) {
+            return array_merge($this->data, $this->modyfied);
+        } else {
+            return $this->data;
+        }
+    }
+
     /**
      * {@inheritDoc}
      * @see \Topi\Data\Model\RecordInterface::remove()
