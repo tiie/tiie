@@ -1,6 +1,8 @@
 <?php
 namespace Topi\Data\Adapters\Commands;
 
+use Topi\Data\Adapters\AdapterInterface;
+
 /**
  * The abstract representation of the command to the adapter.
  */
@@ -19,12 +21,12 @@ abstract class Command
      */
     abstract public function build(array $params = array());
 
-    function __construct(\Topi\Data\Adapters\AdapterInterface $adapter = null)
+    function __construct(AdapterInterface $adapter = null)
     {
         $this->adapter = $adapter;
     }
 
-    public function adapter(\Topi\Data\Adapters\AdapterInterface $adapter = null)
+    public function adapter(AdapterInterface $adapter = null)
     {
         if (is_null($adapter)) {
             return $this->adapter;
@@ -35,7 +37,7 @@ abstract class Command
         }
     }
 
-    public function execute($params = array())
+    public function execute(array $params = array())
     {
         if (is_null($this->adapter)) {
             throw new \Exception("Adapter is not inject.");
@@ -44,7 +46,7 @@ abstract class Command
         return $this->adapter->execute($this, $params);
     }
 
-    public function bind($name, $value = null)
+    public function bind(string $name, $value = null)
     {
         $this->binds[$name] = $value;
 
@@ -62,7 +64,7 @@ abstract class Command
         }
     }
 
-    protected function uid()
+    protected function uid() : string
     {
         $uid = self::$uid++;
 
