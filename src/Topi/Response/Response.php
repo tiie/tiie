@@ -32,8 +32,9 @@ class Response implements ResponseInterface
     {
         $this->params = $params;
 
-        // Load default headers
-        $this->headers($this->params['headers']);
+        if (!empty($this->params['headers'])) {
+            $this->headers($this->params['headers']);
+        }
     }
 
     public function var($name, $value, $type = "js")
