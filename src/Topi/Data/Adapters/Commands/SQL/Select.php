@@ -690,6 +690,7 @@ class Select extends Command
             $sql = "{$sql}\nlimit $slimit";
         }
 
+        $command->params($this->binds());
         $command->command($sql);
 
         return $command;
