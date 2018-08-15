@@ -3,7 +3,8 @@ namespace Topi\Data\Adapters\Commands;
 
 class BuiltCommand
 {
-    private $command, $params;
+    private $command;
+    private $params;
 
     function __construct(string $command = null, array $params = array())
     {
@@ -53,7 +54,7 @@ class BuiltCommand
         }
     }
 
-    public function params(array $params = null, $merge = 0)
+    public function params(array $params = null, $merge = 1)
     {
         if (!is_null($params)) {
             if ($merge) {
