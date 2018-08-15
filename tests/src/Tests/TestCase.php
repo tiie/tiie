@@ -8,6 +8,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return new \Topi\App(new \Topi\Config("./src/App/Config/tests.php"));
     }
 
+    protected function database(int $init = 1)
+    {
+
+    }
+
     public function dir()
     {
         return __DIR__;

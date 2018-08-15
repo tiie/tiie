@@ -19,7 +19,7 @@ class ResponseTest extends \Tests\TestCase
 
     public function testPrepare()
     {
-        $this->app();
+        // $this->app();
 
         $response = new \Topi\Response\Response();
 
