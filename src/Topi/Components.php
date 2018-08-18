@@ -1,11 +1,14 @@
 <?php
 namespace Topi;
 
+use Topi\Components\Scope;
+
 class Components
 {
     private $config;
-    private $inited = array();
+    private $services = array();
     private $initers = array();
+    private $scopes = array();
 
     function __construct(array $config = array())
     {
@@ -24,70 +27,118 @@ class Components
         $this->config = $config;
     }
 
-    public function get($name, $params = array())
+    public function get(string $name, array $params = array(), string $scope = null)
     {
-        if ($name[0] == '@') {
-            if (!isset($this->inited[$name])) {
-                $initer = $this->findIniter($name);
-
-                if (is_null($initer)) {
-                    throw new \Exception(sprintf('Component %s is not defined.', $name));
-                }
-
-                $this->inited[$name] = $initer($this, $params);
-            }
-
-            return $this->inited[$name];
-        }else{
-            if (!isset($this->initers[$name])) {
-                $initer = $this->findIniter($name);
-
-                if (is_null($initer)) {
-                    throw new \Exception(sprintf('Component %s is not defined.', $name));
-                }
-
-                $this->initers[$name] = $initer;
-            }
-
-            $initer = $this->initers[$name];
-
-            return $initer($this, $params);
+        if ($name[0] == '@' && array_key_exists($name, $this->services)) {
+            return $this->services[$name];
         }
+
+        if (!is_null($scope)) {
+            if (array_key_exists($name, $this->services)) {
+                // I check if component is at services.
+                $this->scopes[$scope][$name] = array(
+                    'initer' => null,
+                    'object' => $this->services[$name],
+                );
+            }
+
+            // Scope is defined. I check if there is component at scope. If not
+            // then I init component, otherwise I return inited component.
+            if (!array_key_exists($name, $this->scopes[$scope])) {
+                $this->scopes[$scope][$name] = $this->initComponent($name, $params);
+            }
+
+            return $this->scopes[$scope][$name]['object'];
+        }
+
+        // create new scope
+        // model.user
+        $scope = uniqid();
+        $this->scopes[$scope] = array();
+        $component = $this->scopes[$scope][$name] = $this->initComponent($name, $params);
+
+        if (array_key_exists('after', $component['initer'])) {
+            if (is_callable($component['initer']['after'])) {
+                call_user_func_array($component['initer']['after'], array($component['object'], new Scope($this, $scope), $params));
+            }
+        }
+
+        foreach ($this->scopes[$scope] as $componentname => $other) {
+            if ($componentname == $name) {
+                continue;
+            }
+
+            if (!is_null($other['initer'])) {
+                if (array_key_exists('after', $other['initer'])) {
+                    if (is_callable($other['initer']['after'])) {
+                        call_user_func_array($other['initer']['after'], array($other['object'], new Scope($this, $scope), $params));
+                    }
+                }
+            }
+
+            if ($componentname[0] == '@') {
+                if (!array_key_exists($componentname, $this->services)) {
+                    $this->services[$componentname] = $other['object'];
+                }
+            }
+        }
+
+        unset($this->scopes[$scope]);
+
+        return $component['object'];
+    }
+
+    private function initComponent(string $name, array $params = array())
+    {
+        $initer = $this->initer($name);
+
+        if (!is_callable($initer['init'])) {
+            return array(
+                'initer' => $initer,
+                'object' => $initer['init'],
+            );
+        }
+
+        return array(
+            'initer' => $initer,
+            'object' => call_user_func_array($initer['init'], array($this, $params)),
+        );
     }
 
     public function set($name, $component)
     {
-        $this->inited[$name] = $component;
+        if ($name[0] == '@') {
+            $this->services[$name] = $component;
 
-        return $this;
+            return $this;
+        }
+
+        throw new \Exception("{$name} only services can be set.");
     }
 
     public function defined($name)
     {
-        if ($name[0] == '@') {
-            if (isset($this->inited[$name])) {
-                return 1;
-            }else{
-                return is_null($this->findIniter($name)) ? 0 : 1;
-            }
-        }else{
-            return is_null($this->findIniter($name)) ? 0 : 1;
-        }
+        return is_null($this->initer($name)) ? 0 : 1;
     }
 
-    private function findIniter($name)
+    private function initer($name)
     {
-        // $dirs = array_reverse($this->config['dirs']);
-        $dirs = $this->config['dirs'];
-
-        foreach ($dirs as $dir) {
+        foreach ($this->config['dirs'] as $dir) {
             $path = sprintf('%s/%s.php', $dir, $name);
 
             if (file_exists($path)) {
-                return include($path);
+                $initer = include($path);
+
+                if (is_callable($initer)) {
+                    $initer = array(
+                        'init' => $initer,
+                    );
+                }
+
+                return $initer;
             }
         }
 
-        return null;
+        throw new \Exception("Component {$name} is not defined.");
     }
 }

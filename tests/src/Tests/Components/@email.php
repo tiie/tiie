@@ -1,5 +1,5 @@
 <?php
 
 return function(\Topi\Components $components) {
-    return new \Tests\Components\Client();
+    return new \Tests\Components\Email();
 };

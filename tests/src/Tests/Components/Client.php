@@ -1,6 +1,4 @@
 <?php
 namespace Tests\Components;
 
-class Client
-{
-}
+class Client {}
