@@ -3,15 +3,37 @@ namespace Tests;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
+    private $adapters = array();
+
     protected function app()
     {
         return new \Topi\App(new \Topi\Config("./src/App/Config/tests.php"));
     }
 
-    protected function database(int $init = 1)
-    {
+    protected function adapter(string $name) {
+        if (!array_key_exists($name, $this->adapters)) {
+            if ($name == 'bookshop') {
+                $this->adapters[$name] = new \Topi\Data\Adapters\Mysql\Adapter(array(
+                    'host' => 'localhost',
+                    'dbname' => 'bookshop',
+                    'username' => 'root',
+                    'password' => '',
+                    'charset' => 'utf8',
+                ));
+            }
+        }
 
+        return $this->adapters[$name];
     }
+
+    protected function initDatabase(string $name)
+    {
+        $commands = file_get_contents('./databases/bookshop.sql');
+
+        $this->adapter($name)->execute($commands);
+    }
+
+    // protected function fetch()
 
     public function dir()
     {
@@ -34,6 +56,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         return include($file);
+    }
+
+    protected function createVariable($name, $variable)
+    {
+        file_put_contents(sprintf("./src/Tests/variables/%s.php", $name), sprintf("<?php return %s;", var_export($variable, 1)));
     }
 
     protected function md5($text)
