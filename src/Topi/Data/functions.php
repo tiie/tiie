@@ -1,9 +1,11 @@
 <?php
 namespace Topi\Data;
 
+use Topi\Data\Adapters\Commands\SQL\Expr;
+
 class functions
 {
-    public static function columnStr($value, $config = array())
+    public static function columnStr($value, array $config = array())
     {
         $d = null;
 
@@ -16,9 +18,7 @@ class functions
             }else{
                 return "{$config['quote']}{$value}{$config['quote']}";
             }
-        }
-
-        if ($value instanceof \Topi\Data\Adapters\Commands\SQL\Expr) {
+        } elseif ($value instanceof Expr) {
             return $value->__toString();
         }
 

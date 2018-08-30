@@ -168,31 +168,72 @@ class Select extends Command
      *
      * @param int $limit
      * @param int $offset
-     * @return $this
+     *
      * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
     public function limit(int $limit, int $offset = 0)
     {
-        if (is_numeric($limit) && is_numeric($offset)) {
-            if ($limit <= 0) {
-                throw new \InvalidArgumentException("Limit should be larger than 0");
-            }
-
-            if ($offset < 0) {
-                throw new \InvalidArgumentException("Offset should be larger than 0");
-            }
-
-            $this->limit = array(
-                'limit' => $limit,
-                'offset' => $offset,
-            );
-        }else{
-            throw new \InvalidArgumentException("Limit and Offset should be numberic.");
+        if ($limit <= 0) {
+            throw new \InvalidArgumentException("Limit should be larger than 0");
         }
+
+        if ($offset < 0) {
+            throw new \InvalidArgumentException("Offset should be larger than 0");
+        }
+
+        $this->limit = array(
+            'limit' => $limit,
+            'offset' => $offset,
+        );
 
         return $this;
     }
 
+    /**
+     * Set paggination for result.
+     *
+     * ```php
+     *
+     * // We can user array as param.
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('id')
+     *     ->order('id asc')
+     *     ->page(array(
+     *         'page' => 0,
+     *         'pageSize' => 2,
+     *     ))
+     *     ->fetch()
+     * ;
+     *
+     * // Or use params
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('id')
+     *     ->order('id asc')
+     *     ->page(1, 2)
+     *     ->fetch()
+     * ;
+     *
+     * // Or use string
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('id')
+     *     ->order('id asc')
+     *     ->page('1,2')
+     *     ->fetch()
+     * ;
+     *
+     * ```
+     *
+     * @param mixed $page
+     * @param mixed $pageSize
+     *
+     * @return $this
+     */
     public function page($page, $pageSize = null)
     {
         if (is_array($page)) {
@@ -207,7 +248,7 @@ class Select extends Command
             if (count($exploded) == 2) {
                 return $this->page($exploded[0], $exploded[1]);
             } else {
-                return $this;
+                throw new \InvalidArgumentException("Page as string should be write as page,size");
             }
         }
 
@@ -219,11 +260,10 @@ class Select extends Command
                     $this->limit($pageSize, $page * $pageSize);
                 }
             }else{
-                throw new \InvalidArgumentException("page should be 0 or larger and pageSize should be large then 0.");
+                throw new \InvalidArgumentException("Page should be 0 or larger and pageSize should be large then 0.");
             }
-
         }else{
-            throw new \InvalidArgumentException("page and pageSize shuld be number.");
+            throw new \InvalidArgumentException("Page and pageSize shuld be number.");
         }
 
         return $this;
@@ -244,32 +284,66 @@ class Select extends Command
     }
 
     /**
-     * Metoda dodaje sortowanie do zapytania.
+     * Add order statement to select.
      *
-     * @param string $column
+     * ```php
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('id')
+     *     ->order('id', 'asc')
+     *     ->limit(10)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('id')
+     *     ->order('id desc')
+     *     ->limit(10)
+     *     ->fetch()
+     * ;
+     *
+     * // Or we can use Expr
+     * $select->order(new \Topi\Data\Adapters\Commands\SQL\Expr("RAND()"));
+     *
+     * ```
+     * @param mixed $column
      * @param string $type
+     *
+     * @throws \InvalidArgumentException
+     *
      * @return $this
      */
-    public function order($column, $type = 'asc')
+    public function order($column, string $type = 'asc')
     {
-        if(is_string($column)) {
-            // Jeśli nie podano typu, to próbuje odczytać typ z kolumny.
+        if (is_string($column)) {
             $column = explode(' ', $column);
 
             if (count($column) > 1) {
+                if (count($column) != 2) {
+                    throw new \InvalidArgumentException("Invalid type of order. Allowe is 'column asc|desc'");
+                }
+
                 $type = $column[1];
             }
+
+            $type = strtolower($type);
 
             $this->order[] = array(
                 'column' => $column[0],
                 'type' => $type,
             );
-        }else {
+        } else {
             $this->order[] = array(
                 'column' => $column,
                 'type' => $type,
             );
         }
+
+        // if (!in_array($type, array('desc', 'asc'))) {
+        //     throw new \InvalidArgumentException("Unsupported type of order {$type}.");
+        // }
 
         return $this;
     }
@@ -413,10 +487,10 @@ class Select extends Command
 
     public function params(array $values = array(), array $fields = array())
     {
-        if (array_key_exists('page', $values)) {
+        if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
+            $this->page($values['page'], $values['pageSize']);
+        } elseif (array_key_exists('page', $values)) {
             $this->page($values['page']);
-
-            unset($values['page']);
         }
 
         if (array_key_exists('limit', $values)) {
@@ -628,6 +702,13 @@ class Select extends Command
         if (!empty($this->order)) {
             foreach ($this->order as $order) {
                 $column = \Topi\Data\functions::columnStr($order['column'], $params);
+
+                $orderType = strtolower($order['type']);
+
+                if (!in_array($orderType, array('asc', 'desc'))) {
+                    throw new \InvalidArgumentException("Invalid type of order. Allowe is asc|desc");
+                }
+
                 $sorder .= "{$column} {$order['type']},";
             }
 
