@@ -164,7 +164,6 @@ class SelectTest extends TestCase
             ->fetch()
         ;
 
-        // $this->createVariable('variable-21', $rows);
         $this->assertEquals($this->variable('variable-19'), $rows);
 
         // ---------------
@@ -313,55 +312,306 @@ class SelectTest extends TestCase
         $this->assertEquals(2, count($rows));
     }
 
-    // public function testColumn($column, $alias = null)
-    // {
+    public function testColumn()
+    {
+        $this->initDatabase('bookshop');
 
-    // }
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->column('firstName')
+            ->column('lastName')
+            ->limit(2)
+            ->order('id asc')
+            ->fetch()
+        ;
 
-    // public function testColumns(array $columns = null)
-    // {
+        $this->assertEquals($this->variable('variable-23'), $rows);
 
-    // }
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->column('id')
+            ->limit(2)
+            ->order('id asc')
+            ->fetch()
+        ;
 
-    // public function testFrom($table, $alias = null)
-    // {
+        $this->assertEquals($this->variable('variable-24'), $rows);
 
-    // }
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->column('id')
+            ->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName')
+            ->limit(2)
+            ->order('id asc')
+            ->fetch()
+        ;
 
-    // public function testBrackets($function)
-    // {
+        $this->assertEquals($this->variable('variable-25'), $rows);
 
-    // }
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->column('firstName', 'first')
+            ->column('lastName', 'last')
+            ->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName')
+            ->limit(2)
+            ->order('id asc')
+            ->fetch()
+        ;
 
-    // public function testAndo()
-    // {
+        $this->assertEquals($this->variable('variable-26'), $rows);
+    }
 
-    // }
+    public function testColumns()
+    {
+        $this->initDatabase('bookshop');
 
-    // public function testOro()
-    // {
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->columns(array(
+                'id',
+                'firstName',
+                'fullName' => new Expr("concat(id, '-', firstName, '-', lastName)")
+            ))
+            ->limit(2)
+            ->order('id asc')
+            ->fetch()
+        ;
 
-    // }
+        $this->assertEquals($this->variable('variable-27'), $rows);
 
-    // public function testIn($column, $value)
-    // {
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->columns(array(
+                'id',
+                'firstName',
+            ))
+        ;
 
-    // }
+        $this->assertEquals($this->variable('variable-28'), $rows->columns());
+    }
 
-    // public function testNotIn($column, $value)
-    // {
+    public function testFrom()
+    {
+        $this->initDatabase('bookshop');
 
-    // }
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->limit(2)
+            ->order('id asc')
+            ->fetch()
+        ;
 
-    // public function testIsNull($column)
-    // {
+        $this->assertEquals($this->variable('variable-29'), $rows);
 
-    // }
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->column('id')
+            ->column('firstName')
+            ->column('lastName')
+            ->order('id asc')
+            ->limit(2)
+            ->fetch()
+        ;
 
-    // public function testIsNotNull($column)
-    // {
+        $this->assertEquals($this->variable('variable-31'), $rows);
 
-    // }
+        // ---------------
+        $sub = (new Select())
+            ->from('users', 'sub')
+            ->column('id')
+            ->column('email')
+            ->limit(10)
+        ;
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from($sub, 'base')
+            ->order('base.id asc')
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-30'), $rows);
+    }
+
+    public function testFromInvalidAlias()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $sub = (new Select())
+            ->from('users', 'sub')
+            ->column('id')
+            ->column('email')
+            ->limit(10)
+        ;
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from($sub)
+            ->order('base.id asc')
+            ->fetch()
+        ;
+    }
+
+    public function testIn()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->in('u.id', array(11, 12, 13, 14, 15))
+            ->order('id asc')
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-32'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->in('u.id', array())
+            ->order('id asc')
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-33'), $rows);
+    }
+
+    public function testInSubSelect()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $sub = (new Select())
+            ->from('users')
+            ->column('id')
+            ->in('u.id', array(11, 12, 13, 14, 15, 'test'))
+        ;
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->in('u.id', $sub)
+            ->order('id asc')
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-34'), $rows);
+    }
+
+    public function testInException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->in('u.id', 'test')
+            ->order('id asc')
+            ->fetch()
+        ;
+    }
+
+    public function testNotIn()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->notIn('u.id', array(1, 2, 3, 4, 5))
+            ->order('id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-35'), $rows);
+    }
+
+    public function testNotInSubSelect()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $sub = (new Select())
+            ->from('users')
+            ->column('id')
+            ->in('u.id', array(1, 2, 3, 4, 5, 'test'))
+        ;
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->notIn('u.id', $sub)
+            ->limit(5)
+            ->order('id asc')
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-36'), $rows);
+    }
+
+    public function testIsNull()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->column('u.countryId')
+            ->isNull('u.countryId')
+            ->order('id asc')
+            ->limit(10)
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-37'), $rows);
+    }
+
+    public function testIsNotNull()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.countryId')
+            ->isNotNull('u.countryId')
+            ->order('id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-38', $rows);
+        $this->assertEquals($this->variable('variable-38'), $rows);
+    }
 
     // public function testStartWith($column, $value)
     // {
@@ -444,6 +694,21 @@ class SelectTest extends TestCase
     // }
 
     // public function testRandom()
+    // {
+
+    // }
+
+    // public function testBrackets($function)
+    // {
+
+    // }
+
+    // public function testAndo()
+    // {
+
+    // }
+
+    // public function testOro()
     // {
 
     // }
