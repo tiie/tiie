@@ -1,7 +1,10 @@
 <?php
 namespace Topi\Data\Adapters\Commands\SQL;
 
-class Where extends \Topi\Data\Adapters\Commands\Command
+use Topi\Data\Adapters\Commands\Command;
+use Topi\Data\Adapters\Commands\BuiltCommand;
+
+class Where extends Command
 {
     private $where = null;
     private $pw = null;
@@ -393,6 +396,52 @@ class Where extends \Topi\Data\Adapters\Commands\Command
         return $this;
     }
 
+    /**
+     * Add in() statement to where. There are few type of methods to call.
+     *
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->in('u.id', array(11, 12, 13, 14, 15))
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     *
+     * // There is no need to check if array has values. If not 1=2 is place
+     * // in place of in()
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->in('u.id', array())
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     *
+     * // Other sub query can be use.
+     * $sub = (new Select())
+     *     ->from('users')
+     *     ->column('id')
+     *     ->in('u.id', array(11, 12, 13, 14, 15, 'test'))
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->in('u.id', $sub)
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     * ```
+     */
+
     public function in($column, $value)
     {
         $child = new \stdClass();
@@ -405,6 +454,42 @@ class Where extends \Topi\Data\Adapters\Commands\Command
         return $this;
     }
 
+    /**
+     * Add 'not in()' statement to where. It works like 'in()' but add 'not'.
+     *
+     * ```php
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->notIn('u.id', array(1, 2, 3, 4, 5))
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     *
+     * // Other sub query can be use.
+     * $sub = (new Select())
+     *     ->from('users')
+     *     ->column('id')
+     *     ->in('u.id', array(1, 2, 3, 4, 5, 'test'))
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->notIn('u.id', $sub)
+     *     ->limit(5)
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     * ```
+     *
+     */
     public function notIn($column, $value)
     {
         $child = new \stdClass();
@@ -417,6 +502,23 @@ class Where extends \Topi\Data\Adapters\Commands\Command
         return $this;
     }
 
+    /**
+     * Add 'is null' statement to where.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->column('u.countryId')
+     *     ->isNull('u.countryId')
+     *     ->order('id asc')
+     *     ->limit(10)
+     *     ->fetch()
+     * ;
+     * ```
+     */
     public function isNull($column)
     {
         $child = new \stdClass();
@@ -619,7 +721,7 @@ class Where extends \Topi\Data\Adapters\Commands\Command
 
     public function build(array $params = array())
     {
-        $command = new \Topi\Data\Adapters\Commands\BuiltCommand();
+        $command = new BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'
@@ -634,7 +736,7 @@ class Where extends \Topi\Data\Adapters\Commands\Command
         }
     }
 
-    private function buildBrakets(\stdClass $brakets, \Topi\Data\Adapters\Commands\BuiltCommand $command, array $params)
+    private function buildBrakets(\stdClass $brakets, BuiltCommand $command, array $params)
     {
         $sql = "";
 
@@ -643,6 +745,8 @@ class Where extends \Topi\Data\Adapters\Commands\Command
             case 'brakets':
                 $sql .= "({$this->buildBrakets($child, $command, $params)}) {$brakets->operator} ";
                 break;
+
+            // in, not in
             case 'in':
             case 'notIn':
                 $s = "";
@@ -659,23 +763,21 @@ class Where extends \Topi\Data\Adapters\Commands\Command
                         }
                     }
 
-                    $s = trim($s, ',');
-                // todo Dorobic obsluge Selecta i Command jako wartosc dla in()
-                // }elseif($child->value instanceof \Topi\Data\Statements\Statement){
-                //     $s = $child->value->slq();
-                //     $command->merge($child->value->binds());
-                // }elseif($child->value instanceof \Topi\Data\Adapters\Commands\SQL\Select){
-                //     $t = $child->value->build();
-                //     $s = $t->slq();
-                //     $command->merge($t->binds());
+                    $s = substr($s, 0, strlen($s) - 1);
+                } elseif ($child->value instanceof Command) {
+                    $commandIn = $child->value->build($params);
+                    $s .= "({$commandIn->command()})";
+
+                    $command->params($commandIn->params());
                 }else{
-                    throw new \Exception(sprintf("Unsupported type of in value %s", gettype($child->value)));
+                    throw new \InvalidArgumentException(sprintf("Unsupported type of 'in' value %s", gettype($child->value)));
                 }
 
-                $o = 'in';
-
+                // rest of in
                 if ($child->type == 'notIn') {
                     $o = 'not in';
+                } else {
+                    $o = 'in';
                 }
 
                 if (empty($s)) {
