@@ -54,7 +54,7 @@ class BuiltCommand
         }
     }
 
-    public function params(array $params = null, $merge = 1)
+    public function params(array $params = null, int $merge = 1)
     {
         if (!is_null($params)) {
             if ($merge) {
