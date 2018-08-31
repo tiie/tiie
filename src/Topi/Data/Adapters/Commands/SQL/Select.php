@@ -348,7 +348,35 @@ class Select extends Command
         return $this;
     }
 
-    public function column($column, $alias = null)
+    /**
+     * Add column to Select statement.
+     *
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('firstName')
+     *     ->column('lastName')
+     *     ->limit(2)
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->column('id', 'userId')
+     *     ->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName')
+     *     ->limit(2)
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     * ```
+     *
+     * @param mixed $column
+     * @param string $alias
+     * @return $this;
+     */
+    public function column($column, string $alias = null)
     {
         $cid = !is_null($alias) ? $alias : count($this->columns);
 
@@ -363,9 +391,21 @@ class Select extends Command
     /**
      * Return or set columns for select.
      *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users')
+     *     ->columns(array(
+     *         'id',
+     *         'firstName',
+     *         'fullName' => new Expr("concat(id, '-', firstName, '-', lastName)")
+     *     ))
+     *     ->limit(2)
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     * ```
+     *
      * @param array $column Array with columns.
-     *     u : users
-     *     dic : dictionaries
      *
      * @return $this|array
      */
@@ -378,8 +418,8 @@ class Select extends Command
                 if (is_numeric($key)) {
                     $this->column($column);
                 }else{
-                    // $this->column($column, $key);
-                    $this->column($key, $column);
+                    $this->column($column, $key);
+                    // $this->column($key, $column);
                 }
             }
 
@@ -387,9 +427,43 @@ class Select extends Command
         }
     }
 
+    /**
+     * Set from for Select statement. From can be table name or other sub select.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->limit(2)
+     *     ->order('id asc')
+     *     ->fetch()
+     * ;
+     *
+     * // With sub select
+     * $sub = (new Select())
+     *     ->from('users', 'sub')
+     *     ->column('id')
+     *     ->column('email')
+     *     ->limit(10)
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from($sub, 'base')
+     *     ->order('base.id asc')
+     *     ->fetch()
+     * ;
+     * ```
+     *
+     * @param mixed $table
+     * @param string $alias
+     *
+     * @return $this
+     */
     public function from($table, $alias = null)
     {
-        if (is_null($alias)) {
+        if (is_null($alias) && is_string($alias)) {
             $alias = $table;
         }
 
@@ -629,12 +703,14 @@ class Select extends Command
             $scolumns = trim($scolumns, ",\n");
         }
 
+        // from
         if (!is_null($this->from)) {
             if ($this->from['table'] instanceof Select) {
+                // If from is other select then this select is sub select.
                 $tablecommand = $this->from['table']->build($params);
 
                 if (is_null($this->from['alias'])) {
-                    throw new \Exception("alias is required when from is other select.");
+                    throw new \InvalidArgumentException("alias is required when from is other select.");
                 }
 
                 // merge params
