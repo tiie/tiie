@@ -17,9 +17,6 @@ class ErrorHandler
 
     public function response($error, \Topi\Http\Request $request) : \Topi\Response\ResponseInterface
     {
-        // todo : delete
-        die(print_r($error, true));
-        // endtodo
         if ($error instanceof \Topi\Exceptions\Http\Base) {
             $this->response->code($error->code());
             $this->response->data($error->errors());
