@@ -51,9 +51,9 @@ class Record implements RecordInterface
      * {@inheritDoc}
      * @see \Topi\Data\Model\RecordInterface::run()
      */
-    public function run(string $command, array $param = array()) : RecordInterface
+    public function run(string $command, array $params = array()) : RecordInterface
     {
-        if (! is_null($errors = $this->model->validate($command))) {
+        if (!is_null($errors = $this->model->validate($this, $command, $params))) {
             throw new \Topi\Exceptions\ValidateException($errors);
         }
 
