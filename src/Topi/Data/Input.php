@@ -119,7 +119,7 @@ class Input
         }
     }
 
-    public function rule($field, array $rule = null)
+    public function rule(string $field, array $rule = null)
     {
         if (is_null($rule)) {
             return isset($this->rules[$field]) ? $this->rules[$field] : null;
