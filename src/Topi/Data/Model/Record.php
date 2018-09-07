@@ -114,20 +114,30 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::export()
-     */
-    public function export(array $params = array()): array
-    {
-        return $this->data;
-    }
-
-    /**
-     * {@inheritDoc}
      * @see \Topi\Data\Model\RecordInterface::toArray()
      */
     public function toArray(array $params = array()): array
     {
         return $this->export($params);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see \Topi\Data\Model\RecordInterface::export()
+     */
+    public function export(array $params = array()): array
+    {
+        $exported = array();
+
+        foreach ($this->data as $key => $value) {
+            if ($value instanceof RecordInterface) {
+                $exported[$key] = $value->export();
+            } else {
+                $exported[$key] = $value;
+            }
+        }
+
+        return $exported;
     }
 
     /**
