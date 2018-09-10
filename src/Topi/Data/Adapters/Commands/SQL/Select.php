@@ -664,7 +664,7 @@ class Select extends Command
      */
     public function build(array $params = array())
     {
-        $command = new \Topi\Data\Adapters\Commands\BuiltCommand();
+        $buildCommand = new \Topi\Data\Adapters\Commands\BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'
@@ -714,7 +714,7 @@ class Select extends Command
                 }
 
                 // merge params
-                $command->params($tablecommand->params());
+                $buildCommand->params($tablecommand->params());
 
                 $sfrom .= "({$tablecommand->command()}) as {$params['quote']}{$this->from['alias']}{$params['quote']}";
             } else {
@@ -752,7 +752,7 @@ class Select extends Command
                     $joincommand = $join['table']->build();
 
                     // merge params
-                    $command->params($joincommand->params());
+                    $buildCommand->params($joincommand->params());
 
                     $join['table'] = sprintf("(%s)", $joincommand->command());
 
@@ -769,9 +769,10 @@ class Select extends Command
             $sjoins = trim($sjoins, "\n");
         }
 
+        // where
         $where = $this->where->build($params);
         if (!is_null($where->command())) {
-            $command->params($where->params(), 1);
+            $buildCommand->params($where->params());
             $swhere = $where->command();
         }
 
@@ -847,10 +848,10 @@ class Select extends Command
             $sql = "{$sql}\nlimit $slimit";
         }
 
-        $command->params($this->binds());
-        $command->command($sql);
+        $buildCommand->params($this->binds());
+        $buildCommand->command($sql);
 
-        return $command;
+        return $buildCommand;
     }
 
     public function count($params = array())

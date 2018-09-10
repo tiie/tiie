@@ -541,6 +541,11 @@ class Where extends Command
         return $this;
     }
 
+    /**
+     * Add like "%value" to where statement.
+     *
+     *
+     */
     public function startWith($column, $value)
     {
         $child = new \stdClass();
@@ -721,242 +726,267 @@ class Where extends Command
 
     public function build(array $params = array())
     {
-        $command = new BuiltCommand();
+        $buildCommand = new BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'
         ), $params);
 
         if (count($this->pw->childs) > 0) {
-            $command->command("where {$this->buildBrakets($this->pw, $command, $params)}");
+            $buildCommand->command("where {$this->buildBrakets($this->pw, $buildCommand, $params)}");
 
-            return $command;
+            return $buildCommand;
         }else{
-            return $command;
+            return $buildCommand;
         }
     }
 
-    private function buildBrakets(\stdClass $brakets, BuiltCommand $command, array $params)
+    private function buildBrakets(\stdClass $brakets, BuiltCommand $buildCommand, array $params)
     {
+        // init sql for braket
         $sql = "";
 
         foreach ($brakets->childs as $child) {
-            switch ($child->type) {
-            case 'brakets':
-                $sql .= "({$this->buildBrakets($child, $command, $params)}) {$brakets->operator} ";
-                break;
+            $childValue = null;
 
-            // in, not in
-            case 'in':
-            case 'notIn':
-                $s = "";
+            if ($child->type == 'brakets') {
+                $sql .= "({$this->buildBrakets($child, $buildCommand, $params)}) {$brakets->operator} ";
+            } else {
+                // Parse column
                 $column = \Topi\Data\functions::columnStr($child->column, $params);
 
-                if (is_array($child->value)) {
-                    foreach ($child->value as $value) {
-                        if (is_numeric($value)) {
-                            $s .= "{$value},";
-                        }else{
-                            $uid = $this->uid();
-                            $s .= ":{$uid},";
-                            $command->param($uid, $value);
-                        }
+                switch ($child->type) {
+                // in, not in
+                case 'in':
+                case 'notIn':
+                    $s = "";
+                    $not = "";
+
+                    if ($child->type == 'notIn') {
+                        $not = 'not ';
                     }
 
-                    $s = substr($s, 0, strlen($s) - 1);
-                } elseif ($child->value instanceof Command) {
-                    $commandIn = $child->value->build($params);
-                    $s .= "({$commandIn->command()})";
+                    if (is_string($child->value)) {
+                        $buildCommand->param($uid = $this->uid(), $child->value);
+                        $s = ":{$uid}";
 
-                    $command->params($commandIn->params());
-                }else{
-                    throw new \InvalidArgumentException(sprintf("Unsupported type of 'in' value %s", gettype($child->value)));
-                }
+                    } else if (is_numeric($child->value)) {
+                        $s = "{$child->value}";
+                    } else if (is_array($child->value)) {
+                        foreach ($child->value as $value) {
+                            if (is_numeric($value)) {
+                                $s .= "{$value},";
+                            }else{
+                                $buildCommand->param($uid = $this->uid(), $value);
+                                $s .= ":{$uid},";
+                            }
+                        }
 
-                // rest of in
-                if ($child->type == 'notIn') {
-                    $o = 'not in';
-                } else {
-                    $o = 'in';
-                }
+                        $s = substr($s, 0, strlen($s) - 1);
+                    } else if ($child->value instanceof Command) {
+                        $valueBuiltCommand = $child->value->build($params);
+                        $buildCommand->params($valueBuiltCommand->params());
 
-                if (empty($s)) {
-                    $sql .= "(1=2) {$brakets->operator} ";
-                }else{
-                    $sql .= "{$column} {$o}({$s}) {$brakets->operator} ";
-                }
+                        $s = "({$valueBuiltCommand->command()})";
+                    } else {
+                        throw new \InvalidArgumentException(sprintf("Unsupported type of value %s for in at where.", gettype($child->value)));
+                    }
 
-                break;
-            case 'isNull':
-            case 'isNotNull':
-                $s = "";
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
+                    if (empty($s)) {
+                        if ($child->type == 'in') {
+                            $sql .= "(1=2) {$brakets->operator} ";
+                        } else {
+                            $sql .= "(1=1) {$brakets->operator} ";
+                        }
+                    }else{
+                        $sql .= "{$column} {$not}in({$s}) {$brakets->operator} ";
+                    }
 
-                $o = 'is null';
+                    break;
+                case 'isNull':
+                case 'isNotNull':
+                    $s = "";
+                    $not = "";
 
-                if ($child->type == 'isNotNull') {
-                    $o = 'is not null';
-                }
+                    if ($child->type == 'isNotNull') {
+                        $not = 'not ';
+                    }
 
-                $sql .= "{$column} {$o} {$brakets->operator} ";
+                    $o = $child->type == 'isNotNull' ? 'is not null' : 'is null';
 
-                break;
-            case 'startWith':
-            case 'endWith':
-            case 'contains':
-                if (!is_string($child->value)) {
-                    throw new \Exception(sprintf("Unsupported type of % value %s", $child->type, gettype($child->value)));
-                }
+                    $sql .= "{$column} is {$not}null {$brakets->operator} ";
 
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
-                $tv = null;
-
-                switch ($child->type) {
+                    break;
                 case 'startWith':
-                    $tv = "{$child->value}%";
-                    break;
                 case 'endWith':
-                    $tv = "%{$child->value}";
-                    break;
                 case 'contains':
-                    $tv = "%{$child->value}%";
+                    $s = "";
+
+                    if ($child->value instanceof Command) {
+                        $valueBuiltCommand = $child->value->build($params);
+                        $buildCommand->params($valueBuiltCommand->params());
+
+                        if ($child->type == 'startWith') {
+                            $s .= "concat(({$valueBuiltCommand->command()}), '%')";
+                        } else if($child->type == 'endWith') {
+                            $s .= "concat('%', ({$valueBuiltCommand->command()}))";
+                        } else if($child->type == 'contains') {
+                            $s .= "concat('%', ({$valueBuiltCommand->command()}), '%')";
+                        } else {
+                            throw new \InvalidArgumentException("Unsupported type {$child->type}.");
+                        }
+
+                        $sql .= "{$column} like {$s} {$brakets->operator} ";
+                    } else {
+                        if (
+                               !is_string($child->value)
+                            && !is_numeric($child->value)
+                        ) {
+                            throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
+                        }
+
+                        if ($child->type == 'startWith') {
+                            $s = "{$child->value}%";
+                        } else if($child->type == 'endWith') {
+                            $s = "%{$child->value}";
+                        } else if($child->type == 'contains') {
+                            $s = "%{$child->value}%";
+                        } else {
+                            throw new \InvalidArgumentException("Unsupported type {$child->type}.");
+                        }
+
+                        $buildCommand->param($uid = $this->uid(), $s);
+
+                        $sql .= "{$column} like :{$uid} {$brakets->operator} ";
+                    }
+
                     break;
-                default:
-                    throw new \Exception(sprintf("Unsupported type of %s %s", $child->type, gettype($child->type)));
-                }
+                case 'like':
+                case 'notLike':
+                    $s = "";
+                    $not = "";
 
-                $s = $this->uid();
-                $command->param($s, $tv);
+                    if ($child->type == 'notLike') {
+                        $not = 'not ';
+                    }
 
-                $sql .= "{$column} like :{$s} {$brakets->operator} ";
+                    if ($child->value instanceof Command) {
+                        $valueBuiltCommand = $child->value->build($params);
+                        $buildCommand->params($valueBuiltCommand->params());
 
-                break;
-            case 'like':
-                if (!is_string($child->value)) {
-                    throw new \Exception(sprintf("Unsupported type of % value %s", $child->type, gettype($child->value)));
-                }
+                        if ($child->type == 'startWith') {
+                            $s .= "concat(({$valueBuiltCommand->command()}), '%')";
+                        } else if($child->type == 'endWith') {
+                            $s .= "concat('%', ({$valueBuiltCommand->command()}))";
+                        } else if($child->type == 'contains') {
+                            $s .= "concat('%', ({$valueBuiltCommand->command()}), '%')";
+                        } else {
+                            throw new \InvalidArgumentException("Unsupported type {$child->type}.");
+                        }
 
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
+                        $sql .= "{$column} {$not}like {$s} {$brakets->operator} ";
+                    } else {
+                        if (
+                               !is_string($child->value)
+                            && !is_numeric($child->value)
+                        ) {
+                            throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
+                        }
 
-                $s = $this->uid();
-                $command->param($s, $child->value);
+                        if ($child->type == 'startWith') {
+                            $s = "{$child->value}%";
+                        } else if($child->type == 'endWith') {
+                            $s = "%{$child->value}";
+                        } else if($child->type == 'contains') {
+                            $s = "%{$child->value}%";
+                        } else {
+                            throw new \InvalidArgumentException("Unsupported type {$child->type}.");
+                        }
 
-                $sql .= "{$column} like :{$s} {$brakets->operator} ";
+                        $buildCommand->param($uid = $this->uid(), $s);
 
-                break;
-            case 'notLike':
-                if (!is_string($child->value)) {
-                    throw new \Exception(sprintf("Unsupported type of % value %s", $child->type, gettype($child->value)));
-                }
+                        $sql .= "{$column} {$not}like :{$uid} {$brakets->operator} ";
+                    }
 
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
-
-                $s = $this->uid();
-                $command->param($s, $child->value);
-
-                $sql .= "{$column} not like :{$s} {$brakets->operator} ";
-
-                break;
-            case 'eq':
-            case 'neq':
-            case 'lt':
-            case 'lte':
-            case 'gt':
-            case 'gte':
-                $s = "";
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
-
-                if (is_numeric($child->value)) {
-                    $s = $child->value;
-                }elseif(is_string($child->value)){
-                    $uid = $this->uid();
-                    $command->param($uid, $child->value);
-
-                    $s = ":{$uid}";
-                // }elseif($child->value instanceof \Topi\Data\Statements\Statement){
-                //     $s = "({$child->value->slq()})";
-                //     $command->merge($child->value->binds());
-                // }elseif($child->value instanceof \Topi\Data\Adapters\Commands\SQL\Select){
-                //     $t = $child->value->build();
-                //     $s = "({$t->slq()})";
-                //     $command->merge($t->binds());
-                }else{
-                    die(print_r($child, 1));
-                    throw new \Exception(sprintf("Unsupported type of in value %s", gettype($child->value)));
-                }
-
-                $o = null;
-
-                switch ($child->type) {
+                    break;
                 case 'eq':
-                    $o = "=";
-                    break;
                 case 'neq':
-                    $o = "!=";
-                    break;
                 case 'lt':
-                    $o = "<";
-                    break;
                 case 'lte':
-                    $o = "<=";
-                    break;
                 case 'gt':
-                    $o = ">";
-                    break;
                 case 'gte':
-                    $o = ">=";
+                    $s = "";
+
+                    if (is_string($child->value)) {
+                        $buildCommand->param($uid = $this->uid(), $child->value);
+                        $s = ":{$uid}";
+                    } elseif (is_numeric($child->value)) {
+                        $s = "{$child->value}";
+                    } elseif ($child->value instanceof Command) {
+                        $valueBuiltCommand = $child->value->build($params);
+                        $buildCommand->params($valueBuiltCommand->params());
+
+                        $s = "({$valueBuiltCommand->command()})";
+                    } else {
+                        throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
+                    }
+
+                    $o = null;
+
+                    if ($child->type == 'eq') {
+                        $o = "=";
+                    } elseif ($child->type == 'neq') {
+                        $o = "!=";
+                    } elseif ($child->type == 'lt') {
+                        $o = "<";
+                    } elseif ($child->type == 'lte') {
+                        $o = "<=";
+                    } elseif ($child->type == 'gt') {
+                        $o = ">";
+                    } elseif ($child->type == 'gte') {
+                        $o = ">=";
+                    } else {
+                        throw new \Exception(sprintf("Unsupported type of operator %s", $child->type));
+                    }
+
+                    $sql .= "{$column} {$o} {$s} {$brakets->operator} ";
+
+                    break;
+                case 'expr':
+                    $sql .= "{$child->expr} {$brakets->operator} ";
+
+                    break;
+                case 'exists':
+                case 'notExists':
+                    $s = "";
+                    $not = "";
+
+                    if ($child->type == 'notExists') {
+                        $not = 'not ';
+                    }
+
+                    if ($child->value instanceof Command) {
+                        $valueBuiltCommand = $child->value->build($params);
+                        $buildCommand->params($valueBuiltCommand->params());
+
+                        $s = "({$valueBuiltCommand->command()})";
+                    } else {
+                        throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
+                    }
+
+                    $sql .= "{$column} {$not}exists {$s} {$brakets->operator} ";
+
+                    break;
+                case 'between':
+                    $begin = $this->convForBetween($child->begin, $buildCommand);
+                    $end = $this->convForBetween($child->end, $buildCommand);
+
+                    $sql .= "{$column} between {$begin} and {$end} {$brakets->operator} ";
+
                     break;
                 default:
-                    throw new \Exception(sprintf("Unsupported type of operator %s", $child->type));
+                    throw new \Exception(sprintf("Unsupported type of where %s", $child->type));
                 }
-
-                $sql .= "{$column} {$o} {$s} {$brakets->operator} ";
-
-                break;
-            case 'expr':
-                $sql .= "{$child->expr} {$brakets->operator} ";
-                break;
-            case 'exists':
-            case 'notExists':
-                $s = "";
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
-
-                if (is_string($child->value)) {
-                    $s = $child->value;
-                // }elseif($child->value instanceof \Topi\Data\Statements\Statement){
-                //     $s = "({$child->value->slq()})";
-                //     $command->merge($child->value->binds());
-                // }elseif($child->value instanceof \Topi\Data\Adapters\Commands\SQL\Select){
-                //     $t = $child->value->build();
-                //     $s = "({$t->slq()})";
-                //     $command->merge($t->binds());
-                }else{
-                    throw new \Exception(sprintf("Unsupported type of in value %s", gettype($child->value)));
-                }
-
-                $o = 'exists';
-
-                switch ($child->type) {
-                case 'notExists':
-                    $o = 'not exists';
-                default:
-                    throw new \Exception(sprintf("Unsupported type of operator %s", $child->type));
-                }
-
-                $sql .= "{$column} {$o}({$s}) {$brakets->operator} ";
-
-                break;
-            case 'between':
-                $begin = $this->convForBetween($child->begin, $command);
-                $end = $this->convForBetween($child->end, $command);
-
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
-
-                $sql .= "{$column} between {$begin} and {$end} {$brakets->operator} ";
-
-                break;
-            default:
-                throw new \Exception(sprintf("Unsupported type of where %s", $child->type));
             }
         }
 

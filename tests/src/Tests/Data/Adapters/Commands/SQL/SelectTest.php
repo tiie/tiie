@@ -509,25 +509,11 @@ class SelectTest extends TestCase
             ->column('u.lastName')
             ->in('u.id', $sub)
             ->order('id asc')
+            // ->build()
             ->fetch()
         ;
 
         $this->assertEquals($this->variable('variable-34'), $rows);
-    }
-
-    public function testInException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->in('u.id', 'test')
-            ->order('id asc')
-            ->fetch()
-        ;
     }
 
     public function testNotIn()
@@ -613,10 +599,27 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-38'), $rows);
     }
 
-    // public function testStartWith($column, $value)
-    // {
+    public function testStartWith()
+    {
+        $this->initDatabase('bookshop');
 
-    // }
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.countryId')
+            ->column('u.firstName')
+            ->column('u.lastName')
+            ->isNotNull('u.countryId')
+            ->startWith('u.firstName', 'Ali')
+            ->order('id asc')
+            ->limit(2)
+            ->fetch()
+        ;
+
+        $this->createVariable('variable-39', $rows);
+        $this->assertEquals($this->variable('variable-39'), $rows);
+    }
 
     // public function testEndWith($column, $value)
     // {

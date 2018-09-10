@@ -58,10 +58,10 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
         $sql = null;
 
         if ($command instanceof \Topi\Data\Adapters\Commands\Command) {
-            $buildcommand = $command->build();
-            $sql = $buildcommand->command();
+            $buildCommand = $command->build();
+            $sql = $buildCommand->command();
 
-            $params = array_merge($params, $buildcommand->params());
+            $params = array_merge($params, $buildCommand->params());
         }elseif($command instanceof \Topi\Data\Adapters\Commands\BuiltCommand){
             $sql = $command->command();
 
@@ -93,10 +93,10 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
         $sql = null;
 
         if ($command instanceof \Topi\Data\Adapters\Commands\Command) {
-            $buildcommand = $command->build();
-            $sql = $buildcommand->command();
+            $buildCommand = $command->build();
+            $sql = $buildCommand->command();
 
-            $params = array_merge($params, $buildcommand->params());
+            $params = array_merge($params, $buildCommand->params());
         }elseif ($command instanceof \Topi\Data\Adapters\Commands\BuiltCommand){
             $sql = $command->command();
             $params = array_merge($params, $command->params());
@@ -151,10 +151,10 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
         $sql = null;
 
         if ($command instanceof \Topi\Data\Adapters\Commands\Command) {
-            $buildcommand = $command->build();
-            $sql = $buildcommand->command();
+            $buildCommand = $command->build();
+            $sql = $buildCommand->command();
 
-            $params = array_merge($params, $buildcommand->params());
+            $params = array_merge($params, $buildCommand->params());
         }elseif($command instanceof \Topi\Data\Adapters\Commands\BuiltCommand){
             $sql = $command->command();
 
