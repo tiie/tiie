@@ -273,25 +273,26 @@ class Where extends Command
         return implode('', $name);
     }
 
-    // todo Zwracana wartosc w phpDoc
-    // Trzeba sprawdzić co powiniennem zwracac w dokumentacji metody jeśli
-    // zwracam thisa.
-
     /**
-     * Metoda pozwala na wczytanie warynków, na postawie odpowiedniej struktury
-     * danych.
+     * Method allow add condition base on type of value. For example if
+     * conditions is array then 'in()' statement is added. Below are some
+     * example.
      *
-     * Użycie separatora
-     *     $select->conditions('name-like', 'Pawel');
-     *     $select->conditions('name-in', array());
+     * array(1,2) - in(1,2)
+     * 1 - in(1)
      *
-     * Użycie struktury
+     * array(
+     *     'from' => 1, - 'between 1 and 4'
+     *     'to' => 4,
+     * )
      *
+     * Default operator is 'in' you can change this with param 'operator'.
+     * Operator can be in, contains.
      *
      * @param string $column
      * @param mixed $conditions
      * @param array $params
-     *     + operator
+     *     - operator
      *
      * @return $this
      */
@@ -304,12 +305,12 @@ class Where extends Command
         // Przypadek w którym struktura definiuje operator, w pozostałych
         // przypadkach staram się odczytać operator
         if (is_array($conditions)) {
-            if (isset($conditions['from']) || isset($conditions['to'])) {
-                if (isset($conditions['from']) && isset($conditions['to'])) {
+            if (array_key_exists('from', $conditions) || array_key_exists('to', $conditions)) {
+                if (array_key_exists('from', $conditions) && array_key_exists('to', $conditions)) {
                     $this->between($column, $conditions['from'], $conditions['to']);
-                }elseif(isset($conditions['from'])) {
+                } elseif (array_key_exists('from', $conditions)) {
                     $this->gte($column, $conditions['from']);
-                }elseif(isset($conditions['to'])) {
+                } elseif (array_key_exists('to', $conditions)) {
                     $this->lte($column, $conditions['to']);
                 }
 
@@ -378,7 +379,6 @@ class Where extends Command
 
             break;
         case 'contains':
-
             // Robimy nawias ze wszystkimi ORAMI
             $this->brackets(function($where) use ($value, $column){
                 $where->oro();
@@ -389,8 +389,19 @@ class Where extends Command
             });
 
             break;
+        // case 'equal':
+        //     // Robimy nawias ze wszystkimi ORAMI
+        //     $this->brackets(function($where) use ($value, $column){
+        //         $where->oro();
+
+        //         foreach ($value as $v) {
+        //             $where->eq($column, $v);
+        //         }
+        //     });
+
+        //     break;
         default:
-            throw new \Exception("Unsupported operator.");
+            throw new \InvalidArgumentException("Unsupported operator {$param['operator']}.");
         }
 
         return $this;
@@ -544,6 +555,33 @@ class Where extends Command
     /**
      * Add like "%value" to where statement.
      *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.countryId')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->isNotNull('u.countryId')
+     *     ->startWith('u.firstName', 'Ali')
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.countryId')
+     *     ->column('u.firstName')
+     *     ->column('u.lastName')
+     *     ->isNotNull('u.countryId')
+     *     ->startWith('u.firstName', new Expr('"Aliz"'))
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     * ```
      *
      */
     public function startWith($column, $value)
@@ -558,6 +596,31 @@ class Where extends Command
         return $this;
     }
 
+    /**
+     * Add %value end with statement to where.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->endWith('u.firstName', 'trée')
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->endWith('u.firstName', new Expr('"trée"'))
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     * ```
+     */
     public function endWith($column, $value)
     {
         $child = new \stdClass();
@@ -570,6 +633,32 @@ class Where extends Command
         return $this;
     }
 
+    /**
+     * Add 'like %value%' statement too where.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->contains('u.firstName', 'ébec')
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->contains('u.firstName', new Expr('"ébec"'))
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     * ```
+     *
+     */
     public function contains($column, $value)
     {
         $child = new \stdClass();
@@ -582,6 +671,31 @@ class Where extends Command
         return $this;
     }
 
+    /**
+     * Add 'like value' statement to where.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->contains('u.firstName', 'No%l%a')
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->contains('u.firstName', new Expr('"No%l%a"'))
+     *     ->order('id asc')
+     *     ->limit(2)
+     *     ->fetch()
+     * ;
+     * ```
+     */
     public function like($column, $value)
     {
         $child = new \stdClass();
@@ -682,7 +796,7 @@ class Where extends Command
     {
         $child = new \stdClass();
         $child->type = 'expr';
-        $child->expr = $expr;
+        $child->value = $expr;
 
         $this->pw->childs[] = $child;
 
@@ -751,7 +865,28 @@ class Where extends Command
 
             if ($child->type == 'brakets') {
                 $sql .= "({$this->buildBrakets($child, $buildCommand, $params)}) {$brakets->operator} ";
+            } elseif ($child->type == 'expr') {
+                $sql .= sprintf("%s {$brakets->operator} ", (string) $child->value);
+            } elseif ($child->type == 'exists' || $child->type == 'notExists') {
+                $s = "";
+                $not = "";
+
+                if ($child->type == 'notExists') {
+                    $not = 'not ';
+                }
+
+                if ($child->value instanceof Command) {
+                    $valueBuiltCommand = $child->value->build($params);
+                    $buildCommand->params($valueBuiltCommand->params());
+
+                    $s = "({$valueBuiltCommand->command()})";
+                } else {
+                    throw new \InvalidArgumentException(sprintf("Unsported type of value %s for {$child->type}.", gettype($child->value)));
+                }
+
+                $sql .= "{$not}exists {$s} {$brakets->operator} ";
             } else {
+
                 // Parse column
                 $column = \Topi\Data\functions::columnStr($child->column, $params);
 
@@ -952,29 +1087,8 @@ class Where extends Command
                     $sql .= "{$column} {$o} {$s} {$brakets->operator} ";
 
                     break;
-                case 'expr':
-                    $sql .= "{$child->expr} {$brakets->operator} ";
-
-                    break;
-                case 'exists':
-                case 'notExists':
-                    $s = "";
-                    $not = "";
-
-                    if ($child->type == 'notExists') {
-                        $not = 'not ';
-                    }
-
-                    if ($child->value instanceof Command) {
-                        $valueBuiltCommand = $child->value->build($params);
-                        $buildCommand->params($valueBuiltCommand->params());
-
-                        $s = "({$valueBuiltCommand->command()})";
-                    } else {
-                        throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
-                    }
-
-                    $sql .= "{$column} {$not}exists {$s} {$brakets->operator} ";
+                // case 'expr':
+                //     $sql .= "{$child->expr} {$brakets->operator} ";
 
                     break;
                 case 'between':
@@ -1002,7 +1116,7 @@ class Where extends Command
             $command->param($t, $value);
             $value = ":{$t}";
         }elseif(is_numeric($value)){
-            $value = $t;
+            // $value = $t;
         // }elseif($value instanceof \Topi\Data\Statements\Statement){
         //     $value = "({$value->slq()})";
         //     $command->merge($value->binds());
