@@ -52,6 +52,11 @@ class Records implements \Countable
         return $this->items[$foundKey]['record'];
     }
 
+    public function __debugInfo()
+    {
+        return $this->items;
+    }
+
     /**
      * Return list of records at collection.
      *
@@ -98,6 +103,10 @@ class Records implements \Countable
 
         if (!empty($toload)) {
             $records = $this->model->records($toload, $this->params);
+
+            // if ($this->model instanceof \App\Models\Offers\Offers) {
+            //     die(print_r($toload, true));
+            // }
 
             foreach ($records->records($toload) as $record) {
                 foreach ($this->items as $key => $item) {

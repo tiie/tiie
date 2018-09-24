@@ -77,6 +77,11 @@ class Record implements RecordInterface
         return $this;
     }
 
+    public function __debugInfo()
+    {
+        return $this->data;
+    }
+
     public function setted(string $name, int $modyfied = 1) : int
     {
         if ($modyfied) {
