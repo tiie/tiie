@@ -11,9 +11,7 @@ class Select extends Command
     const JOIN_OUTER = 4;
 
     protected $from = null;
-
     protected $columns = array();
-
     protected $joins = array();
     protected $order = array();
     protected $group = array();
@@ -561,30 +559,34 @@ class Select extends Command
 
     public function params(array $values = array(), array $fields = array())
     {
-        if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
-            $this->page($values['page'], $values['pageSize']);
-        } elseif (array_key_exists('page', $values)) {
-            $this->page($values['page']);
-        }
-
-        if (array_key_exists('limit', $values)) {
-            $this->limit($values['limit']);
-            unset($values['limit']);
-        }
-
         if (array_key_exists('order', $values)) {
             $this->order($values['order']);
 
             unset($values['order']);
-        }
-
-        if (array_key_exists('sort', $values)) {
+        } elseif (array_key_exists('sort', $values)) {
             $this->order($values['sort']);
 
             unset($values['sort']);
         }
 
-        $this->where->params($values, $fields);
+        if (array_key_exists('id', $values)) {
+            $this->where->params(array(
+                'id' => $values['id'],
+            ), $fields);
+        } else {
+            $this->where->params($values, $fields);
+
+            if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
+                $this->page($values['page'], $values['pageSize']);
+            } elseif (array_key_exists('page', $values)) {
+                $this->page($values['page']);
+            }
+
+            if (array_key_exists('limit', $values)) {
+                $this->limit($values['limit']);
+                unset($values['limit']);
+            }
+        }
 
         return $this;
     }
@@ -603,6 +605,33 @@ class Select extends Command
         return $this;
     }
 
+    /**
+     * Add 'column < value' statement to where.
+     *
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->lte('u.id', 5)
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->lte('u.id', new Expr('5'))
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     *
+     * ```
+     */
     public function lt($column, $value)
     {
         $this->where->lt($column, $value);
@@ -610,6 +639,32 @@ class Select extends Command
         return $this;
     }
 
+    /**
+     * Add 'column <= value' statement to where.
+     *
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->lt('u.id', 5)
+     *     ->order('id asc')
+     *     ->limit(4)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->lt('u.id', new Expr('5'))
+     *     ->order('id asc')
+     *     ->limit(4)
+     *     ->fetch()
+     * ;
+     * ```
+     */
     public function lte($column, $value)
     {
         $this->where->lte($column, $value);
@@ -617,6 +672,31 @@ class Select extends Command
         return $this;
     }
 
+    /**
+     * Add 'column > value' statement to where.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->gt('u.id', 5)
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->gt('u.id', new Expr('5'))
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     * ```
+     */
     public function gt($column, $value)
     {
         $this->where->gt($column, $value);
@@ -624,6 +704,31 @@ class Select extends Command
         return $this;
     }
 
+    /**
+     * Add 'column >= value' statement to where.
+     *
+     * ```php
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->gte('u.id', 5)
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     *
+     * $rows = (new Select($this->adapter('bookshop')))
+     *     ->from('users', 'u')
+     *     ->column('u.id')
+     *     ->column('u.firstName')
+     *     ->gte('u.id', new Expr('5'))
+     *     ->order('id asc')
+     *     ->limit(5)
+     *     ->fetch()
+     * ;
+     * ```
+     */
     public function gte($column, $value)
     {
         $this->where->gte($column, $value);
