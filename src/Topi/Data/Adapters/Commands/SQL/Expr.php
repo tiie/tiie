@@ -1,7 +1,10 @@
 <?php
 namespace Topi\Data\Adapters\Commands\SQL;
 
-class Expr extends \Topi\Data\Adapters\Commands\Command
+use Topi\Data\Adapters\Commands\Command;
+use Topi\Data\Adapters\Commands\BuiltCommand;
+
+class Expr extends Command
 {
     private $expr;
 
@@ -17,6 +20,9 @@ class Expr extends \Topi\Data\Adapters\Commands\Command
 
     public function build(array $params = array())
     {
-        return $this->expr;
+        $buildCommand = new BuiltCommand();
+        $buildCommand->command($this->expr);
+
+        return $buildCommand;
     }
 }
