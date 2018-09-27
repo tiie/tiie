@@ -2,6 +2,9 @@
 namespace Topi\Data\Adapters\Commands\SQL;
 
 use Topi\Data\Adapters\Commands\Command;
+use Topi\Data\Adapters\Commands\BuiltCommand;
+use Topi\Data\Adapters\AdapterInterface;
+use Topi\Data\Adapters\Commands\SQL\Where;
 
 class Select extends Command
 {
@@ -27,10 +30,11 @@ class Select extends Command
     protected $where = null;
     protected $pw = null;
 
-    function __construct(\Topi\Data\Adapters\AdapterInterface $adapter = null)
+    function __construct(AdapterInterface $adapter = null)
     {
         parent::__construct($adapter);
-        $this->where = new \Topi\Data\Adapters\Commands\SQL\Where();
+
+        $this->where = new Where();
 
         $this->defaultRuleFun = function($values, $select){
             foreach ($values as $name => $value) {
@@ -769,7 +773,7 @@ class Select extends Command
      */
     public function build(array $params = array())
     {
-        $buildCommand = new \Topi\Data\Adapters\Commands\BuiltCommand();
+        $buildCommand = new BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'
