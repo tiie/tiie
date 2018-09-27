@@ -1,13 +1,22 @@
 <?php
 namespace Topi\Data\Adapters\Commands\SQL;
 
-class Insert extends \Topi\Data\Adapters\Commands\Command
+use Topi\Data\Adapters\Commands\Command;
+use Topi\Data\Adapters\Commands\BuiltCommand;
+
+class Insert extends Command
 {
     private $table = null;
     private $columns = array();
     private $values = array();
 
-    public function into($table = null)
+    /**
+     * Set table to insert.
+     *
+     * @param string $table
+     * @return $this|string Return set value or $this if is use to set.
+     */
+    public function into(string $table = null)
     {
         if (!is_null($table)) {
             $this->table = $table;
@@ -18,25 +27,35 @@ class Insert extends \Topi\Data\Adapters\Commands\Command
         }
     }
 
-    public function table($table = null)
+    /**
+     * @see Insert::into()
+     */
+    public function table(string $table = null)
     {
-        if (!is_null($table)) {
-            $this->table = $table;
-
-            return $this;
-        }else{
-            return $this->table;
-        }
+        return $this->into($table);
     }
 
-    public function value($value) : Insert
+    /**
+     * Add value to insert. Value is key array.
+     *
+     * @param array $value
+     * @return $this
+     */
+    public function value(array $value) : Insert
     {
         $this->values[] = $value;
 
         return $this;
     }
 
-    public function values($values = null)
+    /**
+     * Set values for insert.
+     *
+     * @param array $values
+     * @param int $overwrite
+     * @return $this|array
+     */
+    public function values(array $values = null, int $overwrite = 1)
     {
         if (!is_null($values)) {
             $this->values = $values;
@@ -47,6 +66,9 @@ class Insert extends \Topi\Data\Adapters\Commands\Command
         }
     }
 
+    /**
+     * @see Insert::value()
+     */
     public function add($value)
     {
         $this->values[] = $value;
@@ -68,10 +90,10 @@ class Insert extends \Topi\Data\Adapters\Commands\Command
     public function build(array $params = array())
     {
         if (is_null($this->table)) {
-            throw new \Exception("Insert can not be build, bacause table is not defined.");
+            throw new \InvalidArgumentException("Insert can not be build, bacause table is not defined.");
         }
 
-        $command = new \Topi\Data\Adapters\Commands\BuiltCommand();
+        $command = new BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'
