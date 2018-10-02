@@ -4,6 +4,28 @@ namespace Topi\Data\Adapters\Commands\SQL;
 use Topi\Data\Adapters\Commands\Command;
 use Topi\Data\Adapters\Commands\BuiltCommand;
 
+/**
+ *
+ * ```php
+ * $insert = new Insert($this->adapter('bookshop'));
+ *
+ * $insert->into('users')
+ *     ->add(array(
+ *         'id' => 3000,
+ *         'firstName' => 'Illustrée',
+ *         'lastName' => 'Sauvage',
+ *         'email' => 'jsauvagei@parallels.com',
+ *         'genderId' => 257,
+ *         'birthDate' => '0000-00-00',
+ *         'ip' => '152.106.13.28',
+ *         'countryId' => NULL,
+ *         'cityId' => 1134,
+ *         'phone' => '501-972-3966',
+ *     ))
+ *     ->execute()
+ * ;
+ * ```
+ */
 class Insert extends Command
 {
     private $table = null;
@@ -37,6 +59,20 @@ class Insert extends Command
 
     /**
      * Add value to insert. Value is key array.
+     *
+     * ```php
+     * $insert = new Insert();
+     *
+     * $insert->value(array(
+     *     'id' => 1,
+     *     'name' => 'Pawel'
+     * ));
+     *
+     * $insert->value(array(
+     *     'id' => 2,
+     *     'name' => 'Pawel'
+     * ));
+     * ```
      *
      * @param array $value
      * @return $this
@@ -76,7 +112,19 @@ class Insert extends Command
         return $this;
     }
 
-    public function columns($columns = null)
+    /**
+     * Set columns for INSERT statement. If columns is not set, then first
+     * column from values are used.
+     *
+     * ```php
+     * $insert = new Insert();
+     * $insert->columns(array('id', 'name'));
+     * ```
+     *
+     * @param array $columns
+     * @return $this|array
+     */
+    public function columns(array $columns = null)
     {
         if (!is_null($columns)) {
             $this->columns = $columns;
