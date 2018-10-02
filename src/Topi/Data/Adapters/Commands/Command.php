@@ -14,7 +14,7 @@ abstract class Command
     private $binds = array();
 
     /**
-     * Metoda tworzy obiekt Command reprezentujacy wewnętrzy stan buildera.
+     * Create build command.
      *
      * @param array $params
      * @return \Topi\Data\Adapters\Commands\Command
