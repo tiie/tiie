@@ -1,6 +1,8 @@
 <?php
 namespace Topi\Data\Adapters\Commands\SQL;
 
+use Topi\Data\Adapters\Commands\SQL\Where;
+
 class Delete extends \Topi\Data\Adapters\Commands\Command
 {
     private $from = null;
@@ -10,7 +12,7 @@ class Delete extends \Topi\Data\Adapters\Commands\Command
     {
         parent::__construct($adapter);
 
-        $this->where = new \Topi\Data\Adapters\Commands\SQL\Where();
+        $this->where = new Where();
     }
 
     public function from($from = null)
