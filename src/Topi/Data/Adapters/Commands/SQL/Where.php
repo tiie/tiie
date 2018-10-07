@@ -66,6 +66,41 @@ class Where extends Command
 
         $columns = array();
 
+        $operations = array(
+            'not-in' => 'notIn',
+            'NotIn' => 'notIn',
+            'in' => 'in',
+            'In' => 'in',
+            'is-not-null' => 'isNotNull',
+            'IsNotNull' => 'isNotNull',
+            'is-null' => 'isNull',
+            'IsNull' => 'isNull',
+            'start-with' => 'startWith',
+            'StartWith' => 'startWith',
+            'end-with' => 'endWith',
+            'EndWith' => 'endWith',
+            'contains' => 'contains',
+            'Contains' => 'contains',
+            'not-like' => 'notLike',
+            'NotLike' => 'notLike',
+            'like' => 'like',
+            'Like' => 'like',
+            'not-equal' => 'notEqual',
+            'NotEqual' => 'notEqual',
+            'equal' => 'equal',
+            'Equal' => 'equal',
+            'lower-than-equal' => 'lowerThanEqual',
+            'LowerThanEqual' => 'lowerThanEqual',
+            'lower-than' => 'lowerThan',
+            'LowerThan' => 'lowerThan',
+            'greater-than-equal' => 'greaterThanEqual',
+            'GreaterThanEqual' => 'greaterThanEqual',
+            'greater-than' => 'greaterThan',
+            'GreaterThan' => 'greaterThan',
+            'between' => 'between',
+            'Between' => 'between',
+        );
+
         foreach ($values as $key => $value) {
             preg_match_all($re2, $key, $matches, PREG_SET_ORDER, 0);
 
@@ -74,180 +109,150 @@ class Where extends Command
             }
 
             if (empty($matches)) {
-                $column = $this->dashToCamelCase($key);
+                $field = $this->unifiedColumn($key);
 
-                if (array_key_exists($column, $fields)) {
+                if (array_key_exists($field, $fields)) {
                     if (is_array($value)) {
-                        $this->in($column, $value);
+                        $this->in($field, $value);
                     } else {
-                        $this->eq($column, $value);
+                        $this->eq($field, $value);
                     }
 
-                    return $this;
+                    continue;
                 } else {
                     continue;
                 }
             }
 
-            $fielddash = $matches[0][1];
-            $operation = $matches[0][2];
+            $field = $this->unifiedColumn($matches[0][1]);
+            $operation = $operations[$matches[0][2]];
 
-            $allowed = array();
-            $excluded = array();
-
-            $allowedKey = array_key_exists("{$fielddash}", $fields);
-            $excludeKey = array_key_exists("exclude:{$fielddash}", $fields);
-
-            if (!$allowedKey && !$excludeKey) {
+            if (!array_key_exists($field, $fields)) {
                 continue;
             }
 
-            if ($allowedKey) {
-                if ($fields[$fielddash] == 'all') {
-                    $allowed = array(
-                        'not-in',
-                        'NotIn',
+            $allowedOperations = array();
+            $explodedOperations = array();
+            $fieldValue = $field;
 
+            if (is_string($fields[$field])) {
+                if ($fields[$field] == 'all') {
+                    $allowedOperations = array(
+                        'notIn',
                         'in',
-                        'In',
-
-                        'is-not-null',
-                        'IsNotNull',
-
-                        'is-null',
-                        'IsNull',
-
-                        'start-with',
-                        'StartWith',
-
-                        'end-with',
-                        'EndWith',
-
+                        'isNotNull',
+                        'isNull',
+                        'startWith',
+                        'endWith',
                         'contains',
-                        'Contains',
-
-                        'not-like',
-                        'NotLike',
-
+                        'notLike',
                         'like',
-                        'Like',
-
-                        'not-equal',
-                        'NotEqual',
-
+                        'notEqual',
                         'equal',
-                        'Equal',
-
-                        'lower-than-equal',
-                        'LowerThanEqual',
-
-                        'lower-than',
-                        'LowerThan',
-
-                        'greater-than-equal',
-                        'GreaterThanEqual',
-
-                        'greater-than',
-                        'GreaterThan',
-
+                        'lowerThanEqual',
+                        'lowerThan',
+                        'greaterThanEqual',
+                        'greaterThan',
                         'between',
-                        'Between',
                     );
                 } else {
-                    $allowed = $fields[$fielddash];
+                    $allowedOperations = array($fields[$field]);
+                }
+            } elseif (is_array($fields[$field])) {
+                if (array_key_exists('field', $fields[$field])) {
+                    $fieldValue = $fields[$field]['field'];
+                }
+
+                if (array_key_exists('operations', $fields[$field])) {
+                    $allowedOperations = $fields[$field]['operations'];
+                } else {
+                    $allowedOperations = array(
+                        'notIn',
+                        'in',
+                        'isNotNull',
+                        'isNull',
+                        'startWith',
+                        'endWith',
+                        'contains',
+                        'notLike',
+                        'like',
+                        'notEqual',
+                        'equal',
+                        'lowerThanEqual',
+                        'lowerThan',
+                        'greaterThanEqual',
+                        'greaterThan',
+                        'between',
+                    );
+                }
+
+                if (array_key_exists('excluded', $fields[$field])) {
+                    $explodedOperations = $fields[$field]['excluded'];
                 }
             }
 
-            if ($excludeKey) {
-                $excludeKey = $fields["exclude:{$fielddash}"];
-            }
-
-            if (in_array($operation, $excluded)) {
+            if (in_array($operation, $explodedOperations)) {
                 continue;
             }
 
-            if (!in_array($operation, $allowed)) {
+            if (!in_array($operation, $allowedOperations)) {
                 continue;
             }
 
-            $column = null;
-
-            if (isset($columns[$fielddash])) {
-                $column = $columns[$fielddash];
-            } else {
-                $column = $columns[$fielddash] = $this->dashToCamelCase($fielddash);
-            }
-
-            switch($matches[0][2]) {
-            case 'not-in':
-            case 'NotIn':
-                $this->notIn($column, $value);
+            switch($operation) {
+            case 'notIn':
+                $this->notIn($fieldValue, $value);
                 break;
             case 'in':
-            case 'In':
-                $this->in($column, $value);
+                $this->in($fieldValue, $value);
                 break;
-            case 'is-not-null':
-            case 'IsNotNull':
-                $this->isNotNull($column);
+            case 'isNotNull':
+                $this->isNotNull($fieldValue);
                 break;
-            case 'is-null':
-            case 'IsNull':
-                $this->isNull($column);
+            case 'isNull':
+                $this->isNull($fieldValue);
                 break;
-            case 'start-with':
-            case 'StartWith':
-                $this->startWith($column, $value);
+            case 'startWith':
+                $this->startWith($fieldValue, $value);
                 break;
-            case 'end-with':
-            case 'EndWith':
-                $this->endWith($column, $value);
+            case 'endWith':
+                $this->endWith($fieldValue, $value);
                 break;
             case 'contains':
-            case 'Contains':
-                $this->contains($column, $value);
+                $this->contains($fieldValue, $value);
                 break;
-            case 'not-like':
-            case 'NotLike':
-                $this->notLike($column, $value);
+            case 'notLike':
+                $this->notLike($fieldValue, $value);
                 break;
             case 'like':
-            case 'Like':
-                $this->like($column, $value);
+                $this->like($fieldValue, $value);
                 break;
-            case 'not-equal':
-            case 'NotEqual':
-                $this->neq($column, $value);
+            case 'notEqual':
+                $this->neq($fieldValue, $value);
                 break;
             case 'equal':
-            case 'Equal':
-                $this->eq($column, $value);
+                $this->eq($fieldValue, $value);
                 break;
-            case 'lower-than-equal':
-            case 'LowerThanEqual':
-                $this->lte($column, $value);
+            case 'lowerThanEqual':
+                $this->lte($fieldValue, $value);
                 break;
-            case 'lower-than':
-            case 'LowerThan':
-                $this->lt($column, $value);
+            case 'lowerThan':
+                $this->lt($fieldValue, $value);
                 break;
-            case 'greater-than-equal':
-            case 'GreaterThanEqual':
-                $this->gte($column, $value);
+            case 'greaterThanEqual':
+                $this->gte($fieldValue, $value);
                 break;
-            case 'greater-than':
-            case 'GreaterThan':
-                $this->gt($column, $value);
+            case 'greaterThan':
+                $this->gt($fieldValue, $value);
                 break;
             case 'between':
-            case 'Between':
                 if (is_string($value)) {
                     $value = explode(',', $value);
 
-                    $this->between($column, $value[0], $value[1]);
+                    $this->between($fieldValue, $value[0], $value[1]);
                 } else {
                     if (array_key_exists('from', $value) && array_key_exists('to', $value)) {
-                        $this->between($column, $value['from'], $value['to']);
+                        $this->between($fieldValue, $value['from'], $value['to']);
                     }
                 }
 
@@ -258,7 +263,7 @@ class Where extends Command
         return $this;
     }
 
-    private function dashToCamelCase(string $name)
+    private function unifiedColumn(string $name)
     {
         $name = explode("-", $name);
 
