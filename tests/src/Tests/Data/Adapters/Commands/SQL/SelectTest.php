@@ -81,6 +81,60 @@ class SelectTest extends TestCase
 
     // }
 
+    public function testParamsEqual()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->order('u.id asc')
+            ->params(array(
+                'id' => 1,
+            ), array(
+                'id' => 1,
+            ))
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-72', $rows);
+        $this->assertEquals($this->variable('variable-72'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->order('u.id asc')
+            ->params(array(
+                'idEqual' => 1,
+            ), array(
+                'id' => 'all',
+            ))
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-72'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->column('u.id')
+            ->column('u.firstName')
+            ->order('u.id asc')
+            ->params(array(
+                'id-equal' => 1,
+            ), array(
+                'id' => 'all',
+            ))
+            ->fetch()
+        ;
+
+        $this->assertEquals($this->variable('variable-72'), $rows);
+    }
+
     public function testLimit()
     {
         $this->initDatabase('bookshop');
