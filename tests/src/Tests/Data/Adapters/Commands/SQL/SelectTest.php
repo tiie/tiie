@@ -81,6 +81,1349 @@ class SelectTest extends TestCase
 
     // }
 
+    public function testParamsNotIn()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idNotIn' => array(1, 2),
+                'nameNotIn' => array('André'),
+            ), array(
+                'id' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-73', $rows);
+        $this->assertEquals($this->variable('variable-73'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idNotIn' => array(1, 2),
+                'nameNotIn' => array('André'),
+            ), array(
+                'id' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-74', $rows);
+        $this->assertEquals($this->variable('variable-74'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idNotIn' => array(1, 2),
+                'idEqual' => 10,
+                'nameNotIn' => array('André'),
+            ), array(
+                'id' => array(
+                    'operations' => array('notIn')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-75', $rows);
+        $this->assertEquals($this->variable('variable-75'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idNotIn' => array(1, 2),
+                'idEqual' => 10,
+                'nameNotIn' => array('André'),
+            ), array(
+                'id' => array(
+                    'excluded' => array('notIn')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-76', $rows);
+        $this->assertEquals($this->variable('variable-76'), $rows);
+
+
+        // dashed params
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-not-in' => array(1, 2),
+                'name-not-in' => array('André'),
+            ), array(
+                'id' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-73', $rows);
+        $this->assertEquals($this->variable('variable-73'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-not-in' => array(1, 2),
+                'name-not-in' => array('André'),
+            ), array(
+                'id' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-74', $rows);
+        $this->assertEquals($this->variable('variable-74'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-not-in' => array(1, 2),
+                'id-equal' => 10,
+                'name-not-in' => array('André'),
+            ), array(
+                'id' => array(
+                    'operations' => array('notIn')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-75', $rows);
+        $this->assertEquals($this->variable('variable-75'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-not-in' => array(1, 2),
+                'id-equal' => 10,
+                'name-not-in' => array('André'),
+            ), array(
+                'id' => array(
+                    'excluded' => array('notIn')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-76', $rows);
+        $this->assertEquals($this->variable('variable-76'), $rows);
+    }
+
+    public function testParamsIn()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idIn' => array(1, 2),
+                'nameIn' => array('André'),
+            ), array(
+                'id' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-77', $rows);
+        $this->assertEquals($this->variable('variable-77'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idIn' => array(1, 2),
+                'nameIn' => array('André'),
+            ), array(
+                'id' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-78', $rows);
+        $this->assertEquals($this->variable('variable-78'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idIn' => array(1, 2),
+                'idEqual' => 10,
+                'nameIn' => array('André'),
+            ), array(
+                'id' => array(
+                    'operations' => array('in')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-79', $rows);
+        $this->assertEquals($this->variable('variable-79'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'idIn' => array(1, 2),
+                'idEqual' => 10,
+                'nameIn' => array('André'),
+            ), array(
+                'id' => array(
+                    'excluded' => array('in')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-80', $rows);
+        $this->assertEquals($this->variable('variable-80'), $rows);
+
+        // dashed params
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-in' => array(1, 2),
+                'name-in' => array('André'),
+            ), array(
+                'id' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-77', $rows);
+        $this->assertEquals($this->variable('variable-77'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-in' => array(1, 2),
+                'name-in' => array('André'),
+            ), array(
+                'id' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-78', $rows);
+        $this->assertEquals($this->variable('variable-78'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-in' => array(1, 2),
+                'id-equal' => 10,
+                'name-in' => array('André'),
+            ), array(
+                'id' => array(
+                    'operations' => array('in')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-79', $rows);
+        $this->assertEquals($this->variable('variable-79'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'id-in' => array(1, 2),
+                'id-equal' => 10,
+                'name-in' => array('André'),
+            ), array(
+                'id' => array(
+                    'excluded' => array('in')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-80', $rows);
+        $this->assertEquals($this->variable('variable-80'), $rows);
+
+    }
+
+    public function testParamsIsNotNull()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'countryIdIsNotNull' => 1,
+                'nameIsNull' => 1,
+            ), array(
+                'countryId' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-81', $rows);
+        $this->assertEquals($this->variable('variable-81'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'countryIdIsNotNull' => 1,
+                'nameIsNull' => 1,
+            ), array(
+                'countryId' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-82', $rows);
+        $this->assertEquals($this->variable('variable-82'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'countryIdIsNotNull' => 1,
+                'countryIdIsNull' => 1,
+                'idEqual' => 10,
+            ), array(
+                'countryId' => array(
+                    'operations' => array('isNotNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-83', $rows);
+        $this->assertEquals($this->variable('variable-83'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'countryIdIsNotNull' => 1,
+                'countryIdIsNull' => 1,
+                'idEqual' => 10,
+            ), array(
+                'countryId' => array(
+                    'excluded' => array('isNotNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-84', $rows);
+        $this->assertEquals($this->variable('variable-84'), $rows);
+
+        // dashed params
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'country-id-is-not-null' => 1,
+                'nameIsNull' => 1,
+            ), array(
+                'countryId' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-81', $rows);
+        $this->assertEquals($this->variable('variable-81'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'country-id-is-not-null' => 1,
+                'name-is-null' => 1,
+            ), array(
+                'countryId' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-82', $rows);
+        $this->assertEquals($this->variable('variable-82'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'country-id-is-not-null' => 1,
+                'country-id-is-null' => 1,
+                'id-equal' => 10,
+            ), array(
+                'countryId' => array(
+                    'operations' => array('isNotNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-83', $rows);
+        $this->assertEquals($this->variable('variable-83'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'country-id-is-not-null' => 1,
+                'country-id-is-null' => 1,
+                'id-equal' => 10,
+            ), array(
+                'countryId' => array(
+                    'excluded' => array('isNotNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-84', $rows);
+        $this->assertEquals($this->variable('variable-84'), $rows);
+    }
+
+    public function testParamsIsNull()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'countryIdIsNull' => 1,
+                'nameIsNull' => 1,
+            ), array(
+                'countryId' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-85', $rows);
+        $this->assertEquals($this->variable('variable-85'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'countryIdIsNull' => 1,
+                'nameIsNull' => 1,
+            ), array(
+                'countryId' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-86', $rows);
+        $this->assertEquals($this->variable('variable-86'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'countryIdIsNull' => 1,
+                'countryIdIsNotNull' => 1,
+                'idEqual' => 10,
+            ), array(
+                'countryId' => array(
+                    'operations' => array('isNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-87', $rows);
+        $this->assertEquals($this->variable('variable-87'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'countryIdIsNull' => 1,
+                'countryIdIsNotNull' => 1,
+                'idEqual' => 10,
+            ), array(
+                'countryId' => array(
+                    'excluded' => array('isNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-88', $rows);
+        $this->assertEquals($this->variable('variable-88'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'country-id-is-null' => 1,
+                'name-is-null' => 1,
+            ), array(
+                'countryId' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-85', $rows);
+        $this->assertEquals($this->variable('variable-85'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'country-id-is-null' => 1,
+                'name-is-null' => 1,
+            ), array(
+                'countryId' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-86', $rows);
+        $this->assertEquals($this->variable('variable-86'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'country-id-is-null' => 1,
+                'country-id-is-not-null' => 1,
+                'id-equal' => 10,
+            ), array(
+                'countryId' => array(
+                    'operations' => array('isNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-87', $rows);
+        $this->assertEquals($this->variable('variable-87'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+            ))
+            ->params(array(
+                'country-id-is-null' => 1,
+                'country-id-is-not-null' => 1,
+                'idEqual' => 10,
+            ), array(
+                'countryId' => array(
+                    'excluded' => array('isNull')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-88', $rows);
+        $this->assertEquals($this->variable('variable-88'), $rows);
+    }
+
+    public function testParamsStartWith()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameStartWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-89', $rows);
+        $this->assertEquals($this->variable('variable-89'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameStartWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-90', $rows);
+        $this->assertEquals($this->variable('variable-90'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameStartWith' => 'Pub',
+                'firstNameEndWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => array(
+                    'operations' => array('startWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-91', $rows);
+        $this->assertEquals($this->variable('variable-91'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameStartWith' => 'Pub',
+                'firstNameEndWith' => 'née',
+                'idEqual' => 20
+            ), array(
+                'firstName' => array(
+                    'excluded' => array('startWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-92', $rows);
+        $this->assertEquals($this->variable('variable-92'), $rows);
+
+        // dashed params
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-start-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-89', $rows);
+        $this->assertEquals($this->variable('variable-89'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-start-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-90', $rows);
+        $this->assertEquals($this->variable('variable-90'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-start-with' => 'Pub',
+                'first-name-end-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => array(
+                    'operations' => array('startWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-91', $rows);
+        $this->assertEquals($this->variable('variable-91'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-start-with' => 'Pub',
+                'first-name-end-with' => 'née',
+                'id-equal' => 20
+            ), array(
+                'firstName' => array(
+                    'excluded' => array('startWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-92', $rows);
+        $this->assertEquals($this->variable('variable-92'), $rows);
+    }
+
+    public function testParamsEndWith()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameEndWith' => 'mée',
+                'idEqual' => 20
+            ), array(
+                'firstName' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-93', $rows);
+        $this->assertEquals($this->variable('variable-93'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameEndWith' => 'mée',
+                'idEqual' => 20
+            ), array(
+                'firstName' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-94', $rows);
+        $this->assertEquals($this->variable('variable-94'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameEndWith' => 'mée',
+                'firstNameStartWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => array(
+                    'operations' => array('endWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-95', $rows);
+        $this->assertEquals($this->variable('variable-95'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameEndWith' => 'mée',
+                'firstNameStartWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => array(
+                    'excluded' => array('endWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-96', $rows);
+        $this->assertEquals($this->variable('variable-96'), $rows);
+
+        // dashed params
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-end-with' => 'mée',
+                'id-equal' => 20
+            ), array(
+                'firstName' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-93', $rows);
+        $this->assertEquals($this->variable('variable-93'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-end-with' => 'mée',
+                'id-equal' => 20
+            ), array(
+                'firstName' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-94', $rows);
+        $this->assertEquals($this->variable('variable-94'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-end-with' => 'mée',
+                'first-name-start-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => array(
+                    'operations' => array('endWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-95', $rows);
+        $this->assertEquals($this->variable('variable-95'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-end-with' => 'mée',
+                'first-name-start-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => array(
+                    'excluded' => array('endWith')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-96', $rows);
+        $this->assertEquals($this->variable('variable-96'), $rows);
+    }
+
+    public function testParamsContains()
+    {
+        $this->initDatabase('bookshop');
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameContains' => 'ie-thé',
+                'idEqual' => 20
+            ), array(
+                'firstName' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-97', $rows);
+        $this->assertEquals($this->variable('variable-97'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameContains' => 'ie-thé',
+                'idEqual' => 20
+            ), array(
+                'firstName' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-98', $rows);
+        $this->assertEquals($this->variable('variable-98'), $rows);
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameContains' => 'ie-thé',
+                'firstNameStartWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => array(
+                    'operations' => array('contains')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-99', $rows);
+        $this->assertEquals($this->variable('variable-99'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'firstNameContains' => 'ie-thé',
+                'firstNameStartWith' => 'Pub',
+                'idEqual' => 20
+            ), array(
+                'firstName' => array(
+                    'excluded' => array('contains')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-100', $rows);
+        $this->assertEquals($this->variable('variable-100'), $rows);
+
+        // dashed params
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-contains' => 'ie-thé',
+                'id-equal' => 20
+            ), array(
+                'firstName' => 'all',
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-97', $rows);
+        $this->assertEquals($this->variable('variable-97'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-contains' => 'ie-thé',
+                'id-equal' => 20
+            ), array(
+                'firstName' => 1,
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-98', $rows);
+        $this->assertEquals($this->variable('variable-98'), $rows);
+
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-contains' => 'ie-thé',
+                'first-name-start-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => array(
+                    'operations' => array('contains')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-99', $rows);
+        $this->assertEquals($this->variable('variable-99'), $rows);
+
+        // ---------------
+        $rows = (new Select($this->adapter('bookshop')))
+            ->from('users', 'u')
+            ->columns(array(
+                'id' => 'u.id',
+                'firstName' => 'u.firstName',
+                'countryId' => 'u.countryId',
+            ))
+            ->params(array(
+                'first-name-contains' => 'ie-thé',
+                'first-name-start-with' => 'Pub',
+                'id-equal' => 20
+            ), array(
+                'firstName' => array(
+                    'excluded' => array('contains')
+                ),
+            ))
+            ->order('u.id asc')
+            ->limit(5)
+            ->fetch()
+        ;
+
+        // $this->createVariable('variable-100', $rows);
+        $this->assertEquals($this->variable('variable-100'), $rows);
+    }
+
+    // public function testParamsNotLike()
+    // {
+    // }
+
+    // public function testParamsLike()
+    // {
+    // }
+
+    // public function testParamsNotEqual()
+    // {
+    // }
+
     public function testParamsEqual()
     {
         $this->initDatabase('bookshop');
@@ -99,7 +1442,6 @@ class SelectTest extends TestCase
             ->fetch()
         ;
 
-        // $this->createVariable('variable-72', $rows);
         $this->assertEquals($this->variable('variable-72'), $rows);
 
         // ---------------
@@ -134,6 +1476,26 @@ class SelectTest extends TestCase
 
         $this->assertEquals($this->variable('variable-72'), $rows);
     }
+
+    // public function testParamsLowerThanEqual()
+    // {
+    // }
+
+    // public function testParamsLowerThan()
+    // {
+    // }
+
+    // public function testParamsGreaterThanEqual()
+    // {
+    // }
+
+    // public function testParamsGreaterThan()
+    // {
+    // }
+
+    // public function testParamsBetween()
+    // {
+    // }
 
     public function testLimit()
     {
