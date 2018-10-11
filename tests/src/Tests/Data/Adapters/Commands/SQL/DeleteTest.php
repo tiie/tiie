@@ -15,6 +15,9 @@ class DeleteTest extends TestCase
     {
         $delete = new Delete();
 
+
+        // mock
+        $this->assertEquals(1,1);
     }
 
     //

@@ -96,6 +96,209 @@ class Select extends Command
         return $this;
     }
 
+    public function in($column, $value)
+    {
+        $this->where->in($column, $value);
+
+        return $this;
+    }
+
+    public function notIn($column, $value)
+    {
+        $this->where->notIn($column, $value);
+
+        return $this;
+    }
+
+    public function isNull($column)
+    {
+        $this->where->isNull($column);
+
+        return $this;
+    }
+
+    public function isNotNull($column)
+    {
+        $this->where->isNotNull($column);
+
+        return $this;
+    }
+
+    public function startWith($column, $value)
+    {
+        $this->where->startWith($column, $value);
+
+        return $this;
+    }
+
+    public function notStartWith($column, $value)
+    {
+        $this->where->notStartWith($column, $value);
+
+        return $this;
+    }
+
+    public function endWith($column, $value)
+    {
+        $this->where->endWith($column, $value);
+
+        return $this;
+    }
+
+    public function notEndWith($column, $value)
+    {
+        $this->where->notEndWith($column, $value);
+
+        return $this;
+    }
+
+    public function contains($column, $value)
+    {
+        $this->where->contains($column, $value);
+
+        return $this;
+    }
+
+    public function notContains($column, $value)
+    {
+        $this->where->notContains($column, $value);
+
+        return $this;
+    }
+
+    public function like($column, $value)
+    {
+        $this->where->like($column, $value);
+
+        return $this;
+    }
+
+    public function notLike($column, $value)
+    {
+        $this->where->notLike($column, $value);
+
+        return $this;
+    }
+
+    public function eq($column, $value)
+    {
+        $this->where->eq($column, $value);
+
+        return $this;
+    }
+
+    public function equal($column, $value)
+    {
+        $this->where->equal($column, $value);
+
+        return $this;
+    }
+
+    public function neq($column, $value)
+    {
+        $this->where->neq($column, $value);
+
+        return $this;
+    }
+
+    public function notEqual($column, $value)
+    {
+        $this->where->notEqual($column, $value);
+
+        return $this;
+    }
+
+    public function lowerThan($column, $value)
+    {
+        $this->where->lowerThan($column, $value);
+
+        return $this;
+    }
+
+    public function notLowerThan($column, $value)
+    {
+        $this->where->notLowerThan($column, $value);
+
+        return $this;
+    }
+
+    public function lowerThanEqual($column, $value)
+    {
+        $this->where->lowerThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function notLowerThanEqual($column, $value)
+    {
+        $this->where->notLowerThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function greaterThan($column, $value)
+    {
+        $this->where->greaterThan($column, $value);
+
+        return $this;
+    }
+
+    public function notGreaterThan($column, $value)
+    {
+        $this->where->notGreaterThan($column, $value);
+
+        return $this;
+    }
+
+    public function greaterThanEqual($column, $value)
+    {
+        $this->where->greaterThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function notGreaterThanEqual($column, $value)
+    {
+        $this->where->notGreaterThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function expr($expr)
+    {
+        $this->where->expr($expr);
+
+        return $this;
+    }
+
+    public function exists($value)
+    {
+        $this->where->exists($value);
+
+        return $this;
+    }
+
+    public function notExists($value)
+    {
+        $this->where->notExists($value);
+
+        return $this;
+    }
+
+    public function between($column, $begin, $end)
+    {
+        $this->where->between($column, $value);
+
+        return $this;
+    }
+
+    public function notBetween($column, $begin, $end)
+    {
+        $this->where->notBetween($column, $value);
+
+        return $this;
+    }
+
     /**
      * Add join statement to select.
      *
@@ -498,62 +701,6 @@ class Select extends Command
         return $this;
     }
 
-    public function in($column, $value)
-    {
-        $this->where->in($column, $value);
-
-        return $this;
-    }
-
-    public function notIn($column, $value)
-    {
-        $this->where->notIn($column, $value);
-
-        return $this;
-    }
-
-    public function isNull($column)
-    {
-        $this->where->isNull($column);
-
-        return $this;
-    }
-
-    public function isNotNull($column)
-    {
-        $this->where->isNotNull($column);
-
-        return $this;
-    }
-
-    public function startWith($column, $value)
-    {
-        $this->where->startWith($column, $value);
-
-        return $this;
-    }
-
-    public function endWith($column, $value)
-    {
-        $this->where->endWith($column, $value);
-
-        return $this;
-    }
-
-    public function contains($column, $value)
-    {
-        $this->where->contains($column, $value);
-
-        return $this;
-    }
-
-    public function like($column, $value)
-    {
-        $this->where->like($column, $value);
-
-        return $this;
-    }
-
     public function conditions($column, $conditions, array $params = array())
     {
         $this->where->conditions($column, $conditions, $params);
@@ -591,20 +738,6 @@ class Select extends Command
                 unset($values['limit']);
             }
         }
-
-        return $this;
-    }
-
-    public function eq($column, $value)
-    {
-        $this->where->eq($column, $value);
-
-        return $this;
-    }
-
-    public function neq($column, $value)
-    {
-        $this->where->neq($column, $value);
 
         return $this;
     }
@@ -736,34 +869,6 @@ class Select extends Command
     public function gte($column, $value)
     {
         $this->where->gte($column, $value);
-
-        return $this;
-    }
-
-    public function expr($expr)
-    {
-        $this->where->expr($expr);
-
-        return $this;
-    }
-
-    public function exists($value)
-    {
-        $this->where->exists($value);
-
-        return $this;
-    }
-
-    public function notExists($value)
-    {
-        $this->where->notExists($value);
-
-        return $this;
-    }
-
-    public function between($column, $begin, $end)
-    {
-        $this->where->between($column, $begin, $end);
 
         return $this;
     }

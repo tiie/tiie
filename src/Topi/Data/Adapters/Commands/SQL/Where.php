@@ -61,57 +61,99 @@ class Where extends Command
 
     public function params(array $values = array(), array $fields = array())
     {
-        $re = '/^(.*?)-(not-in|in|is-not-null|is-null|start-with|end-with|contains|not-like|like|not-equal|equal|lower-than-equal|lower-than|greater-than-equal|greater-than|between)$/m';
-        $re2 = '/^(.*?)(NotIn|In|IsNotNull|IsNull|StartWith|EndWith|Contains|NotLike|Like|NotEqual|Equal|LowerThanEqual|LowerThan|GreaterThanEqual|GreaterThan|Between)$/m';
+        $re = '/^(.*?)(-in|In|-not-in|NotIn|-is-null|IsNull|-is-not-null|IsNotNull|-start-with|StartWith|-not-start-with|NotStartWith|-end-with|EndWith|-not-end-with|NotEndWith|-contains|Contains|-not-contains|NotContains|-like|Like|-not-like|NotLike|-equal|Equal|-not-equal|NotEqual|-lower-than-equal|LowerThanEqual|-not-lower-than-equal|NotLowerThanEqual|-lower-than|LowerThan|-not-lower-than|NotLowerThan|-greater-than-equal|GreaterThanEqual|-not-greater-than-equal|NotGreaterThanEqual|-greater-than|GreaterThan|-not-greater-than|NotGreaterThan|-between|Between|-not-between|NotBetween)$/m';
 
         $columns = array();
 
         $operations = array(
-            'not-in' => 'notIn',
-            'NotIn' => 'notIn',
-            'in' => 'in',
+            '-in' => 'in',
             'In' => 'in',
-            'is-not-null' => 'isNotNull',
-            'IsNotNull' => 'isNotNull',
-            'is-null' => 'isNull',
+            '-not-in' => 'notIn',
+            'NotIn' => 'notIn',
+
+            '-is-null' => 'isNull',
             'IsNull' => 'isNull',
-            'start-with' => 'startWith',
+            '-is-not-null' => 'isNotNull',
+            'IsNotNull' => 'isNotNull',
+
+            '-start-with' => 'startWith',
             'StartWith' => 'startWith',
-            'end-with' => 'endWith',
+            '-not-start-with' => 'notStartWith',
+            'NotStartWith' => 'notStartWith',
+
+            '-end-with' => 'endWith',
             'EndWith' => 'endWith',
-            'contains' => 'contains',
+            '-not-end-with' => 'notEndWith',
+            'NotEndWith' => 'notEndWith',
+
+            '-contains' => 'contains',
             'Contains' => 'contains',
-            'not-like' => 'notLike',
-            'NotLike' => 'notLike',
-            'like' => 'like',
+            '-not-contains' => 'notContains',
+            'NotContains' => 'notContains',
+
+            '-like' => 'like',
             'Like' => 'like',
-            'not-equal' => 'notEqual',
-            'NotEqual' => 'notEqual',
-            'equal' => 'equal',
+            '-not-like' => 'notLike',
+            'NotLike' => 'notLike',
+
+            '-equal' => 'equal',
             'Equal' => 'equal',
-            'lower-than-equal' => 'lowerThanEqual',
+            '-not-equal' => 'notEqual',
+            'NotEqual' => 'notEqual',
+
+            '-lower-than-equal' => 'lowerThanEqual',
             'LowerThanEqual' => 'lowerThanEqual',
-            'lower-than' => 'lowerThan',
+            '-not-lower-than-equal' => 'notLowerThanEqual',
+            'NotLowerThanEqual' => 'notLowerThanEqual',
+
+            '-lower-than' => 'lowerThan',
             'LowerThan' => 'lowerThan',
-            'greater-than-equal' => 'greaterThanEqual',
+            '-not-lower-than' => 'notLowerThan',
+            'NotLowerThan' => 'notLowerThan',
+
+            '-greater-than-equal' => 'greaterThanEqual',
             'GreaterThanEqual' => 'greaterThanEqual',
-            'greater-than' => 'greaterThan',
+            '-not-greater-than-equal' => 'notGreaterThanEqual',
+            'NotGreaterThanEqual' => 'notGreaterThanEqual',
+
+            '-greater-than' => 'greaterThan',
             'GreaterThan' => 'greaterThan',
-            'between' => 'between',
+            '-not-greater-than' => 'notGreaterThan',
+            'NotGreaterThan' => 'notGreaterThan',
+
+            '-between' => 'between',
             'Between' => 'between',
+            '-not-between' => 'notBetween',
+            'NotBetween' => 'notBetween',
         );
 
-        foreach ($values as $key => $value) {
-            preg_match_all($re2, $key, $matches, PREG_SET_ORDER, 0);
-
-            if (empty($matches)) {
-                preg_match_all($re, $key, $matches, PREG_SET_ORDER, 0);
+        foreach ($fields as $key => $value) {
+            if (is_numeric($key)) {
+                unset($fields[$key]);
+                $fields[$value] = array();
             }
+        }
+
+        foreach ($values as $key => $value) {
+            preg_match_all($re, $key, $matches, PREG_SET_ORDER, 0);
 
             if (empty($matches)) {
                 $field = $this->unifiedColumn($key);
 
-                if (array_key_exists($field, $fields)) {
+                // standard field
+                if (!empty($fields)) {
+                    if (array_key_exists($field, $fields)) {
+                        if (is_array($value)) {
+                            $this->in($field, $value);
+                        } else {
+                            $this->eq($field, $value);
+                        }
+
+                        continue;
+                    } else {
+                        continue;
+                    }
+                } else {
                     if (is_array($value)) {
                         $this->in($field, $value);
                     } else {
@@ -119,131 +161,136 @@ class Where extends Command
                     }
 
                     continue;
-                } else {
-                    continue;
                 }
             }
 
             $field = $this->unifiedColumn($matches[0][1]);
             $operation = $operations[$matches[0][2]];
 
-            if (!array_key_exists($field, $fields)) {
-                continue;
+            if (!empty($fields)) {
+                if (!array_key_exists($field, $fields)) {
+                    continue;
+                }
             }
 
-            $allowedOperations = array();
-            $explodedOperations = array();
+            $operationsAllowed = array(
+                'in',
+                'notIn',
+                'isNull',
+                'isNotNull',
+                'startWith',
+                'notStartWith',
+                'endWith',
+                'notEndWith',
+                'contains',
+                'notContains',
+                'like',
+                'notLike',
+                'equal',
+                'notEqual',
+                'lowerThanEqual',
+                'notLowerThanEqual',
+                'lowerThan',
+                'notLowerThan',
+                'greaterThanEqual',
+                'notGreaterThanEqual',
+                'greaterThan',
+                'notGreaterThan',
+                'between',
+                'notBetween',
+            );
+
+            $operationsExcluded = array();
             $fieldValue = $field;
 
-            if (is_string($fields[$field])) {
-                if ($fields[$field] == 'all') {
-                    $allowedOperations = array(
-                        'notIn',
-                        'in',
-                        'isNotNull',
-                        'isNull',
-                        'startWith',
-                        'endWith',
-                        'contains',
-                        'notLike',
-                        'like',
-                        'notEqual',
-                        'equal',
-                        'lowerThanEqual',
-                        'lowerThan',
-                        'greaterThanEqual',
-                        'greaterThan',
-                        'between',
-                    );
-                } else {
-                    $allowedOperations = array($fields[$field]);
-                }
-            } elseif (is_array($fields[$field])) {
+            if (array_key_exists($field, $fields)) {
                 if (array_key_exists('field', $fields[$field])) {
                     $fieldValue = $fields[$field]['field'];
                 }
 
                 if (array_key_exists('operations', $fields[$field])) {
-                    $allowedOperations = $fields[$field]['operations'];
-                } else {
-                    $allowedOperations = array(
-                        'notIn',
-                        'in',
-                        'isNotNull',
-                        'isNull',
-                        'startWith',
-                        'endWith',
-                        'contains',
-                        'notLike',
-                        'like',
-                        'notEqual',
-                        'equal',
-                        'lowerThanEqual',
-                        'lowerThan',
-                        'greaterThanEqual',
-                        'greaterThan',
-                        'between',
-                    );
+                    $operationsAllowed = $fields[$field]['operations'];
                 }
 
                 if (array_key_exists('excluded', $fields[$field])) {
-                    $explodedOperations = $fields[$field]['excluded'];
+                    $operationsExcluded = $fields[$field]['excluded'];
                 }
             }
 
-            if (in_array($operation, $explodedOperations)) {
+            if (in_array($operation, $operationsExcluded)) {
                 continue;
             }
 
-            if (!in_array($operation, $allowedOperations)) {
+            if (!in_array($operation, $operationsAllowed)) {
                 continue;
             }
 
             switch($operation) {
-            case 'notIn':
-                $this->notIn($fieldValue, $value);
-                break;
             case 'in':
                 $this->in($fieldValue, $value);
                 break;
-            case 'isNotNull':
-                $this->isNotNull($fieldValue);
+            case 'notIn':
+                $this->notIn($fieldValue, $value);
                 break;
             case 'isNull':
-                $this->isNull($fieldValue);
+                $this->isNull($fieldValue, $value);
+                break;
+            case 'isNotNull':
+                $this->isNotNull($fieldValue, $value);
                 break;
             case 'startWith':
                 $this->startWith($fieldValue, $value);
                 break;
+            case 'notStartWith':
+                $this->notStartWith($fieldValue, $value);
+                break;
             case 'endWith':
                 $this->endWith($fieldValue, $value);
+                break;
+            case 'notEndWith':
+                $this->notEndWith($fieldValue, $value);
                 break;
             case 'contains':
                 $this->contains($fieldValue, $value);
                 break;
-            case 'notLike':
-                $this->notLike($fieldValue, $value);
+            case 'notContains':
+                $this->notContains($fieldValue, $value);
                 break;
             case 'like':
                 $this->like($fieldValue, $value);
                 break;
-            case 'notEqual':
-                $this->neq($fieldValue, $value);
+            case 'notLike':
+                $this->notLike($fieldValue, $value);
                 break;
             case 'equal':
-                $this->eq($fieldValue, $value);
+                $this->equal($fieldValue, $value);
+                break;
+            case 'notEqual':
+                $this->notEqual($fieldValue, $value);
                 break;
             case 'lowerThanEqual':
-                $this->lte($fieldValue, $value);
+                $this->lowerThanEqual($fieldValue, $value);
+                break;
+            case 'notLowerThanEqual':
+                $this->notLowerThanEqual($fieldValue, $value);
                 break;
             case 'lowerThan':
-                $this->lt($fieldValue, $value);
+                $this->lowerThan($fieldValue, $value);
+                break;
+            case 'notLowerThan':
+                $this->notLowerThan($fieldValue, $value);
                 break;
             case 'greaterThanEqual':
-                $this->gte($fieldValue, $value);
+                $this->greaterThanEqual($fieldValue, $value);
+                break;
+            case 'notGreaterThanEqual':
+                $this->notGreaterThanEqual($fieldValue, $value);
                 break;
             case 'greaterThan':
-                $this->gt($fieldValue, $value);
+                $this->greaterThan($fieldValue, $value);
+                break;
+            case 'notGreaterThan':
+                $this->notGreaterThan($fieldValue, $value);
                 break;
             case 'between':
                 if (is_string($value)) {
@@ -257,6 +304,19 @@ class Where extends Command
                 }
 
                 break;
+            case 'notBetween':
+                if (is_string($value)) {
+                    $value = explode(',', $value);
+
+                    $this->notBetween($fieldValue, $value[0], $value[1]);
+                } else {
+                    if (array_key_exists('from', $value) && array_key_exists('to', $value)) {
+                        $this->notBetween($fieldValue, $value['from'], $value['to']);
+                    }
+                }
+
+                break;
+
             }
         }
 
@@ -601,6 +661,18 @@ class Where extends Command
         return $this;
     }
 
+    public function notStartWith($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notStartWith';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
     /**
      * Add %value end with statement to where.
      *
@@ -630,6 +702,18 @@ class Where extends Command
     {
         $child = new \stdClass();
         $child->type = 'endWith';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notEndWith($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notEndWith';
         $child->column = $column;
         $child->value = $value;
 
@@ -668,6 +752,18 @@ class Where extends Command
     {
         $child = new \stdClass();
         $child->type = 'contains';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notContains($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notContains';
         $child->column = $column;
         $child->value = $value;
 
@@ -727,8 +823,13 @@ class Where extends Command
 
     public function eq($column, $value)
     {
+        return $this->equal($column, $value);
+    }
+
+    public function equal($column, $value)
+    {
         $child = new \stdClass();
-        $child->type = 'eq';
+        $child->type = 'equal';
         $child->column = $column;
         $child->value = $value;
 
@@ -739,8 +840,13 @@ class Where extends Command
 
     public function neq($column, $value)
     {
+        return $this->notEqual($column, $value);
+    }
+
+    public function notEqual($column, $value)
+    {
         $child = new \stdClass();
-        $child->type = 'neq';
+        $child->type = 'notEqual';
         $child->column = $column;
         $child->value = $value;
 
@@ -751,8 +857,25 @@ class Where extends Command
 
     public function lt($column, $value)
     {
+        return $this->lowerThan($column, $value);
+    }
+
+    public function lowerThan($column, $value)
+    {
         $child = new \stdClass();
-        $child->type = 'lt';
+        $child->type = 'lowerThan';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notLowerThan($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notLowerThan';
         $child->column = $column;
         $child->value = $value;
 
@@ -763,8 +886,25 @@ class Where extends Command
 
     public function lte($column, $value)
     {
+        return $this->lowerThanEqual($column, $value);
+    }
+
+    public function lowerThanEqual($column, $value)
+    {
         $child = new \stdClass();
-        $child->type = 'lte';
+        $child->type = 'lowerThanEqual';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notLowerThanEqual($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notLowerThanEqual';
         $child->column = $column;
         $child->value = $value;
 
@@ -775,8 +915,25 @@ class Where extends Command
 
     public function gt($column, $value)
     {
+        return $this->greaterThan($column, $value);
+    }
+
+    public function greaterThan($column, $value)
+    {
         $child = new \stdClass();
-        $child->type = 'gt';
+        $child->type = 'greaterThan';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notGreaterThan($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notGreaterThan';
         $child->column = $column;
         $child->value = $value;
 
@@ -787,8 +944,25 @@ class Where extends Command
 
     public function gte($column, $value)
     {
+        return $this->greaterThanEqual($column, $value);
+    }
+
+    public function greaterThanEqual($column, $value)
+    {
         $child = new \stdClass();
-        $child->type = 'gte';
+        $child->type = 'greaterThanEqual';
+        $child->column = $column;
+        $child->value = $value;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notGreaterThanEqual($column, $value)
+    {
+        $child = new \stdClass();
+        $child->type = 'notGreaterThanEqual';
         $child->column = $column;
         $child->value = $value;
 
@@ -834,6 +1008,19 @@ class Where extends Command
     {
         $child = new \stdClass();
         $child->type = 'between';
+        $child->column = $column;
+        $child->begin = $begin;
+        $child->end = $end;
+
+        $this->pw->childs[] = $child;
+
+        return $this;
+    }
+
+    public function notBetween($column, $begin, $end)
+    {
+        $child = new \stdClass();
+        $child->type = 'notBetween';
         $child->column = $column;
         $child->begin = $begin;
         $child->end = $end;
@@ -958,9 +1145,21 @@ class Where extends Command
 
                     break;
                 case 'startWith':
+                case 'notStartWith':
                 case 'endWith':
+                case 'notEndWith':
                 case 'contains':
+                case 'notContains':
                     $s = "";
+                    $not = "";
+
+                    if (in_array($child->type, array(
+                        'notStartWith',
+                        'notEndWith',
+                        'notContains'
+                    ))) {
+                        $not = 'not ';
+                    }
 
                     if ($child->value instanceof Command) {
                         $valueBuiltCommand = $child->value->build($params);
@@ -985,11 +1184,11 @@ class Where extends Command
                             throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
                         }
 
-                        if ($child->type == 'startWith') {
+                        if ($child->type == 'startWith' || $child->type == 'notStartWith') {
                             $s = "{$child->value}%";
-                        } else if($child->type == 'endWith') {
+                        } else if($child->type == 'endWith' || $child->type == 'notEndWith') {
                             $s = "%{$child->value}";
-                        } else if($child->type == 'contains') {
+                        } else if($child->type == 'contains' || $child->type == 'notContains') {
                             $s = "%{$child->value}%";
                         } else {
                             throw new \InvalidArgumentException("Unsupported type {$child->type}.");
@@ -997,7 +1196,7 @@ class Where extends Command
 
                         $buildCommand->param($uid = $this->uid(), $s);
 
-                        $sql .= "{$column} like :{$uid} {$brakets->operator} ";
+                        $sql .= "{$column} {$not}like :{$uid} {$brakets->operator} ";
                     }
 
                     break;
@@ -1014,34 +1213,15 @@ class Where extends Command
                         $valueBuiltCommand = $child->value->build($params);
                         $buildCommand->params($valueBuiltCommand->params());
 
-                        if ($child->type == 'startWith') {
-                            $s .= "concat(({$valueBuiltCommand->command()}), '%')";
-                        } else if($child->type == 'endWith') {
-                            $s .= "concat('%', ({$valueBuiltCommand->command()}))";
-                        } else if($child->type == 'contains') {
-                            $s .= "concat('%', ({$valueBuiltCommand->command()}), '%')";
-                        } else {
-                            throw new \InvalidArgumentException("Unsupported type {$child->type}.");
-                        }
+                        $s .= "({$valueBuiltCommand->command()})";
 
                         $sql .= "{$column} {$not}like {$s} {$brakets->operator} ";
                     } else {
-                        if (
-                               !is_string($child->value)
-                            && !is_numeric($child->value)
-                        ) {
+                        if (!is_string($child->value) && !is_numeric($child->value)) {
                             throw new \InvalidArgumentException(sprintf("Unsported type of value %s", gettype($child->value)));
                         }
 
-                        if ($child->type == 'startWith') {
-                            $s = "{$child->value}%";
-                        } else if($child->type == 'endWith') {
-                            $s = "%{$child->value}";
-                        } else if($child->type == 'contains') {
-                            $s = "%{$child->value}%";
-                        } else {
-                            throw new \InvalidArgumentException("Unsupported type {$child->type}.");
-                        }
+                        $s = "{$child->value}";
 
                         $buildCommand->param($uid = $this->uid(), $s);
 
@@ -1049,13 +1229,28 @@ class Where extends Command
                     }
 
                     break;
-                case 'eq':
-                case 'neq':
-                case 'lt':
-                case 'lte':
-                case 'gt':
-                case 'gte':
+                case 'equal':
+                case 'notEqual':
+                case 'lowerThan':
+                case 'notLowerThan':
+                case 'lowerThanEqual':
+                case 'notLowerThanEqual':
+                case 'greaterThan':
+                case 'notGreaterThan':
+                case 'greaterThanEqual':
+                case 'notGreaterThanEqual':
                     $s = "";
+                    $not = "";
+
+                    if (in_array($child->type, array(
+                        'notEqual',
+                        'notLowerThan',
+                        'notLowerThanEqual',
+                        'notGreaterThan',
+                        'notGreaterThanEqual',
+                    ))) {
+                        $not = 'not ';
+                    }
 
                     if (is_string($child->value)) {
                         $buildCommand->param($uid = $this->uid(), $child->value);
@@ -1073,23 +1268,21 @@ class Where extends Command
 
                     $o = null;
 
-                    if ($child->type == 'eq') {
+                    if ($child->type == 'equal' || $child->type == 'notEqual') {
                         $o = "=";
-                    } elseif ($child->type == 'neq') {
-                        $o = "!=";
-                    } elseif ($child->type == 'lt') {
+                    } elseif ($child->type == 'lowerThan' || $child->type == 'notLowerThan') {
                         $o = "<";
-                    } elseif ($child->type == 'lte') {
+                    } elseif ($child->type == 'lowerThanEqual' || $child->type == 'notLowerThanEqual') {
                         $o = "<=";
-                    } elseif ($child->type == 'gt') {
+                    } elseif ($child->type == 'greaterThan' || $child->type == 'notGreaterThan') {
                         $o = ">";
-                    } elseif ($child->type == 'gte') {
+                    } elseif ($child->type == 'greaterThanEqual' || $child->type == 'notGreaterThanEqual') {
                         $o = ">=";
                     } else {
                         throw new \Exception(sprintf("Unsupported type of operator %s", $child->type));
                     }
 
-                    $sql .= "{$column} {$o} {$s} {$brakets->operator} ";
+                    $sql .= "{$not}{$column} {$o} {$s} {$brakets->operator} ";
 
                     break;
                 // case 'expr':
@@ -1097,14 +1290,23 @@ class Where extends Command
 
                     break;
                 case 'between':
+                case 'notBetween':
+                    $not = '';
+
+                    if (in_array($child->type, array(
+                        'notBetween',
+                    ))) {
+                        $not = 'not ';
+                    }
+
                     $begin = $this->convForBetween($child->begin, $buildCommand);
                     $end = $this->convForBetween($child->end, $buildCommand);
 
-                    $sql .= "{$column} between {$begin} and {$end} {$brakets->operator} ";
+                    $sql .= "{$column} {$not}between {$begin} and {$end} {$brakets->operator} ";
 
                     break;
                 default:
-                    throw new \Exception(sprintf("Unsupported type of where %s", $child->type));
+                    throw new \InvalidArgumentException(sprintf("Unsupported type of where %s", $child->type));
                 }
             }
         }
