@@ -1,8 +1,8 @@
 <?php
 namespace Topi\Data\Model;
 
-use Topi\Data\Model\Model;
 use Topi\Data\Model\CreatorInterface;
+use Topi\Data\Model\ModelInterface;
 
 class Creator implements CreatorInterface
 {
@@ -55,6 +55,6 @@ class Creator implements CreatorInterface
             $this->record = $this->model->createRecord($this->data);
         }
 
-        return $this->model->validate($this->record, 'creating', $params);
+        return $this->model->validate($this->record, ModelInterface::PROCESS_CREATING, $params);
     }
 }
