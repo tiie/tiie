@@ -375,12 +375,11 @@ class Select extends Command
      * @param int $offset
      *
      * @throws \InvalidArgumentException
-     *
      * @return $this
      */
     public function limit(int $limit, int $offset = 0)
     {
-        if ($limit <= 0) {
+        if ($limit < 0) {
             throw new \InvalidArgumentException("Limit should be larger than 0");
         }
 
