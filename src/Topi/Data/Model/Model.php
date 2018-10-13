@@ -18,10 +18,27 @@ abstract class Model implements ModelInterface
 
     private $records = array();
 
-
     public function find(array $params = array()) : Records
     {
-        return new Records($this, $this->fetch($params, 1), $params, $this->id);
+        $records = array();
+
+        foreach ($this->fetch($params) as $item) {
+            $records[] = $this->createRecord($item);
+        }
+
+        return new Records($this, $records, $this->id);
+    }
+
+    public function generator(array $params = array()) : iterable
+    {
+        $count = $this->count($params);
+        $limit = 5;
+        $offset = 0;
+        $packages = array();
+
+        for($i=0; $i < $count; $i++) {
+            yield $this->createRecord($this->fetch($params, 1, $i));
+        }
     }
 
     public function count(array $params = array()) : string

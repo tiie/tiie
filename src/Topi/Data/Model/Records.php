@@ -4,57 +4,73 @@ namespace Topi\Data\Model;
 use Topi\Data\Model\Records;
 use Topi\Data\Model\RecordInterface;
 use Topi\Data\Model\ModelInterface;
+use Iterator;
 
-class Records implements \Countable
+class Records implements \Countable, Iterator
 {
     private $model;
-    private $items = array(
-        // array(
-        //     'id' => 10,
-        //     'record' => null,
-        // )
+    private $fieldId;
+    private $records = array();
+
+    private $pointer = 0;
+    private $array = array(
+        "firstelement",
+        "secondelement",
+        "lastelement",
     );
 
-    private $params = array();
-    private $fieldId;
-
-    function __construct(ModelInterface $model, array $items = array(), array $params = array(), string $fieldId = 'id')
+    function __construct(ModelInterface $model, array $records = array(), string $fieldId = 'id')
     {
+        $this->records = $records;
         $this->model = $model;
-        $this->items = $items;
-        $this->params = $params;
         $this->fieldId = $fieldId;
+        $this->pointer = 0;
+    }
+
+    public function rewind()
+    {
+        $this->pointer = 0;
+    }
+
+    public function current()
+    {
+        return $this->records[$this->pointer];
+    }
+
+    public function key()
+    {
+        return $this->pointer;
+    }
+
+    public function next()
+    {
+        ++$this->pointer;
+    }
+
+    public function valid()
+    {
+        return isset($this->records[$this->pointer]);
     }
 
     public function count() : int
     {
-        return count($this->items);
+        return count($this->records);
     }
 
     public function get(string $id) : ?RecordInterface
     {
-        $foundKey = null;
-
-        foreach ($this->items as $key => $item) {
-            if ($item['id'] == $id) {
-                $foundKey = $key;
+        foreach ($this->records as $record) {
+            if ($this->get($this->fieldId) == $id) {
+                return $record;
             }
         }
 
-        if (!is_null($foundKey)) {
-            if (!isset($this->items[$foundKey]['record'])) {
-                $this->items[$foundKey]['record'] = $this->model->record($this->items[$foundKey]['id'], $this->params);
-            }
-        } else {
-            return null;
-        }
-
-        return $this->items[$foundKey]['record'];
+        return null;
     }
 
     public function __debugInfo()
     {
-        return $this->items;
+        return $this->records;
     }
 
     /**
@@ -64,22 +80,14 @@ class Records implements \Countable
      */
     public function records() : array
     {
-        $this->load();
-
-        $records = array();
-
-        foreach ($this->items as $item) {
-            $records[] = $item['record'];
-        }
-
-        return $records;
+        return $this->records;
     }
 
     public function column(string $name)
     {
         $column = array();
 
-        foreach ($this->records() as $record) {
+        foreach ($this->records as $record) {
             $value = $record->get($name);
 
             if (!is_null($value = $record->get($name))) {
@@ -90,67 +98,29 @@ class Records implements \Countable
         return $column;
     }
 
-    private function load()
-    {
-        $toload = array();
-
-        foreach ($this->items as $item) {
-            if (!isset($item['record'])) {
-                // Record does not exist. I save id to load record.
-                $toload[] = $item[$this->fieldId];
-            }
-        }
-
-        if (!empty($toload)) {
-            $records = $this->model->records($toload, $this->params);
-
-            // if ($this->model instanceof \App\Models\Offers\Offers) {
-            //     die(print_r($toload, true));
-            // }
-
-            foreach ($records->records($toload) as $record) {
-                foreach ($this->items as $key => $item) {
-                    if ($item[$this->fieldId] == $record->id()) {
-                        $this->items[$key]['record'] = $record;
-                    }
-                }
-            }
-        }
-    }
-
     public function first() : RecordInterface
     {
-        if (count($this->items) == 0) {
+        if (count($this->records) == 0) {
             return null;
         }
 
-        if (!array_key_exists('record', $this->items[0])) {
-            $this->items[0]['record'] = $this->model->record($this->items[0][$this->fieldId]);
-        }
-
-        return $this->items[0]['record'];
+        return $this->records[0];
     }
 
     public function last() : RecordInterface
     {
-        if (count($this->items) == 0) {
+        if (count($this->records) == 0) {
             return null;
         }
 
-        $i = array_pop(array_keys($this->items));
-
-        if (!array_key_exists('record', $this->items[$i])) {
-            $this->items[$i]['record'] = $this->model->record($this->items[$i][$this->fieldId]);
-        }
-
-        return $this->items[$i]['record'];
+        return $this->records[count($this->records)-1];
     }
 
     public function toArray(array $params = array()) : array
     {
         $array = array();
 
-        foreach ($this->records() as $record) {
+        foreach ($this->records as $record) {
             $array[] = $record->toArray($params);
         }
 

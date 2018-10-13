@@ -17,13 +17,16 @@ interface ModelInterface
      */
     public function find(array $params = array()) : Records;
 
+    public function generator(array $params = array()) : iterable;
+
     /**
      * Fetch data from source.
      *
      * @param array $params
      * @return array
      */
-    public function fetch(array $params = array(), int $onlyId = 0) : array;
+    // public function fetch(array $params = array(), int $onlyId = 0) : array;
+    public function fetch(array $params = array(), int $limit = null, int $offset = 0) : array;
 
     /**
      * Fetch data by id.
