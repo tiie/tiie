@@ -213,6 +213,17 @@ class Request
         return array_key_exists($name, $headers) ? $headers[$name] : null;
     }
 
+    /**
+     * Returns IP of request. If IP can not be determined then null is
+     * returned.
+     *
+     * @return string|null
+     */
+    public function ip() : ?string
+    {
+        return $this->get('ip');
+    }
+
     public function accept($priorities = array())
     {
         $accept = $this->header('Accept');

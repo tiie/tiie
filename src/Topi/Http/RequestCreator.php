@@ -79,7 +79,8 @@ class RequestCreator
                 $_GET,
                 $input,
                 array(
-                    'headers' => $headers
+                    'headers' => $headers,
+                    'ip' => empty($_SERVER['REMOTE_ADDR']) ? null : $_SERVER['REMOTE_ADDR'],
                 ),
                 $domain,
                 $emergency
