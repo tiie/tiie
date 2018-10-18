@@ -1,12 +1,26 @@
 <?php
 namespace Topi;
 
+use Topi\Components;
+use Topi\Env;
+use Topi\Http\RequestCreator;
+use Topi\Http\Request;
+use Topi\Response\ResponseInterface;
+
 class App
 {
     private $config;
     private $env;
     private $router;
     private $components;
+    private $params = array(
+        // env
+        'env' => 'dev',
+
+        // output
+        'output' => 'buffer',
+        'outputFile' => null,
+    );
 
     /**
      * Podstawowe żadanie. Jest tworzone na początku, może wystąpić sytuacja
@@ -14,8 +28,65 @@ class App
      */
     private $request;
 
-    function __construct(\Topi\Config $config)
+    function __construct(array $params = array(), \Topi\Config $config = null)
     {
+        $this->loadParams($params);
+
+        $this->config = $this->initConfig($config);
+
+        // write components
+        $this->components = new Components($this->config->get('topi.components'));
+        $this->components->set('@app', $this);
+        $this->components->set('@config', $this->config);
+
+        // export components to global scope
+        global $components;
+        $components = $this->components;
+
+        // env
+        $this->env = new Env(isset($_SERVER) ? $_SERVER : array());
+        $this->env->set('sapi', php_sapi_name());
+
+        $this->components->set('@env', $this->env);
+
+        // router
+        $this->router = $this->components->get("@router");
+    }
+
+    public function run(array $params = array(), $request = null)
+    {
+        // prepare params
+        $this->loadParams($params);
+
+        // run
+        set_error_handler(array($this, '_errorHandler'));
+        set_exception_handler(array($this, '_exceptionHandler'));
+
+        // Próbuje stworzyć żądanie
+        try {
+            if (is_null($request)) {
+                $this->request = (new RequestCreator())->create($this->env);
+            } else {
+                $this->request = $request;
+            }
+        } catch (\Exception $error) {
+            return $this->error($error);
+        }
+
+        try {
+            return $this->response($this->router->run($this->request), $this->request);
+        } catch (\Exception $error) {
+            return $this->error($error);
+        }
+    }
+
+    private function initConfig(Config $config = null)
+    {
+        if (is_null($config)) {
+            // todo Base config
+            // Create config base on params.
+        }
+
         // config
         $config->merge(array(
             'response' => array(
@@ -116,45 +187,16 @@ class App
             )
         ), true);
 
-        $this->config = $config;
-
-        // write components
-        $this->components = new \Topi\Components($this->config->get('topi.components'));
-        $this->components->set('@app', $this);
-        $this->components->set('@config', $config);
-
-        // export components to global scope
-        global $components;
-        $components = $this->components;
-
-        // env
-        $this->env = new \Topi\Env(isset($_SERVER) ? $_SERVER : array());
-        $this->env->set('sapi', php_sapi_name());
-
-        $this->components->set('@env', $this->env);
-
-        // router
-        $this->router = $this->components->get("@router");
+        return $config;
     }
 
-    public function run()
+    private function loadParams(array $params = array())
     {
-        set_error_handler(array($this, '_errorHandler'));
-        set_exception_handler(array($this, '_exceptionHandler'));
-
-        // Próbuje stworzyć żądanie
-        try {
-            $this->request = (new \Topi\Http\RequestCreator())->create($this->env);
-        } catch (\Exception $error) {
-            $this->error($error);
+        foreach ($this->params as $key => $value) {
+            if (array_key_exists($key, $params)) {
+                $this->params[$key] = $params[$key];
+            }
         }
-
-        try {
-            $this->response($this->router->run($this->request), $this->request);
-        } catch (\Exception $error) {
-            $this->error($error);
-        }
-
     }
 
     public function _exceptionHandler($error)
@@ -215,6 +257,11 @@ class App
         $this->error($error);
     }
 
+    /**
+     * Handle with error.
+     *
+     * @param mixed $error
+     */
     public function error($error)
     {
         // check if request exitsts
@@ -240,29 +287,63 @@ class App
         }
     }
 
-    private function response(\Topi\Response\ResponseInterface $response, \Topi\Http\Request $request)
+    /**
+     * Processes response and return result. In case of output buffer then
+     * result is print at buffer.
+     *
+     * @param ResponseInterface $response
+     * @param Request $request
+     *
+     * @return mixed It is dependent from type of buffer.
+     */
+    private function response(ResponseInterface $response, Request $request)
     {
         $config = $this->components->get('@config');
         // $accept = $this->accept($request);
 
         $result = $response->response($request);
 
-        if (!empty($result['code'])) {
-            http_response_code($result['code']);
-        }
-
-        foreach ($config->get('response.headers', array()) as $header => $value) {
-            header(sprintf('%s:%s', $header, $value));
-        }
-
-        // headers
-        if (!empty($result['headers'])) {
-            foreach ($result['headers'] as $name => $value) {
-                header(sprintf('%s:%s', $name, $value));
+        if ($this->params['output'] == 'buffer') {
+            if (!empty($result['code'])) {
+                http_response_code($result['code']);
             }
-        }
 
-        echo $result['body'];
+            foreach ($config->get('response.headers', array()) as $header => $value) {
+                header(sprintf('%s:%s', $header, $value));
+            }
+
+            // headers
+            if (!empty($result['headers'])) {
+                foreach ($result['headers'] as $name => $value) {
+                    header(sprintf('%s:%s', $name, $value));
+                }
+            }
+
+            echo $result['body'];
+
+            return null;
+        } elseif ($this->params['output'] == 'return') {
+            foreach ($config->get('response.headers', array()) as $header => $value) {
+                if (!array_key_exists($header, $result['headers'])) {
+                    $result['headers'][$header] = $value;
+                }
+            }
+
+            return $result;
+        } elseif ($this->params['output'] == 'std') {
+            // todo Respose to std
+            // Dorobić odpowiednie zwracanie na standardowe wyście. Wraz z
+            // obsługą błędów.
+            foreach ($config->get('response.headers', array()) as $header => $value) {
+                if (!array_key_exists($header, $result['headers'])) {
+                    $result['headers'][$header] = $value;
+                }
+            }
+
+            return $result;
+        } else {
+            throw new \Exception("Unknown type of output '{$this->params['output']}'.");
+        }
     }
 
     /**
