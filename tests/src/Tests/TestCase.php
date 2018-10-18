@@ -1,6 +1,8 @@
 <?php
 namespace Tests;
 
+use Topi\Data\Adapters\Http\Adapter as AdapterHttp;
+
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private $adapters = array();
@@ -8,6 +10,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function app()
     {
         return new \Topi\App(new \Topi\Config("./src/App/Config/tests.php"));
+    }
+
+    protected function api()
+    {
+        return new AdapterHttp(array(
+            'url' => 'localhost',
+        ));
     }
 
     protected function adapter(string $name) {

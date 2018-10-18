@@ -3,20 +3,27 @@ namespace Tests\Data\Model;
 
 use Tests\TestCase;
 use App\Models\Bookshop\Users;
+use Topi\Data\Adapters\Commands\SQL\Select;
+use Topi\Data\Model\Records;
 
 class ModelTest extends TestCase
 {
-    // public function testFind()
-    // {
-    //     $this->initDatabase('bookshop');
+    public function testFind()
+    {
+        $this->initDatabase('bookshop');
 
-    //     $users = new Users($this->adapter('bookshop'));
+        $users = new Users($this->adapter('bookshop'));
 
-    //     $records = $users->find(array(
-    //         'id' => array(1, 2, 3)
-    //     ));
+        $records = $users->find(array(
+            'id' => array(1, 2, 3),
+            'order' => 'id asc',
+        ));
 
-    // }
+        $this->assertEquals(true, $records instanceof Records);
+
+        // $this->createVariable('variable-104', $records->toArray());
+        $this->assertEquals($this->variable('variable-104'), $records->toArray());
+    }
 
     // public function testGenerator()
     // {
@@ -35,29 +42,68 @@ class ModelTest extends TestCase
 
         $users = new Users($this->adapter('bookshop'));
 
-        foreach ($users->find() as $key => $record) {
-            print_r($record);
+        // get records
+        $records = $users->find(array(
+            'order' => 'id asc'
+        ));
 
-            if ($key == 5) {
+        $this->assertEquals(true, is_iterable($records));
+
+        $recordsIds = array();
+
+        foreach ($records as $key => $record) {
+            $recordsIds[] = $record->get('id');
+
+            if ($key == 4) {
                 break;
             }
         }
+
+        $this->assertEquals($this->variable('variable-105'), $recordsIds);
     }
 
-    // public function testFetch()
-    // {
+    public function testFetch()
+    {
+        $this->initDatabase('bookshop');
 
-    // }
+        $users = new Users($this->adapter('bookshop'));
 
-    // public function testFetchById()
-    // {
+        // get records
+        $rows = $users->fetch(array(
+            'order' => 'id asc'
+        ), 5);
 
-    // }
+        $this->assertEquals(true, is_array($rows));
 
-    // public function testFetchByIds()
-    // {
+        // $this->createVariable('variable-101', $rows);
+        $this->assertEquals($this->variable('variable-101'), $rows);
+    }
 
-    // }
+    public function testFetchById()
+    {
+        $this->initDatabase('bookshop');
+
+        $users = new Users($this->adapter('bookshop'));
+
+        // get records
+        $rows = $users->fetchById(5);
+
+        // $this->createVariable('variable-102', $rows);
+        $this->assertEquals($this->variable('variable-102'), $rows);
+    }
+
+    public function testFetchByIds()
+    {
+        $this->initDatabase('bookshop');
+
+        $users = new Users($this->adapter('bookshop'));
+
+        // get records
+        $rows = $users->fetchByIds(array(4, 5));
+
+        // $this->createVariable('variable-103', $rows);
+        $this->assertEquals($this->variable('variable-103'), $rows);
+    }
 
     // public function testRun()
     // {
@@ -69,10 +115,22 @@ class ModelTest extends TestCase
 
     // }
 
-    // public function testSave()
-    // {
+    public function testSave()
+    {
+        $this->initDatabase('bookshop');
 
-    // }
+        $users = new Users($this->adapter('bookshop'));
+
+        $record = $users->record(5);
+
+        $record->set('firstName', 'changed');
+
+        $users->save($record);
+
+
+        // $this->createVariable('variable-103', $rows);
+        // $this->assertEquals($this->variable('variable-103'), $rows);
+    }
 
     // public function testCreate()
     // {

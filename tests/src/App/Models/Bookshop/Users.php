@@ -35,4 +35,24 @@ class Users extends Model
 
         return $select->fetch();
     }
+
+    public function save(RecordInterface $record, array $params = array()) : ModelInterface
+    {
+        if (!is_null($errors = $this->validate($record, ModelInterface::PROCESS_SAVING))) {
+            throw new \Topi\Exceptions\ValidateException($errors);
+        }
+
+    }
+
+    public function validate(RecordInterface $record, string $process, array $params = array()) : ?array
+    {
+        switch ($process) {
+        case ModelInterface::PROCESS_CREATING:
+            return null;
+        case ModelInterface::PROCESS_SAVING:
+            return null;
+        default:
+            return parent::validate($record, $process, $params);
+        }
+    }
 }
