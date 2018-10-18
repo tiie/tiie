@@ -88,7 +88,7 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
      * @param array $params Parametry przekazane do wywołania.
      * @return mixed
      */
-    public function fetch($command, $format = 'all', $params = array())
+    public function fetch($command, $format = 'all', array $params = array())
     {
         $sql = null;
 
