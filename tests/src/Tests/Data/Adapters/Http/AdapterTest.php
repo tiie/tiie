@@ -16,6 +16,10 @@ class AdapterTest extends TestCase
         $response = $api->fetch(array(
             'urn' => '/clients',
         ));
+
+        // todo : delete
+        die(print_r($response, true));
+        // endtodo
     }
 
     // public function testMetadata()
