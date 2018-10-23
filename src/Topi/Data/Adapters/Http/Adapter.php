@@ -3,6 +3,7 @@ namespace Topi\Data\Adapters\Http;
 
 use Topi\Data\Adapters\AdapterInterface;
 use Topi\Data\Adapters\MetadataAccessibleInterface;
+use Topi\Http\Headers\Parser;
 
 class Adapter implements AdapterInterface
 {
@@ -52,6 +53,7 @@ class Adapter implements AdapterInterface
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HEADER, 1);
 
         switch (strtoupper($command['method'])) {
         case 'GET':
@@ -115,6 +117,17 @@ class Adapter implements AdapterInterface
         $response = curl_exec($curl);
         $info = curl_getinfo($curl);
 
+        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $responseHeaders = substr($response, 0, $headerSize);
+        $responseBody = substr($response, $headerSize);
+
+        $headers = (new Parser())->parse($responseHeaders);
+
+        // todo Debug to delete
+        die(print_r($headers, true));
+        // todo : delete
+        die(print_r(array($responseHeaders, $responseBody, $info), true));
+        // endtodo
         // todo : delete
         // die(print_r($response, true));
         // endtodo
