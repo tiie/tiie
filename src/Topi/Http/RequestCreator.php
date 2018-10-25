@@ -33,6 +33,8 @@ class RequestCreator
                 $uri = $_SERVER['DOCUMENT_URI'];
             }
 
+            $uri = urldecode($uri);
+
             if (is_null($uri) && $emergency == 0) {
                 throw new \Exception("Can not determine URI");
             }
