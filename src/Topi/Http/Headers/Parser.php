@@ -17,13 +17,13 @@ class Parser
                 continue;
             }
 
-            $header = trim($line[0]);
+            $header = strtolower(trim($line[0]));
             $value = trim($line[1]);
 
             if (0) {
-            } else if ($header =='Content-Type') {
+            } else if ($header =='content-type') {
                 $header = new ContentType($value);
-                    
+
             // } else if ($header =='Accept') {
             // } else if ($header =='Accept-Charset') {
             // } else if ($header =='Accept-Encoding') {
