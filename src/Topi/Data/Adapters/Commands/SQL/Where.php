@@ -143,6 +143,10 @@ class Where extends Command
                 // standard field
                 if (!empty($fields)) {
                     if (array_key_exists($field, $fields)) {
+                        if (array_key_exists($field, $fields) && is_array($fields[$field]) && array_key_exists('field', $fields[$field])) {
+                            $field = $fields[$field]['field'];
+                        }
+
                         if (is_array($value)) {
                             $this->in($field, $value);
                         } else {
