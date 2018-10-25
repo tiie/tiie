@@ -719,23 +719,17 @@ class Select extends Command
             unset($values['sort']);
         }
 
-        if (array_key_exists('id', $values)) {
-            $this->where->params(array(
-                'id' => $values['id'],
-            ), $fields);
-        } else {
-            $this->where->params($values, $fields);
+        $this->where->params($values, $fields);
 
-            if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
-                $this->page($values['page'], $values['pageSize']);
-            } elseif (array_key_exists('page', $values)) {
-                $this->page($values['page']);
-            }
+        if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
+            $this->page($values['page'], $values['pageSize']);
+        } elseif (array_key_exists('page', $values)) {
+            $this->page($values['page']);
+        }
 
-            if (array_key_exists('limit', $values)) {
-                $this->limit($values['limit']);
-                unset($values['limit']);
-            }
+        if (array_key_exists('limit', $values)) {
+            $this->limit($values['limit']);
+            unset($values['limit']);
         }
 
         return $this;
