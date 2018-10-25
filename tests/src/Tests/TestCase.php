@@ -2,6 +2,7 @@
 namespace Tests;
 
 use Topi\Data\Adapters\Http\Adapter as AdapterHttp;
+use Topi\Data\Encoders\Json as EncoderJson;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -14,9 +15,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function api()
     {
-        return new AdapterHttp(array(
+        $adapter = new AdapterHttp(array(
             'url' => 'localhost',
+        ), array(
+            'application/json' => new EncoderJson(),
         ));
+
+        return $adapter;
     }
 
     protected function adapter(string $name) {
