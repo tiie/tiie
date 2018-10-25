@@ -9,12 +9,14 @@ class Response
     private $code;
     private $headers;
     private $data;
+    private $variables;
 
-    function __construct(string $code, Headers $headers, array $data = array())
+    function __construct(string $code, Headers $headers, array $data = array(), array $variables = array())
     {
         $this->code = $code;
         $this->headers = $headers;
         $this->data = $data;
+        $this->variables = $variables;
     }
 
     /**

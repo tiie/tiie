@@ -7,6 +7,7 @@ use Topi\Http\Headers\Parser;
 
 class Adapter implements AdapterInterface
 {
+    private $encoders;
     private $params = array(
         'url' => null,
         'queryEncodeFormat' => 'x-www-form-urlencoded',
@@ -16,13 +17,15 @@ class Adapter implements AdapterInterface
         // 'userAgent' => null,
     );
 
-    function __construct(array $params)
+    function __construct(array $params = array(), array $encoders = array())
     {
         foreach ($this->params as $key => $value) {
             if (array_key_exists($key, $params)) {
                 $this->params[$key] = $params[$key];
             }
         }
+
+        $this->encoders = $encoders;
 
         // if (is_null($this->params['uri'])) {
         //     $this->params['uri'] = "{$this->params['url']}{$this->params['urn']}";
@@ -117,28 +120,35 @@ class Adapter implements AdapterInterface
         $response = curl_exec($curl);
         $info = curl_getinfo($curl);
 
+        // curl_close($curl);
+
         $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
         $responseHeaders = substr($response, 0, $headerSize);
         $responseBody = substr($response, $headerSize);
 
         $headers = (new Parser())->parse($responseHeaders);
 
-        // todo Debug to delete
-        die(print_r($headers, true));
-        // todo : delete
-        die(print_r(array($responseHeaders, $responseBody, $info), true));
-        // endtodo
-        // todo : delete
-        // die(print_r($response, true));
-        // endtodo
-        // todo : delete
-        die(print_r(curl_getinfo($curl), true));
-        // endtodo
-        // todo : delete
-        die(print_r($response, true));
-        // endtodo
-        // Close request to clear up some resources
-        curl_close($curl);
+        $contentType = $headers->contentType();
+
+        // todo [debug] Debug to delete
+        die(print_r($contentType, true));
+        if (is_null($contentType)) {
+            throw new \Exception("Unknown Content-Type.");
+        }
+
+        $mediaType = $contentType->mediaType();
+
+        if (is_null($mediaType)) {
+            throw new \Exception("Unknown media type for {$contentType->value()}.");
+        }
+
+        if (!array_key_exists($mediaType, $this->encoders)) {
+            throw new \Exception("Unsupported type of media type {$mediaType}.");
+        }
+
+        $data = $this->encoders[$mediaType]->decode($responseBody);
+
+        return new Response($info['http_code'], $headers, $data, $info);
     }
 
     private function prepareURI(array $command)
