@@ -1,7 +1,4 @@
 <?php
-namespace Topi\Data\Decoders;
+namespace Topi\Data\Encoders;
 
-abstract class Encoder
-{
-
-}
+abstract class Encoder implements EncoderInterface {}

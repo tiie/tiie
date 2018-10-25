@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Decoders;
+namespace Topi\Data\Encoders;
 
 use Topi\Data\Encoders\Encoder;
 

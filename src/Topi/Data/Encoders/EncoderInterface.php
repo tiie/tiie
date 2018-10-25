@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Decoders;
+namespace Topi\Data\Encoders;
 
 interface EncoderInterface
 {
