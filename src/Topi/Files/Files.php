@@ -15,8 +15,6 @@ class Files
 
     public function create($data)
     {
-        // todo : dorobic walidacje
-
         if (empty($data['extension'])) {
             // try get extension from file name
             $tmp = explode('.', $data['name']);
@@ -71,7 +69,7 @@ class Files
             }
         }
 
-        return $select->fetch();
+        return $select->fetch()->data();
     }
 
     public function findById($id)
@@ -79,7 +77,8 @@ class Files
         $file = (new \Topi\Data\Adapters\Commands\SQL\Select($this->db))
             ->from($this->params['table'])
             ->eq('id', $id)
-            ->fetch('row')
+            ->fetch()
+            ->format('row')
         ;
 
         if (empty($file)) {

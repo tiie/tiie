@@ -1,7 +1,7 @@
 <?php
 namespace Topi\Data\Adapters\Commands\SQL;
 
-use Topi\Data\Adapters\Commands\SQL\Where;
+// use Topi\Data\Adapters\Commands\SQL\Where;
 
 class Delete extends \Topi\Data\Adapters\Commands\Command
 {

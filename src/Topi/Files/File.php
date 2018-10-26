@@ -27,7 +27,8 @@ class File
         $this->data = (new \Topi\Data\Adapters\Commands\SQL\Select($this->db))
             ->from($this->params['table'])
             ->eq('id', $id)
-            ->fetch('row')
+            ->fetch()
+            ->format('row')
         ;
 
         if (is_null($this->data)) {

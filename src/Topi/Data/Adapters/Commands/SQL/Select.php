@@ -1079,7 +1079,7 @@ class Select extends Command
         return $this;
     }
 
-    public function fetch($format = 'all', $params = array())
+    public function fetch(array $params = array())
     {
         $adapter = $this->adapter();
 
@@ -1087,6 +1087,6 @@ class Select extends Command
             throw new \Exception("Adapter is not inject.");
         }
 
-        return $adapter->fetch($this, $format, $params);
+        return $adapter->fetch($this, $params);
     }
 }

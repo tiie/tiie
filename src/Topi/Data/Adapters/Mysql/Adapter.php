@@ -88,7 +88,8 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
      * @param array $params Parametry przekazane do wywołania.
      * @return mixed
      */
-    public function fetch($command, $format = 'all', array $params = array())
+    // public function fetch($command, array $params = array()) : Result
+    public function fetch($command, array $params = array()) : \Topi\Data\Adapters\Result
     {
         $sql = null;
 
@@ -109,41 +110,7 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
         $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
         $statement->closeCursor();
 
-        // response format
-        switch ($format) {
-        case 'all':
-            return $result;
-        case 'row':
-            if (empty($result)) {
-                return null;
-            }else{
-                return $result[0];
-            }
-        case 'one':
-            if (empty($result)) {
-                return null;
-            }else{
-                $keys = array_keys($result);
-
-                return $result[$keys[0]];
-            }
-        case 'col':
-            $values = array();
-
-            if (!empty($result)) {
-                $index = array_keys($result[0])[0];
-
-                foreach ($result as $row) {
-                    $values[] = $row[$index];
-                }
-            }
-
-            return $values;
-        default:
-            throw new \Exception("Unsported format {$format}.");
-
-            break;
-        }
+        return new \Topi\Data\Adapters\Result($result);
     }
 
     public function count($command, $params = array())
@@ -351,7 +318,7 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
     // - AdapterInterface
     public function lastId()
     {
-        return $this->fetch("select last_insert_id() as id", 'one')['id'];
+        return $this->fetch("select last_insert_id() as id")->format('row')['id'];
     }
 
     private function prepare($sql, $params = array())
