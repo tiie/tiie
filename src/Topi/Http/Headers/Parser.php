@@ -17,11 +17,12 @@ class Parser
                 continue;
             }
 
-            $header = strtolower(trim($line[0]));
+            // $header = strtolower(trim($line[0]));
+            $header = trim($line[0]);
             $value = trim($line[1]);
 
             if (0) {
-            } else if ($header =='content-type') {
+            } else if ($header =='Content-Type') {
                 $header = new ContentType($value);
 
             // } else if ($header =='Accept') {
