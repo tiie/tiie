@@ -207,7 +207,7 @@ class Where extends Command
             $operationsExcluded = array();
             $fieldValue = $field;
 
-            if (array_key_exists($field, $fields)) {
+            if (array_key_exists($field, $fields) && is_array($fields[$field])) {
                 if (array_key_exists('field', $fields[$field])) {
                     $fieldValue = $fields[$field]['field'];
                 }
