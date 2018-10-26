@@ -2,6 +2,7 @@
 namespace Topi\Data\Adapters\Http;
 
 use Topi\Data\Adapters\AdapterInterface;
+use Topi\Data\Adapters\Http\Result as HttpResut;
 use Topi\Data\Adapters\MetadataAccessibleInterface;
 use Topi\Http\Headers\Parser;
 
@@ -36,7 +37,7 @@ class Adapter implements AdapterInterface
     {
     }
 
-    public function fetch($command, $format = 'all', array $params = array())
+    public function fetch($command, array $params = array()) : \Topi\Data\Adapters\Result
     {
         if (is_array($command)) {
             if (array_key_exists('headers', $command)) {
@@ -130,8 +131,6 @@ class Adapter implements AdapterInterface
 
         $contentType = $headers->contentType();
 
-        // todo [debug] Debug to delete
-        die(print_r($contentType, true));
         if (is_null($contentType)) {
             throw new \Exception("Unknown Content-Type.");
         }
@@ -148,7 +147,11 @@ class Adapter implements AdapterInterface
 
         $data = $this->encoders[$mediaType]->decode($responseBody);
 
-        return new Response($info['http_code'], $headers, $data, $info);
+        // return new Response($info['http_code'], $headers, $data, $info);
+        return new Result($data, array_merge(array(
+            'code' => $info['http_code'],
+            'headers' => $headers,
+        ), $info));
     }
 
     private function prepareURI(array $command)
