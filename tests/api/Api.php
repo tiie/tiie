@@ -45,7 +45,7 @@ class Api
             http_response_code(200);
 
             if($accept == 'application/json') {
-                header('Content-Type: application/json, charset=utf-8');
+                header('Content-Type: application/json; charset=utf-8');
                 echo json_encode($data);
             }
         }

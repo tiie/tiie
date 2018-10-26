@@ -115,6 +115,7 @@ class UpdateTest extends TestCase
             ->order('id asc')
             ->in('id', array(1, 2, 3))
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals(3, count($rows));

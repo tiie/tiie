@@ -28,6 +28,7 @@ class InsertTest extends TestCase
     //     //     ->column('phone')
     //     //     ->eq('id', 1)
     //     //     ->fetch('row')
+    //     //     -> data()
     //     // ;
 
     //     // // $this->createVariable('variable-38', $rows);
@@ -175,6 +176,7 @@ class InsertTest extends TestCase
             ))
             ->eq('id', $id)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals(1, count($rows));
@@ -221,6 +223,7 @@ class InsertTest extends TestCase
             ))
             ->eq('id', 3000)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals(1, count($rows));

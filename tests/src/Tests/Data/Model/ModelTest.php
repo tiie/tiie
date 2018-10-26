@@ -3,7 +3,6 @@ namespace Tests\Data\Model;
 
 use Tests\TestCase;
 use App\Models\Bookshop\Users;
-use Topi\Data\Adapters\Commands\SQL\Select;
 use Topi\Data\Model\Records;
 
 class ModelTest extends TestCase
@@ -115,23 +114,24 @@ class ModelTest extends TestCase
 
     // }
 
-    public function testSave()
-    {
-        $this->initDatabase('bookshop');
-
-        $users = new Users($this->adapter('bookshop'));
-
-        $record = $users->record(5);
-
-        $record->set('firstName', 'changed');
-
-        $users->save($record);
-
-
-        // $this->createVariable('variable-103', $rows);
-        // $this->assertEquals($this->variable('variable-103'), $rows);
-    }
-
+//     public function testSave()
+//     {
+//         $this->initDatabase('bookshop');
+//
+//         $users = new Users($this->adapter('bookshop'));
+//
+//         $record = $users->record(5);
+//         $record->set('firstName', 'changed');
+//
+//         $users->save($record);
+//
+//         $record = $users->record(5);
+//
+//         $this->assertEquals('changed', $record->get('firstName'));
+//         // $this->createVariable('variable-103', $rows);
+//         // $this->assertEquals($this->variable('variable-103'), $rows);
+//     }
+//
     // public function testCreate()
     // {
 

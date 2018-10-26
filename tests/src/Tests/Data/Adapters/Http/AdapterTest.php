@@ -13,13 +13,18 @@ class AdapterTest extends TestCase
     {
         $api = $this->api();
 
-        $response = $api->fetch(array(
+        $result = $api->fetch(array(
             'urn' => '/clients',
         ));
 
-        // todo : delete
-        die(print_r($response, true));
-        // endtodo
+        // $this->createVariable('variable-107', $result->code());
+        $this->assertEquals($this->variable('variable-107'), $result->code());
+
+        // $this->createVariable('variable-108', $result->headers()->toArray());
+        $this->assertEquals($this->variable('variable-108'), $result->headers()->toArray());
+
+        // $this->createVariable('variable-109', $result->data());
+        $this->assertEquals($this->variable('variable-109'), $result->data());
     }
 
     // public function testMetadata()

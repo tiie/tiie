@@ -25,7 +25,8 @@ class SelectTest extends TestCase
             ->column('cityId')
             ->column('phone')
             ->eq('id', 1)
-            ->fetch('row')
+            ->fetch()
+            ->format('row')
         ;
 
         $this->assertEquals($this->variable('variable-16'), $row);
@@ -373,6 +374,7 @@ class SelectTest extends TestCase
                 ->$method($filterColumn, $filter)
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $rows = (new Select($this->adapter('bookshop')))
@@ -388,6 +390,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -405,6 +408,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -421,6 +425,7 @@ class SelectTest extends TestCase
                 ->$method($filterColumn, $filter)
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $rows = (new Select($this->adapter('bookshop')))
@@ -439,6 +444,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -459,6 +465,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -475,6 +482,7 @@ class SelectTest extends TestCase
                 ->$method($filterColumn, $filter)
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $rows = (new Select($this->adapter('bookshop')))
@@ -496,6 +504,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -519,6 +528,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -535,6 +545,7 @@ class SelectTest extends TestCase
                 ->$methodNegated($filterColumn, $filter)
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $rows = (new Select($this->adapter('bookshop')))
@@ -556,6 +567,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -579,6 +591,7 @@ class SelectTest extends TestCase
                 ))
                 ->limit(5)
                 ->fetch()
+                ->data()
             ;
 
             $this->assertEquals($base, $rows);
@@ -601,6 +614,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-17'), $rows);
@@ -612,6 +626,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5, 5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-18'), $rows);
@@ -625,6 +640,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(-1)
             ->fetch()
+            ->data()
         ;
 
         (new Select($this->adapter('bookshop')))
@@ -633,6 +649,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(-10, -11)
             ->fetch()
+            ->data()
         ;
     }
 
@@ -647,6 +664,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->page(0, 2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-19'), $rows);
@@ -658,6 +676,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->page(1, 2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-20'), $rows);
@@ -672,6 +691,7 @@ class SelectTest extends TestCase
                 'pageSize' => 2,
             ))
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-19'), $rows);
@@ -686,6 +706,7 @@ class SelectTest extends TestCase
                 'pageSize' => 2,
             ))
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-20'), $rows);
@@ -697,6 +718,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->page('1,2')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-20'), $rows);
@@ -710,6 +732,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->page('1,2,3')
             ->fetch()
+            ->data()
         ;
 
         // ---------------
@@ -721,6 +744,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->page(-1, 0)
             ->fetch()
+            ->data()
         ;
     }
 
@@ -745,6 +769,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-21'), $rows);
@@ -756,6 +781,7 @@ class SelectTest extends TestCase
             ->order('id desc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-22'), $rows);
@@ -767,6 +793,7 @@ class SelectTest extends TestCase
             ->order('id', 'asc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-21'), $rows);
@@ -778,6 +805,7 @@ class SelectTest extends TestCase
             ->order('id', 'desc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-22'), $rows);
@@ -789,6 +817,7 @@ class SelectTest extends TestCase
             ->order('id', 'DESC')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-22'), $rows);
@@ -817,6 +846,7 @@ class SelectTest extends TestCase
             ->order(new Expr("RAND()"))
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals(2, count($rows));
@@ -833,6 +863,7 @@ class SelectTest extends TestCase
             ->limit(2)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-23'), $rows);
@@ -844,6 +875,7 @@ class SelectTest extends TestCase
             ->limit(2)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-24'), $rows);
@@ -856,6 +888,7 @@ class SelectTest extends TestCase
             ->limit(2)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-25'), $rows);
@@ -869,6 +902,7 @@ class SelectTest extends TestCase
             ->limit(2)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-26'), $rows);
@@ -889,6 +923,7 @@ class SelectTest extends TestCase
             ->limit(2)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-27'), $rows);
@@ -918,6 +953,7 @@ class SelectTest extends TestCase
             ->limit(2)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-29'), $rows);
@@ -931,6 +967,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-31'), $rows);
@@ -947,6 +984,7 @@ class SelectTest extends TestCase
             ->from($sub, 'base')
             ->order('base.id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-30'), $rows);
@@ -967,6 +1005,7 @@ class SelectTest extends TestCase
             ->from($sub)
             ->order('base.id asc')
             ->fetch()
+            ->data()
         ;
     }
 
@@ -983,6 +1022,7 @@ class SelectTest extends TestCase
             ->in('u.id', array(11, 12, 13, 14, 15))
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-32'), $rows);
@@ -996,6 +1036,7 @@ class SelectTest extends TestCase
             ->in('u.id', array())
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-33'), $rows);
@@ -1021,6 +1062,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             // ->build()
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-34'), $rows);
@@ -1040,6 +1082,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-35'), $rows);
@@ -1065,6 +1108,7 @@ class SelectTest extends TestCase
             ->limit(5)
             ->order('id asc')
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-36'), $rows);
@@ -1085,6 +1129,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-37'), $rows);
@@ -1103,6 +1148,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-38'), $rows);
@@ -1124,6 +1170,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-39'), $rows);
@@ -1139,6 +1186,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-40'), $rows);
@@ -1157,6 +1205,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-41'), $rows);
@@ -1169,6 +1218,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-42'), $rows);
@@ -1188,6 +1238,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-43'), $rows);
@@ -1200,6 +1251,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-44'), $rows);
@@ -1218,6 +1270,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-45'), $rows);
@@ -1230,6 +1283,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-46'), $rows);
@@ -1248,6 +1302,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-47'), $rows);
@@ -1260,6 +1315,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-48'), $rows);
@@ -1275,6 +1331,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-49'), $rows);
@@ -1293,6 +1350,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(10)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-50'), $rows);
@@ -1311,6 +1369,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-51'), $rows);
@@ -1323,6 +1382,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(2)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-52'), $rows);
@@ -1341,6 +1401,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(4)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-53'), $rows);
@@ -1353,6 +1414,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(4)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-54'), $rows);
@@ -1371,6 +1433,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-55'), $rows);
@@ -1383,6 +1446,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-56'), $rows);
@@ -1401,6 +1465,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-57'), $rows);
@@ -1413,6 +1478,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-58'), $rows);
@@ -1431,6 +1497,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-59'), $rows);
@@ -1443,6 +1510,7 @@ class SelectTest extends TestCase
             ->order('id asc')
             ->limit(5)
             ->fetch()
+            ->data()
         ;
 
         $this->assertEquals($this->variable('variable-60'), $rows);
@@ -1460,10 +1528,10 @@ class SelectTest extends TestCase
             ->expr('u.id >= :from and u.id <= :to')
             ->order('id asc')
             ->limit(5)
-            ->fetch('all', array(
+            ->fetch(array(
                 'from' => 10,
                 'to' => '20',
-            ))
+            ))->data()
         ;
 
         $this->assertEquals($this->variable('variable-61'), $rows);
@@ -1475,10 +1543,10 @@ class SelectTest extends TestCase
             ->expr(new Expr('u.id >= :from and u.id <= :to'))
             ->order('id asc')
             ->limit(5)
-            ->fetch('all', array(
+            ->fetch(array(
                 'from' => 10,
                 'to' => '20',
-            ))
+            ))->data()
         ;
 
         $this->assertEquals($this->variable('variable-62'), $rows);
@@ -1505,7 +1573,8 @@ class SelectTest extends TestCase
             ->order('id asc')
             // ->limit(5)
             ->exists($exists)
-            ->fetch('all')
+            ->fetch()
+            ->data()
         ;
 
         $this->assertEquals(158, count($rows));
@@ -1531,7 +1600,8 @@ class SelectTest extends TestCase
             ->order('id asc')
             // ->limit(5)
             ->notExists($exists)
-            ->fetch('all')
+            ->fetch()
+            ->data()
         ;
 
         $this->assertEquals(2000 - 158, count($rows));

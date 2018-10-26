@@ -3,6 +3,9 @@ namespace App\Models\Bookshop;
 
 use Topi\Data\Model\Model;
 use Topi\Data\Adapters\Commands\SQL\Select;
+use Topi\Data\Adapters\Commands\SQL\Update;
+use Topi\Data\Model\RecordInterface;
+use Topi\Data\Model\ModelInterface;
 
 class Users extends Model
 {
@@ -33,7 +36,7 @@ class Users extends Model
             'id'
         ));
 
-        return $select->fetch();
+        return $select->fetch()->data();
     }
 
     public function save(RecordInterface $record, array $params = array()) : ModelInterface
@@ -42,6 +45,13 @@ class Users extends Model
             throw new \Topi\Exceptions\ValidateException($errors);
         }
 
+        $update = (new Update($this->db))
+            ->set('firstName', $record->get('firstName'))
+            ->equal('id', $record->id())
+            ->execute()
+        ;
+
+        return $this;
     }
 
     public function validate(RecordInterface $record, string $process, array $params = array()) : ?array
