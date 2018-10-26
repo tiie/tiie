@@ -27,4 +27,15 @@ class Headers
     {
         return $this->get('Content-Type');
     }
+
+    public function toArray()
+    {
+        $prepared = array();
+
+        foreach ($this->headers as $header) {
+            $prepared[$header->name()] = $header->value();
+        }
+
+        return $prepared;
+    }
 }
