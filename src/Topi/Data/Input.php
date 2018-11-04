@@ -8,7 +8,7 @@ namespace Topi\Data;
 //             '@validators' => array(
 //                 'exists',
 //                 'notEmpty',
-//                 new \Topi\Validators\Schema($db, 'dictionaries.id')
+//                 new \Topi\Data\Validators\Schema($db, 'dictionaries.id')
 //             ),
 //         ),
 //         'user' => array(
@@ -38,7 +38,7 @@ namespace Topi\Data;
 //                 '@validators' => array(
 //                     'exists',
 //                     'notEmpty',
-//                     // new \Topi\Validators\Schema($db, 'dictionaries.id')
+//                     // new \Topi\Data\Validators\Schema($db, 'dictionaries.id')
 //                 ),
 //
 //             ),
@@ -184,7 +184,7 @@ class Input
             return;
         }
 
-        $this->notEmpty = new \Topi\Validators\NotEmpty();
+        $this->notEmpty = new \Topi\Data\Validators\NotEmpty();
 
         $result = $this->processRules($this->rules, $this->data);
 
@@ -274,13 +274,13 @@ class Input
 
                 // Walidatory
                 foreach ($validators as $validator) {
-                    if ($validator instanceof \Topi\Validators\ComplexValidatorInterface) {
+                    if ($validator instanceof \Topi\Data\Validators\ComplexValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             foreach ($error as $code => $error) {
                                 $errors[$field][] = $error;
                             }
                         }
-                    }elseif($validator instanceof \Topi\Validators\ValidatorInterface) {
+                    }elseif($validator instanceof \Topi\Data\Validators\ValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             $errors[$field][] = $error;
                         }
@@ -451,13 +451,13 @@ class Input
 
                     // validators
                     foreach ($validators as $validator) {
-                        if ($validator instanceof \Topi\Validators\ComplexValidatorInterface) {
+                        if ($validator instanceof \Topi\Data\Validators\ComplexValidatorInterface) {
                             if(!is_null($error = $validator->validate($prepared[$field][$key]))){
                                 foreach ($error as $code => $error) {
                                     $errors[$field][$key][] = $error;
                                 }
                             }
-                        }elseif($validator instanceof \Topi\Validators\ValidatorInterface) {
+                        }elseif($validator instanceof \Topi\Data\Validators\ValidatorInterface) {
                             if(!is_null($error = $validator->validate($prepared[$field][$key]))){
                                 $errors[$field][$key][] = $error;
                             }

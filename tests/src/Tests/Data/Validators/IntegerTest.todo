@@ -1,0 +1,17 @@
+<?php
+namespace Tests\Data;
+
+use Topi\Data\Validators\Integer;
+
+class IntegerTest extends \Tests\TestCase
+{
+    public function testDescription()
+    {
+    }
+
+    public function testValidate()
+    {
+        $validator = new Integer();
+
+    }
+}

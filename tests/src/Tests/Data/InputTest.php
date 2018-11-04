@@ -174,7 +174,7 @@ class InputTest extends \Tests\TestCase
             "id" => array(),
             "email" => array(
                 '@validators' => array(
-                    new \Topi\Validators\Email()
+                    new \Topi\Data\Validators\Email()
                 )
             ),
             "private" => array()
