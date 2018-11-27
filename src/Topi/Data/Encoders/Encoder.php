@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Data\Encoders;
+namespace Elusim\Data\Encoders;
 
 abstract class Encoder implements EncoderInterface {}

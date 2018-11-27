@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Validators\Number;
+use Elusim\Validators\Number;
 
 class Bigint extends Number
 {
@@ -16,7 +16,7 @@ class Bigint extends Number
 
     public function description()
     {
-        return '@(Topi.Data.Validators.Bigint.Description)';
+        return '@(Elusim.Data.Validators.Bigint.Description)';
     }
 
     public function validate($value)

@@ -1,13 +1,13 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class NotEmpty implements ValidatorInterface
 {
     public function description()
     {
-        return '@(Topi.Data.Validator.NotEmpty.Description)';
+        return '@(Elusim.Data.Validator.NotEmpty.Description)';
     }
 
     public function validate($value)
@@ -16,7 +16,7 @@ class NotEmpty implements ValidatorInterface
             if (empty($value)) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                    'error' => "@(Topi.Data.Validator.NotEmpty.IsEmpty)",
+                    'error' => "@(Elusim.Data.Validator.NotEmpty.IsEmpty)",
                 );
             }else{
                 return null;
@@ -25,7 +25,7 @@ class NotEmpty implements ValidatorInterface
             if ($value == "") {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                    'error' => "@(Topi.Data.Validator.NotEmpty.IsEmpty)",
+                    'error' => "@(Elusim.Data.Validator.NotEmpty.IsEmpty)",
                 );
             }else{
                 return null;
@@ -35,14 +35,14 @@ class NotEmpty implements ValidatorInterface
         }elseif(is_null($value)){
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                'error' => "@(Topi.Data.Validator.NotEmpty.IsEmpty)",
+                'error' => "@(Elusim.Data.Validator.NotEmpty.IsEmpty)",
             );
         }else{
             if($value instanceof \Countable) {
                 if ($value->count() == 0) {
                     return array(
                         'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                        'error' => "@(Topi.Data.Validator.NotEmpty.WrongType)",
+                        'error' => "@(Elusim.Data.Validator.NotEmpty.WrongType)",
                     );
                 } else {
                     return null;

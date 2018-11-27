@@ -1,33 +1,33 @@
 <?php
-namespace Topi\Actions;
+namespace Elusim\Actions;
 
-class Error extends \Topi\Actions\Action
+class Error extends \Elusim\Actions\Action
 {
-    public function action(\Topi\Http\Request $request, array $params = array())
+    public function action(\Elusim\Http\Request $request, array $params = array())
     {
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
 
         $error = $params['error'];
 
-        if ($error instanceof \Topi\Exceptions\Http\Base) {
+        if ($error instanceof \Elusim\Exceptions\Http\Base) {
             $response->code($error->code());
             $response->data($error->errors());
 
-        }elseif($error instanceof \Topi\Exceptions\ValidateException){
+        }elseif($error instanceof \Elusim\Exceptions\ValidateException){
             // todo : ValidateException zmianiam na InvalidData
             $response->code('400');
             $response->data($error->errors());
 
-        }elseif($error instanceof \Topi\Exceptions\InvalidData){
+        }elseif($error instanceof \Elusim\Exceptions\InvalidData){
             $response->code('400');
             $response->data($error->errors());
 
-        }elseif($error instanceof \Topi\Router\Exceptions\ActionNotFound){
+        }elseif($error instanceof \Elusim\Router\Exceptions\ActionNotFound){
             $response->code('404');
-        }elseif($error instanceof \Topi\Exceptions\PHPErrorException){
+        }elseif($error instanceof \Elusim\Exceptions\PHPErrorException){
             $response->code(500);
 
-            $niceTrace = new \Topi\NiceTrace($error->getTrace());
+            $niceTrace = new \Elusim\NiceTrace($error->getTrace());
 
             $response->data(array(
                 'message' => $error->getMessage(),
@@ -40,7 +40,7 @@ class Error extends \Topi\Actions\Action
         }elseif($error instanceof \Exception){
             $response->code(500);
 
-            $niceTrace = new \Topi\NiceTrace($error->getTrace());
+            $niceTrace = new \Elusim\NiceTrace($error->getTrace());
 
             $response->data(array(
                 'message' => $error->getMessage(),
@@ -52,7 +52,7 @@ class Error extends \Topi\Actions\Action
         }elseif($error instanceof \Error){
             $response->code(500);
 
-            $niceTrace = new \Topi\NiceTrace($error->getTrace());
+            $niceTrace = new \Elusim\NiceTrace($error->getTrace());
 
             $response->data(array(
                 'message' => $error->getMessage(),

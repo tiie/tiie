@@ -1,7 +1,7 @@
 <?php
-namespace Topi;
+namespace Elusim;
 
-use Topi\Components\Scope;
+use Elusim\Components\Scope;
 
 class Components
 {

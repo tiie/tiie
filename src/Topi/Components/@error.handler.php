@@ -1,4 +1,5 @@
 <?php
-return function(\Topi\Components $components) {
-    return new \Topi\Errors\ErrorHandler($components->get("response"));
+
+return function(\Elusim\Components $components) {
+    return new \Elusim\Errors\ErrorHandler($components->get("response"), $components->get("@log"));
 };

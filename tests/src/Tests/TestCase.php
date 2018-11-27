@@ -1,8 +1,8 @@
 <?php
 namespace Tests;
 
-use Topi\Data\Adapters\Http\Adapter as AdapterHttp;
-use Topi\Data\Encoders\Json as EncoderJson;
+use Elusim\Data\Adapters\Http\Adapter as AdapterHttp;
+use Elusim\Data\Encoders\Json as EncoderJson;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -10,7 +10,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function app()
     {
-        return new \Topi\App(new \Topi\Config("./src/App/Config/tests.php"));
+        return new \Elusim\App(new \Elusim\Config("./src/App/Config/tests.php"));
     }
 
     protected function api()
@@ -27,7 +27,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function adapter(string $name) {
         if (!array_key_exists($name, $this->adapters)) {
             if ($name == 'bookshop') {
-                $this->adapters[$name] = new \Topi\Data\Adapters\Mysql\Adapter(array(
+                $this->adapters[$name] = new \Elusim\Data\Adapters\Mysql\Adapter(array(
                     'host' => 'localhost',
                     'dbname' => 'bookshop',
                     'username' => 'root',

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Response\Engines;
+namespace Elusim\Response\Engines;
 
 interface EngineInterface
 {
-    public function prepare(\Topi\Response\ResponseInterface $response, \Topi\Http\Request $request, array $accept);
+    public function prepare(\Elusim\Response\ResponseInterface $response, \Elusim\Http\Request $request, array $accept);
 }

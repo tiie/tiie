@@ -1,12 +1,12 @@
 <?php
-namespace Topi\Components;
+namespace Elusim\Components;
 
 class Scope
 {
     private $components;
     private $scope;
 
-    function __construct(\Topi\Components $components, string $scope)
+    function __construct(\Elusim\Components $components, string $scope)
     {
         $this->components = $components;
         $this->scope = $scope;

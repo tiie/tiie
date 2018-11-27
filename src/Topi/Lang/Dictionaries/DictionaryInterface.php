@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Lang\Dictionaries;
+namespace Elusim\Lang\Dictionaries;
 
 interface DictionaryInterface {
 

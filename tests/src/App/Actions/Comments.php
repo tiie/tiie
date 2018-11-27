@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions;
 
-class Comments extends \Topi\Actions\Rest {
+class Comments extends \Elusim\Actions\Rest {
     public static function metadata()
     {
         return array(

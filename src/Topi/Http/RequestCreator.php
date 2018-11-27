@@ -1,9 +1,9 @@
 <?php
-namespace Topi\Http;
+namespace Elusim\Http;
 
 class RequestCreator
 {
-    public function create(\Topi\Env $env, $emergency = 0)
+    public function create(\Elusim\Env $env, $emergency = 0)
     {
         switch ($env->get('sapi')) {
         case 'cli':
@@ -75,7 +75,7 @@ class RequestCreator
                 throw new \Exception("Server name is not defined.");
             }
 
-            return new \Topi\Http\Request(
+            return new \Elusim\Http\Request(
                 $method,
                 $uri,
                 $_GET,
@@ -110,12 +110,12 @@ class RequestCreator
                     $data = json_decode($body, true);
 
                     if (is_null($data)) {
-                        throw new \Topi\Exceptions\Http\BadRequest('Can not decode json data.');
+                        throw new \Elusim\Exceptions\Http\BadRequest('Can not decode json data.');
                     }
 
                     break;
                 default :
-                    throw new \Topi\Exceptions\Http\UnsupportedMediaType();
+                    throw new \Elusim\Exceptions\Http\UnsupportedMediaType();
                 }
             }
 

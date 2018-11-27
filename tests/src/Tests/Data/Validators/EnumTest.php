@@ -1,9 +1,9 @@
 <?php
 namespace Tests\Data;
 
-use Topi\Data\Validators\Enum;
+use Elusim\Data\Validators\Enum;
 
-class EmailTest extends \Tests\TestCase
+class EnumTest extends \Tests\TestCase
 {
     public function testValidate()
     {

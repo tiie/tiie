@@ -2,8 +2,8 @@
 namespace Tests\Data\Adapters\Commands\SQL;
 
 use Tests\TestCase;
-use Topi\Data\Adapters\Commands\SQL\Select;
-use Topi\Data\Adapters\Commands\SQL\Expr;
+use Elusim\Data\Adapters\Commands\SQL\Select;
+use Elusim\Data\Adapters\Commands\SQL\Expr;
 
 // $this->createVariable('variable-38', $rows);
 class SelectTest extends TestCase

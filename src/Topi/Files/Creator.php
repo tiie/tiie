@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Files;
+namespace Elusim\Files;
 
 class Creator
 {

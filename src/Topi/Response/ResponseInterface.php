@@ -1,16 +1,16 @@
 <?php
-namespace Topi\Response;
+namespace Elusim\Response;
 
 interface ResponseInterface {
 
-    public function response(\Topi\Http\Request $request);
+    public function response(\Elusim\Http\Request $request);
 
     /**
      * Set data for response.
      *
      * @param string $name
      * @param string $name
-     * @return \Topi\Response\ResponseInterface
+     * @return \Elusim\Response\ResponseInterface
      */
     public function set($name, $value);
     public function get($name);

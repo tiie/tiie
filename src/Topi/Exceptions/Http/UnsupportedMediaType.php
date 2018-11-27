@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Exceptions\Http;
+namespace Elusim\Exceptions\Http;
 
-class UnsupportedMediaType extends \Topi\Exceptions\Http\Base
+class UnsupportedMediaType extends \Elusim\Exceptions\Http\Base
 {
     public function __construct($errors = null, \Exception $previous = null)
     {

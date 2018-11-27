@@ -1,22 +1,18 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Number;
 
-class Time implements ValidatorInterface
+class Time implements Number
 {
     function __construct()
     {
+        parent::__construct(1);
     }
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Time.Description)';
-    }
-
-    public function validate($value)
-    {
-        // todo
-        throw new \Exception("Dorobic");
+        return '@(Elusim.Data.Validator.Time.Description)';
     }
 }

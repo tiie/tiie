@@ -1,14 +1,14 @@
 <?php
-namespace Topi\Data\Adapters\Commands\SQL;
+namespace Elusim\Data\Adapters\Commands\SQL;
 
-// use Topi\Data\Adapters\Commands\SQL\Where;
+// use Elusim\Data\Adapters\Commands\SQL\Where;
 
-class Delete extends \Topi\Data\Adapters\Commands\Command
+class Delete extends \Elusim\Data\Adapters\Commands\Command
 {
     private $from = null;
     private $where;
 
-    function __construct(\Topi\Data\Adapters\AdapterInterface $adapter = null)
+    function __construct(\Elusim\Data\Adapters\AdapterInterface $adapter = null)
     {
         parent::__construct($adapter);
 
@@ -186,7 +186,7 @@ class Delete extends \Topi\Data\Adapters\Commands\Command
             throw new \Exception("Delete can not be build. From is not defined.");
         }
 
-        $command = new \Topi\Data\Adapters\Commands\BuiltCommand();
+        $command = new \Elusim\Data\Adapters\Commands\BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'

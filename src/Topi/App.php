@@ -1,11 +1,13 @@
 <?php
-namespace Topi;
+namespace Elusim;
 
-use Topi\Components;
-use Topi\Env;
-use Topi\Http\RequestCreator;
-use Topi\Http\Request;
-use Topi\Response\ResponseInterface;
+use Elusim\Components;
+use Elusim\Env;
+use Elusim\Http\RequestCreator;
+use Elusim\Http\Request;
+use Elusim\Response\ResponseInterface;
+use Elusim\Errors\Error;
+use Elusim\Errors\ErrorHandlerInterface;
 
 class App
 {
@@ -28,14 +30,14 @@ class App
      */
     private $request;
 
-    function __construct(array $params = array(), \Topi\Config $config = null)
+    function __construct(array $params = array(), \Elusim\Config $config = null)
     {
         $this->loadParams($params);
 
         $this->config = $this->initConfig($config);
 
         // write components
-        $this->components = new Components($this->config->get('topi.components'));
+        $this->components = new Components($this->config->get('elusim.components'));
         $this->components->set('@app', $this);
         $this->components->set('@config', $this->config);
 
@@ -62,6 +64,12 @@ class App
         set_error_handler(array($this, '_errorHandler'));
         set_exception_handler(array($this, '_exceptionHandler'));
 
+        // trigger_error('E_USER_ERROR', E_USER_ERROR);
+        // trigger_error('E_USER_WARNING', E_USER_WARNING);
+        // trigger_error('E_USER_NOTICE', E_USER_NOTICE);
+        // trigger_error('E_USER_DEPRECATED', E_USER_DEPRECATED);
+        // throw new \Exception("Pawel");
+
         // Próbuje stworzyć żądanie
         try {
             if (is_null($request)) {
@@ -70,13 +78,13 @@ class App
                 $this->request = $request;
             }
         } catch (\Exception $error) {
-            return $this->error($error);
+            return $this->_error($error);
         }
 
         try {
             return $this->response($this->router->run($this->request), $this->request);
         } catch (\Exception $error) {
-            return $this->error($error);
+            return $this->_error($error);
         }
     }
 
@@ -124,7 +132,7 @@ class App
                 ),
             ),
 
-            'topi' => array(
+            'elusim' => array(
                 'errors' => array(
                     'errorReporting' => array(
                         // List of errors to display
@@ -148,9 +156,8 @@ class App
                     'errorReportingSilently' => true,
                 ),
                 'lang' => array(
-                    'default' => '@lang.dictionaries.topi',
                     'dictionaries' => array(
-                        '@lang.dictionaries.topi'
+                        '@lang.dictionaries.elusim',
                     )
                 ),
                 'twig' => array(
@@ -164,7 +171,7 @@ class App
                 ),
                 'router' => array(
                     'error' => array(
-                        'action' => \Topi\Actions\Error::class
+                        'action' => \Elusim\Actions\Error::class
                     )
                 ),
                 'components' => array(
@@ -201,60 +208,62 @@ class App
 
     public function _exceptionHandler($error)
     {
-        $this->error($error);
+        $this->_error($error);
     }
 
-    public function _errorHandler($code, $message, $file, $line)
+    public function _errorHandler($severity, $message, $file, $line)
     {
-        switch($code){
-        case E_ERROR :
-            $error = new \Topi\Exceptions\ErrorException($message, $code, $file, $line);
-            break;
-        case E_WARNING :
-            $error = new \Topi\Exceptions\WarningException($message, $code, $file, $line);
-            break;
-        case E_PARSE :
-            $error = new \Topi\Exceptions\ParseException($message, $code, $file, $line);
-            break;
-        case E_NOTICE :
-            $error = new \Topi\Exceptions\NoticeException($message, $code, $file, $line);
-            break;
-        case E_CORE_ERROR :
-            $error = new \Topi\Exceptions\CoreErrorException($message, $code, $file, $line);
-            break;
-        case E_CORE_WARNING :
-            $error = new \Topi\Exceptions\CoreWarningException($message, $code, $file, $line);
-            break;
-        case E_COMPILE_ERROR :
-            $error = new \Topi\Exceptions\CompileErrorException($message, $code, $file, $line);
-            break;
-        case E_COMPILE_WARNING :
-            $error = new \Topi\Exceptions\CoreWarningException($message, $code, $file, $line);
-            break;
-        case E_USER_ERROR :
-            $error = new \Topi\Exceptions\UserErrorException($message, $code, $file, $line);
-            break;
-        case E_USER_WARNING :
-            $error = new \Topi\Exceptions\UserWarningException($message, $code, $file, $line);
-            break;
-        case E_USER_NOTICE :
-            $error = new \Topi\Exceptions\UserNoticeException($message, $code, $file, $line);
-            break;
-        case E_STRICT :
-            $error = new \Topi\Exceptions\StrictException($message, $code, $file, $line);
-            break;
-        case E_RECOVERABLE_ERROR :
-            $error = new \Topi\Exceptions\RecoverableErrorException($message, $code, $file, $line);
-            break;
-        case E_DEPRECATED :
-            $error = new \Topi\Exceptions\DeprecatedException($message, $code, $file, $line);
-            break;
-        case E_USER_DEPRECATED :
-            $error = new \Topi\Exceptions\UserDeprecatedException($message, $code, $file, $line);
-            break;
-        }
+        $this->_error(new Error($message, 0, $severity, $file, $line));
 
-        $this->error($error);
+        // switch($code){
+        // case E_ERROR :
+        //     $error = new \Elusim\Exceptions\ErrorException($message, $code, $file, $line);
+        //     break;
+        // case E_WARNING :
+        //     $error = new \Elusim\Exceptions\WarningException($message, $code, $file, $line);
+        //     break;
+        // case E_PARSE :
+        //     $error = new \Elusim\Exceptions\ParseException($message, $code, $file, $line);
+        //     break;
+        // case E_NOTICE :
+        //     $error = new \Elusim\Exceptions\NoticeException($message, $code, $file, $line);
+        //     break;
+        // case E_CORE_ERROR :
+        //     $error = new \Elusim\Exceptions\CoreErrorException($message, $code, $file, $line);
+        //     break;
+        // case E_CORE_WARNING :
+        //     $error = new \Elusim\Exceptions\CoreWarningException($message, $code, $file, $line);
+        //     break;
+        // case E_COMPILE_ERROR :
+        //     $error = new \Elusim\Exceptions\CompileErrorException($message, $code, $file, $line);
+        //     break;
+        // case E_COMPILE_WARNING :
+        //     $error = new \Elusim\Exceptions\CoreWarningException($message, $code, $file, $line);
+        //     break;
+        // case E_USER_ERROR :
+        //     $error = new \Elusim\Exceptions\UserErrorException($message, $code, $file, $line);
+        //     break;
+        // case E_USER_WARNING :
+        //     $error = new \Elusim\Exceptions\UserWarningException($message, $code, $file, $line);
+        //     break;
+        // case E_USER_NOTICE :
+        //     $error = new \Elusim\Exceptions\UserNoticeException($message, $code, $file, $line);
+        //     break;
+        // case E_STRICT :
+        //     $error = new \Elusim\Exceptions\StrictException($message, $code, $file, $line);
+        //     break;
+        // case E_RECOVERABLE_ERROR :
+        //     $error = new \Elusim\Exceptions\RecoverableErrorException($message, $code, $file, $line);
+        //     break;
+        // case E_DEPRECATED :
+        //     $error = new \Elusim\Exceptions\DeprecatedException($message, $code, $file, $line);
+        //     break;
+        // case E_USER_DEPRECATED :
+        //     $error = new \Elusim\Exceptions\UserDeprecatedException($message, $code, $file, $line);
+        //     break;
+        // }
+
+        // $this->error($error);
     }
 
     /**
@@ -262,18 +271,21 @@ class App
      *
      * @param mixed $error
      */
-    public function error($error)
+    public function _error($error)
     {
-        // check if request exitsts
         $request = $this->request;
 
         try {
             if (is_null($request)) {
                 // request does not exists i create new with emergency mode
-                $request = (new \Topi\Http\RequestCreator())->create($this->env, 1);
+                $request = (new \Elusim\Http\RequestCreator())->create($this->env, 1);
             }
 
-            $this->response($this->components->get("@error.handler")->response($error, $request), $request);
+            $result = $this->components->get("@error.handler")->handle($error);
+
+            if ($result == ErrorHandlerInterface::PROCESS_EXIT) {
+                $this->response($this->components->get("@error.handler")->response($error, $request), $request);
+            }
         } catch (\Exception $error) {
             // oznacza to ze nie jest mozliwe odpowiednie przekierowanie bledu
             // akcje bledu

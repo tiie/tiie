@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
-use Topi\Data\Validators\Number;
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Number;
 
 class Mediumint extends Number
 {
@@ -17,7 +17,7 @@ class Mediumint extends Number
 
     public function description()
     {
-        return '@(Topi.Data.Validators.Mediumint.Description)';
+        return '@(Elusim.Data.Validators.Mediumint.Description)';
     }
 
     public function validate($value)
@@ -32,14 +32,14 @@ class Mediumint extends Number
             if ($value < 0 || $value > 16777215) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                    'error' => '@(Topi.Data.Validators.Mediumint.Invalid)',
+                    'error' => '@(Elusim.Data.Validators.Mediumint.Invalid)',
                 );
             }
         }else{
             if ($value < -8388608 || $value > 8388607) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                    'error' => '@(Topi.Data.Validators.Mediumint.Invalid)',
+                    'error' => '@(Elusim.Data.Validators.Mediumint.Invalid)',
                 );
             }
         }

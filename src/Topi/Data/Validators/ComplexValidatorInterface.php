@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 interface ComplexValidatorInterface extends ValidatorInterface
 {

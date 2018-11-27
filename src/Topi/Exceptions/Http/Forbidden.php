@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Exceptions\Http;
+namespace Elusim\Exceptions\Http;
 
-class Forbidden extends \Topi\Exceptions\Http\Base
+class Forbidden extends \Elusim\Exceptions\Http\Base
 {
     public function __construct($errors = null, \Exception $previous = null)
     {

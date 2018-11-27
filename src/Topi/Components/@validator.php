@@ -1,5 +1,5 @@
 <?php
-return function(\Topi\Components $components, $params = array()) {
+return function(\Elusim\Components $components, $params = array()) {
     $validator = new \Validate();
 
     $creator = $components->get("respose.offer.creator");

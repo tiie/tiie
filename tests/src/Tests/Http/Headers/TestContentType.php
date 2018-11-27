@@ -2,7 +2,7 @@
 namespace Tests\Http\Headers;
 
 use Tests\TestCase;
-use Topi\Http\Headers\ContentType;
+use Elusim\Http\Headers\ContentType;
 
 class TestContentType extends TestCase
 {

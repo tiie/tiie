@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Exceptions\Http;
+namespace Elusim\Exceptions\Http;
 
-class RequestHeaderFieldsTooLarge extends \Topi\Exceptions\Http\Base
+class RequestHeaderFieldsTooLarge extends \Elusim\Exceptions\Http\Base
 {
     public function __construct($errors = null, \Exception $previous = null)
     {

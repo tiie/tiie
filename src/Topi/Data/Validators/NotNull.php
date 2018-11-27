@@ -1,13 +1,13 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class NotNull implements ValidatorInterface
 {
     public function description()
     {
-        return '@(Topi.Data.Validator.NotNull.Description)';
+        return '@(Elusim.Data.Validator.NotNull.Description)';
     }
 
     public function validate($value)
@@ -15,7 +15,7 @@ class NotNull implements ValidatorInterface
         if (is_null($value)) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.NotNull.Invalid)',
+                'error' => '@(Elusim.Data.Validator.NotNull.Invalid)',
             );
         }
 

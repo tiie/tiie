@@ -1,4 +1,4 @@
 <?php
-return function(\Topi\Components $components, $params) {
-    return new \Topi\Data\Input($params['input']);
+return function(\Elusim\Components $components, $params) {
+    return new \Elusim\Data\Input($params['input']);
 };

@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
-use Topi\Data\Validators\Number;
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Number;
 
 class Integer extends Number
 {
@@ -17,7 +17,7 @@ class Integer extends Number
 
     public function description()
     {
-        return '@(Topi.Data.Validators.Integer.Description)';
+        return '@(Elusim.Data.Validators.Integer.Description)';
     }
 
     public function validate($value)

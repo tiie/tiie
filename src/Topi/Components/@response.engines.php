@@ -1,11 +1,11 @@
 <?php
 
-return function(\Topi\Components $components) {
-    $engines = new \Topi\Response\Engines\Engines();
+return function(\Elusim\Components $components) {
+    $engines = new \Elusim\Response\Engines\Engines();
 
-    $engines->register("json", new \Topi\Response\Engines\Json());
-    $engines->register("text", new \Topi\Response\Engines\Text());
-    $engines->register("twig", new \Topi\Response\Engines\Twig());
+    $engines->register("json", new \Elusim\Response\Engines\Json());
+    $engines->register("text", new \Elusim\Response\Engines\Text());
+    $engines->register("twig", new \Elusim\Response\Engines\Twig());
 
     return $engines;
 };

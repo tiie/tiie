@@ -1,5 +1,5 @@
 <?php
-namespace Topi\func;
+namespace Elusim\func;
 
 function fileExtension($path){
     $texploded = explode('.', $path);

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Router;
+namespace Elusim\Router;
 
-use Topi\Http\Request;
+use Elusim\Http\Request;
 
 class Router
 {
@@ -9,7 +9,7 @@ class Router
     const OBJECT_ACTION = 'action';
 
     /**
-     * @var \Topi\Config Reference to params object.
+     * @var \Elusim\Config Reference to params object.
      */
     private $params;
 
@@ -60,20 +60,20 @@ class Router
         }
     }
 
-    public function run(Request $request) : \Topi\Response\ResponseInterface
+    public function run(Request $request) : \Elusim\Response\ResponseInterface
     {
         $route = $this->match($request);
 
         if (is_null($route)) {
-            throw new \Topi\Router\Exceptions\RouteNotFound("Route not found for {$request->__toString()}");
+            throw new \Elusim\Router\Exceptions\RouteNotFound("Route not found for {$request->__toString()}");
         }
 
         if (!class_exists("\\".$route['action']['class'])) {
-            throw new \Topi\Router\Exceptions\ActionNotFound("Action not found for {$request->__toString()}");
+            throw new \Elusim\Router\Exceptions\ActionNotFound("Action not found for {$request->__toString()}");
         }
 
         if (!in_array($route['action']['method'], get_class_methods($route['action']['class']))) {
-            throw new \Topi\Router\Exceptions\MethodNotFound("Method not found for {$request->__toString()}");
+            throw new \Elusim\Router\Exceptions\MethodNotFound("Method not found for {$request->__toString()}");
         }
 
         $class = $route['action']['class'];

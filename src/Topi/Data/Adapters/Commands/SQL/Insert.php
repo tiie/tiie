@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Adapters\Commands\SQL;
+namespace Elusim\Data\Adapters\Commands\SQL;
 
-use Topi\Data\Adapters\Commands\Command;
-use Topi\Data\Adapters\Commands\BuiltCommand;
+use Elusim\Data\Adapters\Commands\Command;
+use Elusim\Data\Adapters\Commands\BuiltCommand;
 
 /**
  *
@@ -157,7 +157,7 @@ class Insert extends Command
         if (!empty($this->columns)) {
             foreach ($this->columns as $column) {
                 // todo funkcje columnStr trzeba ladniej zapisac
-                $scolumns .= sprintf('%s,', \Topi\Data\functions::columnStr($column, $params));
+                $scolumns .= sprintf('%s,', \Elusim\Data\functions::columnStr($column, $params));
             }
 
             $scolumns = trim($scolumns, ',');

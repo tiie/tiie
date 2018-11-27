@@ -1,7 +1,7 @@
 <?php
-return function(\Topi\Components $components) {
+return function(\Elusim\Components $components) {
 
     $config = $components->get('@config');
 
-    return new \Topi\Paths($config->get('topi.paths', array()));
+    return new \Elusim\Paths($config->get('elusim.paths', array()));
 };

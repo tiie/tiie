@@ -1,5 +1,5 @@
 <?php
-namespace \Topi\Data\Filters;
+namespace \Elusim\Data\Filters;
 
 interface FilterInterface
 {

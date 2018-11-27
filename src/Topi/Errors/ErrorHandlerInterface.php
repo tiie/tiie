@@ -1,8 +1,11 @@
 <?php
-namespace Topi\Errors;
+namespace Elusim\Errors;
 
 interface ErrorHandlerInterface
 {
+    const PROCESS_EXIT = 'process-exit';
+    const PROCESS_CONTINUATION = 'process-continuation';
+
     /**
      * Handle error.
      */
@@ -11,5 +14,5 @@ interface ErrorHandlerInterface
     /**
      * Handle error and return response.
      */
-    public function response($error, \Topi\Http\Request $request) : \Topi\Response\ResponseInterface;
+    public function response($error, \Elusim\Http\Request $request) : \Elusim\Response\ResponseInterface;
 }

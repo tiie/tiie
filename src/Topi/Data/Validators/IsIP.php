@@ -1,13 +1,13 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class IsIP implements ValidatorInterface
 {
     public function description()
     {
-        return '@(Topi.Data.Validator.IsIP.Description)';
+        return '@(Elusim.Data.Validator.IsIP.Description)';
     }
 
     public function validate($value)
@@ -17,7 +17,7 @@ class IsIP implements ValidatorInterface
         } else {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => "@(Topi.Data.Validator.IsIP.Error)",
+                'error' => "@(Elusim.Data.Validator.IsIP.Error)",
             );
         }
     }

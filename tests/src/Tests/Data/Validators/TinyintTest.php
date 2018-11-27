@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Topi\Data\Validators\Tinyint;
+use Elusim\Data\Validators\Tinyint;
 
 class TinyintTest extends \Tests\TestCase
 {

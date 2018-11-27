@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Model;
+namespace Elusim\Data\Model;
 
 interface CreatorInterface
 {

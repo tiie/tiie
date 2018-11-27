@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
 interface ValidatorInterface
 {

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class DateTime implements ValidatorInterface
 {
@@ -14,7 +14,7 @@ class DateTime implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validators.DateTime.Description)';
+        return '@(Elusim.Data.Validators.DateTime.Description)';
     }
 
     public function validate($value)
@@ -26,7 +26,7 @@ class DateTime implements ValidatorInterface
         if ($errors['warning_count'] + $errors['error_count'] > 0) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validators.DateTime.Invalid)',
+                'error' => '@(Elusim.Data.Validators.DateTime.Invalid)',
             );
         }
 

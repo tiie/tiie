@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\Clients;
 
-class Activation extends \Topi\Actions\RPC
+class Activation extends \Elusim\Actions\RPC
 {
     public function run($id, array $params = array(), array $input = array())
     {

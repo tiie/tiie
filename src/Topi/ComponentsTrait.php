@@ -1,5 +1,5 @@
 <?php
-namespace Topi;
+namespace Elusim;
 
 trait ComponentsTrait {
     protected function component($name, $params = array())

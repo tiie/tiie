@@ -1,9 +1,9 @@
 <?php
-namespace Topi\Response\Engines;
+namespace Elusim\Response\Engines;
 
-class Text implements \Topi\Response\Engines\EngineInterface
+class Text implements \Elusim\Response\Engines\EngineInterface
 {
-    public function prepare(\Topi\Response\ResponseInterface $response, \Topi\Http\Request $request, array $accept)
+    public function prepare(\Elusim\Response\ResponseInterface $response, \Elusim\Http\Request $request, array $accept)
     {
         return array(
             'code' => $response->code(),

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class Year implements ValidatorInterface
 {
@@ -11,7 +11,7 @@ class Year implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Year.Description)';
+        return '@(Elusim.Data.Validator.Year.Description)';
     }
 
     public function validate($value)

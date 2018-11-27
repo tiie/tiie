@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Topi\Data\Validators\Exists;
+use Elusim\Data\Validators\Exists;
 
 class ExistsTest extends \Tests\TestCase
 {

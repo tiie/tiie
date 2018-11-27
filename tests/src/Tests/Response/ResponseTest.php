@@ -7,7 +7,7 @@ class ResponseTest extends \Tests\TestCase
     // {
     //     $this->app();
 
-    //     $request = new \Topi\Http\Request("get", "/api/clients/2");
+    //     $request = new \Elusim\Http\Request("get", "/api/clients/2");
 
     //     $response = $app->component("@router")->run($request);
 
@@ -21,7 +21,7 @@ class ResponseTest extends \Tests\TestCase
     {
         // $this->app();
 
-        $response = new \Topi\Response\Response();
+        $response = new \Elusim\Response\Response();
 
         $response->var("name", "Paweł");
         $response->var("age", 12);

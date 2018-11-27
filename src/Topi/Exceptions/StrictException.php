@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
-class StrictException extends \Topi\Exceptions\PHPErrorException {}
+class StrictException extends \Elusim\Exceptions\PHPErrorException {}

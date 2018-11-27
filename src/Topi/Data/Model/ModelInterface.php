@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Model;
+namespace Elusim\Data\Model;
 
-use Topi\Data\Model\CreatorInterface;
+use Elusim\Data\Model\CreatorInterface;
 
 interface ModelInterface
 {
@@ -65,7 +65,7 @@ interface ModelInterface
     /**
      * Save record at source.
      *
-     * @return \Topi\Data\Model\ModelInterface
+     * @return \Elusim\Data\Model\ModelInterface
      */
     public function save(RecordInterface $record, array $params = array()) : ModelInterface;
 

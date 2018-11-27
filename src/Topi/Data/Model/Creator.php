@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Model;
+namespace Elusim\Data\Model;
 
-use Topi\Data\Model\CreatorInterface;
-use Topi\Data\Model\ModelInterface;
+use Elusim\Data\Model\CreatorInterface;
+use Elusim\Data\Model\ModelInterface;
 
 class Creator implements CreatorInterface
 {

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Http\Headers;
+namespace Elusim\Http\Headers;
 
-use Topi\Http\Headers\Header;
+use Elusim\Http\Headers\Header;
 
 /**
  * @link https://www.ietf.org/rfc/rfc2045.txt

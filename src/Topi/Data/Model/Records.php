@@ -1,9 +1,9 @@
 <?php
-namespace Topi\Data\Model;
+namespace Elusim\Data\Model;
 
-use Topi\Data\Model\Records;
-use Topi\Data\Model\RecordInterface;
-use Topi\Data\Model\ModelInterface;
+use Elusim\Data\Model\Records;
+use Elusim\Data\Model\RecordInterface;
+use Elusim\Data\Model\ModelInterface;
 use Iterator;
 
 class Records implements \Countable, Iterator

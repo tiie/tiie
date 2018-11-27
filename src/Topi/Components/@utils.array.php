@@ -1,4 +1,4 @@
 <?php
-return function(\Topi\Components $components) {
-    return new \Topi\Utils\ArrayUtils();
+return function(\Elusim\Components $components) {
+    return new \Elusim\Utils\ArrayUtils();
 };

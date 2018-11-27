@@ -1,14 +1,14 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
-use Topi\Data\Validators\Number;
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Number;
 
 class Email implements ValidatorInterface
 {
     public function description()
     {
-        return '@(Topi.Data.Validators.Email.Description)';
+        return '@(Elusim.Data.Validators.Email.Description)';
     }
 
     public function validate($value)
@@ -18,7 +18,7 @@ class Email implements ValidatorInterface
         }else{
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validators.Email.Invalid)',
+                'error' => '@(Elusim.Data.Validators.Email.Invalid)',
             );
         }
     }

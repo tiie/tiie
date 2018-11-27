@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data;
+namespace Elusim\Data;
 
 class Index
 {

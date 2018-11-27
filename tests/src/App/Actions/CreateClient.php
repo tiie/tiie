@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\Clients;
 
-class CreateClient extends \Topi\Actions\RPC
+class CreateClient extends \Elusim\Actions\RPC
 {
     public static function metadata()
     {

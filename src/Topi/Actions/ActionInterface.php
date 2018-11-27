@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Actions;
+namespace Elusim\Actions;
 
 interface ActionInterface {}

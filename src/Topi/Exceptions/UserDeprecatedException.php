@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
-class UserDeprecatedException extends \Topi\Exceptions\PHPErrorException {}
+class UserDeprecatedException extends \Elusim\Exceptions\PHPErrorException {}

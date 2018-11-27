@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class Exists
 {
@@ -14,7 +14,7 @@ class Exists
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Exists.Description)';
+        return '@(Elusim.Data.Validator.Exists.Description)';
     }
 
     public function validate($value)
@@ -22,14 +22,14 @@ class Exists
         if (!is_array($value)) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                'error' => "@(Topi.Data.Validator.Exists.WrongType)",
+                'error' => "@(Elusim.Data.Validator.Exists.WrongType)",
             );
         }
 
         if (!in_array($this->field, array_keys($value))) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
-                'error' => "@(Topi.Data.Validator.Exists.Error)",
+                'error' => "@(Elusim.Data.Validator.Exists.Error)",
             );
         }
 

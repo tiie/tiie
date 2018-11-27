@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data;
+namespace Elusim\Data;
 
-use Topi\Data\Adapters\Commands\SQL\Expr;
+use Elusim\Data\Adapters\Commands\SQL\Expr;
 
 class functions
 {

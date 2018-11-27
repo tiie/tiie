@@ -1,11 +1,11 @@
 <?php
-namespace Topi\Response\Engines;
+namespace Elusim\Response\Engines;
 
-class Json implements \Topi\Response\Engines\EngineInterface
+class Json implements \Elusim\Response\Engines\EngineInterface
 {
-    use \Topi\ComponentsTrait;
+    use \Elusim\ComponentsTrait;
 
-    public function prepare(\Topi\Response\ResponseInterface $response, \Topi\Http\Request $request, array $accept)
+    public function prepare(\Elusim\Response\ResponseInterface $response, \Elusim\Http\Request $request, array $accept)
     {
         $headers = $response->headers();
         $headers['Content-Type'] = 'application/json';

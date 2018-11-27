@@ -1,5 +1,5 @@
 <?php
-return function(\Topi\Components $components) {
+return function(\Elusim\Components $components) {
 
     // Create Driver with default options
     // $driver = new Stash\Driver\FileSystem();

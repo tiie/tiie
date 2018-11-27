@@ -3,7 +3,7 @@ namespace Tests\Data\Model;
 
 use Tests\TestCase;
 use App\Models\Bookshop\Users;
-use Topi\Data\Model\Records;
+use Elusim\Data\Model\Records;
 
 class ModelTest extends TestCase
 {

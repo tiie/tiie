@@ -1,6 +1,6 @@
 <?php
 namespace App\Actions;
 
-class Logs extends \Topi\Actions\Rest {
+class Logs extends \Elusim\Actions\Rest {
 
 }

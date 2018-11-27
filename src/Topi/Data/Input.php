@@ -1,6 +1,7 @@
 <?php
-namespace Topi\Data;
+namespace Elusim\Data;
 
+use Elusim\Data\Validators\NotEmpty;
 // $data = $this->components->get('input', array('input' => $data))
 //     ->rules(array(
 //         'categoryId' => array(
@@ -8,7 +9,7 @@ namespace Topi\Data;
 //             '@validators' => array(
 //                 'exists',
 //                 'notEmpty',
-//                 new \Topi\Data\Validators\Schema($db, 'dictionaries.id')
+//                 new \Elusim\Data\Validators\Schema($db, 'dictionaries.id')
 //             ),
 //         ),
 //         'user' => array(
@@ -38,7 +39,7 @@ namespace Topi\Data;
 //                 '@validators' => array(
 //                     'exists',
 //                     'notEmpty',
-//                     // new \Topi\Data\Validators\Schema($db, 'dictionaries.id')
+//                     // new \Elusim\Data\Validators\Schema($db, 'dictionaries.id')
 //                 ),
 //
 //             ),
@@ -72,43 +73,68 @@ namespace Topi\Data;
 // ;
 class Input
 {
+    const INPUT_DATA_TYPE_VALUE = 'value';
+    const INPUT_DATA_TYPE_OBJECT = 'object';
+    const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'list-of-objects';
+    const INPUT_DATA_TYPE_LIST = 'vector';
+
     private $data = array();
     private $prepared = array();
     private $errors = array();
     private $rules = array();
-    private $processed = false;
     private $notEmpty = null;
-    private $validators = array();
 
-    function __construct(array $data = array())
+    private $processed = 0;
+
+    function __construct(array $input = array(), array $rules = array())
     {
-        $this->data = $data;
+        $this->input = $input;
+        $this->rules = $rules;
+        $this->notEmpty = new NotEmpty();
     }
 
     /**
-     * Ustawia lub zwraca dane.
+     * Return or set input to prepare.
      *
-     * @param array $data
-     * @return $this|mixed
+     * @param array $input
+     * @return $this|array
      */
-    public function data(array $data = null)
+    public function input(array $input = null, int $merge = 1)
     {
-        if (is_null($data)) {
-            return $this->data;
+        if (is_null($input)) {
+            return $this->input;
         }else{
-            $this->data = $data;
+            if ($merge) {
+                $this->input = array_merge($input);
+            } else {
+                $this->input = $input;
+            }
 
             return $this;
         }
     }
 
     /**
-     * Ustawia reguły przygotowania danych.
+     * Set one field for input.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return \Elusim\Data\Input
+     */
+    public function set(string $name, $value)
+    {
+        $this->input[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set rules to prepare data.
      *
      * @param array $rules
      * @return $this|array
      */
-    public function rules($rules = null)
+    public function rules(array $rules = null)
     {
         if (is_null($rules)) {
             return $this->rules;
@@ -119,6 +145,23 @@ class Input
         }
     }
 
+    /**
+     * Return value of errors.
+     *
+     * @return string|null
+     */
+    public function errors() : ?array
+    {
+        return empty($this->errors) ? null : $this->errors;
+    }
+
+    /**
+     * Set rule for one field. Or return rule for field.
+     *
+     * @param string $field
+     * @param array $rule
+     * @return array|null|\Elusim\Data\Input
+     */
     public function rule(string $field, array $rule = null)
     {
         if (is_null($rule)) {
@@ -130,74 +173,65 @@ class Input
         }
     }
 
-    public function get($field)
+    /**
+     * Return prepared value for given field.
+     *
+     * @param string $field
+     * @return mixed
+     */
+    public function get(string $field)
     {
         return isset($this->prepared[$field]) ? $this->prepared[$field] : null;
     }
 
     /**
-     * Przygotowanie danych. Metoda przygotowywyje dane zgodnie z przyjętymi
-     * regułami. Przygowane dane są zwracane. Wyrzucany jest wyjątek, jeśli
-     * wystąbi błąd walidacji.
+     * Prepares data according to specific rules. If preparation goes well then
+     * 1 is return otherwise 0. Then you need to call errors() method to see
+     * what data needs fixing.
      *
-     * @throws \Topi\Exceptions\ValidateException
-     * @return array
+     * @return int
      */
-    public function prepare()
+    public function prepare() : int
     {
         $this->process();
 
-        if (!is_null($errors = $this->validate())) {
-            throw new \Topi\Exceptions\ValidateException($errors);
+        if (!empty($this->errors)) {
+            return 0;
+        } else {
+            return 1;
         }
-
-        return $this->prepared;
     }
 
-    /**
-     * Zwraca przgotowane dane, jeśli te wcześniej zostały przygotowane.
-     * Została wywołana metoda prepare()
-     *
-     * @return array
-     */
-    public function prepared()
-    {
-        return $this->prepared;
-    }
+    // /**
+    //  * Returns the prepared data.
+    //  *
+    //  * @return array
+    //  */
+    // public function prepared()
+    // {
+    //     return $this->prepared;
+    // }
 
-    /**
-     * Walidaje dane i zwraca tablicę błędów jeśli wystąpiły lub NULL jeśli ich
-     * nie było.
-     *
-     * @return array|null
-     */
-    public function validate()
-    {
-        $this->process();
+    // /**
+    //  * Validates data according to specific rules. The value of 'null' is
+    //  * returned in the absence of errors or 'array' if any.
+    //  *
+    //  * @return array|null
+    //  */
+    // public function validate()
+    // {
+    //     $this->process();
 
-        return empty($this->errors) ? null : $this->errors;
-    }
+    //     return empty($this->errors) ? null : $this->errors;
+    // }
 
     private function process()
     {
-        if ($this->processed) {
-            return;
-        }
-
-        $this->notEmpty = new \Topi\Data\Validators\NotEmpty();
-
-        $result = $this->processRules($this->rules, $this->data);
-
-        $this->processed = true;
+        $result = $this->processRules($this->rules, $this->input);
 
         $this->errors = $result['errors'];
         $this->prepared = $result['prepared'];
-
-        // if (!empty($this->errors)) {
-        //     throw new \Topi\Exceptions\ValidateException($this->errors);
-        // }
-
-        return $this->prepared;
+        // return $this->prepared;
     }
 
     private function processRules($rules, $data)
@@ -215,14 +249,15 @@ class Input
             $validators = in_array('@validators', $rulesKeys) ? $rule['@validators'] : array();
 
             switch ($type) {
-            case 'value':
+            // case 'value':
+            case self::INPUT_DATA_TYPE_VALUE:
                 if (!in_array($field, $dataKeys)) {
                     // Pole nie zostało podane, sprawdzam czy jest walidator
                     // exists
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Topi.Data.Input.NotExists)',
+                            'error' => '@(Elusim.Data.Input.NotExists)',
                         );
                     }
 
@@ -234,7 +269,7 @@ class Input
                     // więc nie mogę zastosować walidatorów dla wartości.
                     $errors[$field][] = array(
                         'code' => 'wrongType',
-                        'error' => '@(Topi.Data.Input.WrongType)',
+                        'error' => '@(Elusim.Data.Input.WrongType)',
                     );
 
                     continue;
@@ -265,7 +300,7 @@ class Input
                         $prepared[$field] = filter_var($prepared[$field], $filter);
                     }elseif(is_string($filter)){
 
-                    }elseif($filter instanceof \Topi\Data\FilterInterface){
+                    }elseif($filter instanceof \Elusim\Data\FilterInterface){
                         $prepared[$field] = $filter->filter($prepared[$field]);
                     }else{
                         throw new \Exception("Unsported type of filter.");
@@ -274,13 +309,13 @@ class Input
 
                 // Walidatory
                 foreach ($validators as $validator) {
-                    if ($validator instanceof \Topi\Data\Validators\ComplexValidatorInterface) {
+                    if ($validator instanceof \Elusim\Data\Validators\ComplexValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             foreach ($error as $code => $error) {
                                 $errors[$field][] = $error;
                             }
                         }
-                    }elseif($validator instanceof \Topi\Data\Validators\ValidatorInterface) {
+                    }elseif($validator instanceof \Elusim\Data\Validators\ValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             $errors[$field][] = $error;
                         }
@@ -292,13 +327,14 @@ class Input
                 }
 
                 break;
-            case 'object':
+            // case 'object':
+            case self::INPUT_DATA_TYPE_OBJECT:
                 if (!in_array($field, $dataKeys)) {
                     // Brak pola w obiekcie, sprawdzam czy klucz musi istniec.
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Topi.Data.Input.NotExists)',
+                            'error' => '@(Elusim.Data.Input.NotExists)',
                         );
                     }
 
@@ -316,7 +352,7 @@ class Input
                 }
 
                 if (!is_array($data[$field])) {
-                    $errors[$field]['wrongType'] = '@(Topi.Data.Input.WrongType)';
+                    $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
 
                     continue;
                 }
@@ -338,11 +374,12 @@ class Input
 
                 break;
             case 'list':
+            case self::INPUT_DATA_TYPE_LIST_OF_OBJECTS:
                 if (!in_array($field, $dataKeys)) {
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Topi.Data.Input.NotExists)',
+                            'error' => '@(Elusim.Data.Input.NotExists)',
                         );
                     }
 
@@ -350,10 +387,10 @@ class Input
                 }
 
                 if (!is_array($data[$field])) {
-                    // $errors[$field]['wrongType'] = '@(Topi.Data.Input.WrongType)';
+                    // $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
                     $errors[$field][] = array(
                         'code' => 'wrongType',
-                        'error' => '@(Topi.Data.Input.WrongType)',
+                        'error' => '@(Elusim.Data.Input.WrongType)',
                     );
 
                     continue;
@@ -390,12 +427,12 @@ class Input
                 }
 
                 break;
-            case 'vector':
+            case self::INPUT_DATA_TYPE_LIST:
                 if (!in_array($field, $dataKeys)) {
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Topi.Data.Input.NotExists)',
+                            'error' => '@(Elusim.Data.Input.NotExists)',
                         );
                     }
 
@@ -403,10 +440,10 @@ class Input
                 }
 
                 if (!is_array($data[$field])) {
-                    // $errors[$field]['wrongType'] = '@(Topi.Data.Input.WrongType)';
+                    // $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
                     $errors[$field][] = array(
                         'code' => 'wrongType',
-                        'error' => '@(Topi.Data.Input.WrongType)',
+                        'error' => '@(Elusim.Data.Input.WrongType)',
                     );
 
                     continue;
@@ -442,7 +479,7 @@ class Input
                             $prepared[$field][$key] = filter_var($prepared[$field], $filter);
                         }elseif(is_string($filter)){
 
-                        }elseif($filter instanceof \Topi\Data\FilterInterface){
+                        }elseif($filter instanceof \Elusim\Data\FilterInterface){
                             $prepared[$field][$key] = $filter->filter($prepared[$field]);
                         }else{
                             throw new \Exception("Unsported type of filter.");
@@ -451,13 +488,13 @@ class Input
 
                     // validators
                     foreach ($validators as $validator) {
-                        if ($validator instanceof \Topi\Data\Validators\ComplexValidatorInterface) {
+                        if ($validator instanceof \Elusim\Data\Validators\ComplexValidatorInterface) {
                             if(!is_null($error = $validator->validate($prepared[$field][$key]))){
                                 foreach ($error as $code => $error) {
                                     $errors[$field][$key][] = $error;
                                 }
                             }
-                        }elseif($validator instanceof \Topi\Data\Validators\ValidatorInterface) {
+                        }elseif($validator instanceof \Elusim\Data\Validators\ValidatorInterface) {
                             if(!is_null($error = $validator->validate($prepared[$field][$key]))){
                                 $errors[$field][$key][] = $error;
                             }

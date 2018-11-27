@@ -1,9 +1,9 @@
 <?php
-namespace Topi\Data;
+namespace Elusim\Data;
 
 class Record
 {
-    use \Topi\ComponentsTrait;
+    use \Elusim\ComponentsTrait;
 
     protected $data = array();
     protected $modyfied = array();

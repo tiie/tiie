@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Topi;
+namespace Elusim;
 
 /**
  * Basic class for managing config.
@@ -26,7 +26,7 @@ namespace Topi;
  *          )
  *          ...
  *        );
- *     3. \Topi\Config - it is other config object
+ *     3. \Elusim\Config - it is other config object
  *     4. Json file - Path to Json file
  *
  * Config uses dotted dots to retrieve nested config. For example,
@@ -64,7 +64,7 @@ class Config implements \ArrayAccess
             return $this;
         }
 
-        if ($config instanceof \Topi\Config) {
+        if ($config instanceof \Elusim\Config) {
             $this->config = $config->toArray();
 
             return $this;
@@ -111,7 +111,7 @@ class Config implements \ArrayAccess
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
-            throw new \InvalidArgumentException(sprintf('\Topi\Config does not support appends.'));
+            throw new \InvalidArgumentException(sprintf('\Elusim\Config does not support appends.'));
         } else {
             $this->set($offset, $value);
         }
@@ -355,7 +355,7 @@ class Config implements \ArrayAccess
      * Return new other object of config under key.
      *
      * @param string $key
-     * @return \Topi\Config
+     * @return \Elusim\Config
      */
     public function config($key)
     {

@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
-class CoreErrorException extends \Topi\Exceptions\PHPErrorException {}
+class CoreErrorException extends \Elusim\Exceptions\PHPErrorException {}

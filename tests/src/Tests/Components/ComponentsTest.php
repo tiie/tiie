@@ -2,7 +2,7 @@
 namespace Tests;
 
 use Tests\TestCase;
-use Topi\Components;
+use Elusim\Components;
 use Tests\Components\Client;
 
 class ComponentsTest extends TestCase

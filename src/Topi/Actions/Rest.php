@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Actions;
+namespace Elusim\Actions;
 
-abstract class Rest extends \Topi\Actions\Action
+abstract class Rest extends \Elusim\Actions\Action
 {
     protected $headers = array();
     protected $code = null;
@@ -19,7 +19,7 @@ abstract class Rest extends \Topi\Actions\Action
                     //     // 'default' => null,
 
                     //     'validators' => array(
-                    //         \Topi\Validators\IsNumeric::class
+                    //         \Elusim\Validators\IsNumeric::class
                     //     ),
                     //     'filters' => array(),
 
@@ -61,13 +61,13 @@ abstract class Rest extends \Topi\Actions\Action
         );
     }
 
-    public function action(\Topi\Http\Request $request, array $params = array())
+    public function action(\Elusim\Http\Request $request, array $params = array())
     {
         // sprawdzam czy metota jest dozwolona
         $metadata = static::metadata();
 
         if (!in_array($request->method(), $metadata['allowMethods']) && $request->method() != 'options') {
-            throw new \Topi\Exceptions\Http\MethodNotAllowed();
+            throw new \Elusim\Exceptions\Http\MethodNotAllowed();
         }
 
         switch ($request->method()) {
@@ -88,33 +88,33 @@ abstract class Rest extends \Topi\Actions\Action
         }
     }
 
-    public function getAction(\Topi\Http\Request $request)
+    public function getAction(\Elusim\Http\Request $request)
     {
         return $this->response($request, $this->get($request->id(), $request->params()));
     }
 
     public function get($id, $params = array())
     {
-        throw new \Topi\Exceptions\Http\MethodNotAllowed();
+        throw new \Elusim\Exceptions\Http\MethodNotAllowed();
     }
 
     // collection
-    public function collectionAction(\Topi\Http\Request $request)
+    public function collectionAction(\Elusim\Http\Request $request)
     {
         return $this->response($request, $this->collection($request->params()));
     }
 
     public function collection($params = array())
     {
-        throw new \Topi\Exceptions\Http\MethodNotAllowed();
+        throw new \Elusim\Exceptions\Http\MethodNotAllowed();
     }
 
     // post
-    public function postAction(\Topi\Http\Request $request)
+    public function postAction(\Elusim\Http\Request $request)
     {
         $data = $this->post($request->input(), $request->params());
 
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
 
         if (is_null($this->code)) {
             if (is_null($data)) {
@@ -179,35 +179,35 @@ abstract class Rest extends \Topi\Actions\Action
 
     public function post($data = array(), $params = array())
     {
-        throw new \Topi\Exceptions\Http\MethodNotAllowed();
+        throw new \Elusim\Exceptions\Http\MethodNotAllowed();
     }
 
     // put
-    public function putAction(\Topi\Http\Request $request)
+    public function putAction(\Elusim\Http\Request $request)
     {
         return $this->response($request, $this->put($request->id(), $request->input(), $request->params()));
     }
 
     public function put($id, $data = array(), $params = array())
     {
-        throw new \Topi\Exceptions\Http\MethodNotAllowed();
+        throw new \Elusim\Exceptions\Http\MethodNotAllowed();
     }
 
     // delete
-    public function deleteAction(\Topi\Http\Request $request)
+    public function deleteAction(\Elusim\Http\Request $request)
     {
         return $this->response($request, $this->delete($request->id(), $request->params()));
     }
 
     public function delete($id, $params = array())
     {
-        throw new \Topi\Exceptions\Http\MethodNotAllowed();
+        throw new \Elusim\Exceptions\Http\MethodNotAllowed();
     }
 
     //
-    public function optionsAction(\Topi\Http\Request $request)
+    public function optionsAction(\Elusim\Http\Request $request)
     {
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
 
         // get metadata
         $metadata = static::metadata();
@@ -272,9 +272,9 @@ abstract class Rest extends \Topi\Actions\Action
     /**
      * Obsługa odpowiedzi
      */
-    protected function response(\Topi\Http\Request $request, array $data = null)
+    protected function response(\Elusim\Http\Request $request, array $data = null)
     {
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
 
         if (is_null($data)) {
             // Odpowiedź jest nieznana

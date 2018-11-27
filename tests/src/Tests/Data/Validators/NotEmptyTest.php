@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Topi\Data\Validators\NotEmpty;
+use Elusim\Data\Validators\NotEmpty;
 
 class NotEmptyTest extends \Tests\TestCase
 {

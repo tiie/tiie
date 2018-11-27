@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Router\Exceptions;
+namespace Elusim\Router\Exceptions;
 
 class ErrorActionNotDefined extends \Exception {
 }

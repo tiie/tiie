@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Tree;
+namespace Elusim\Data\Tree;
 
 class Tree
 {

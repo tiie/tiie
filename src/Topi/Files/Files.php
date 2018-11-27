@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Files;
+namespace Elusim\Files;
 
 class Files
 {
@@ -48,7 +48,7 @@ class Files
      */
     public function find(array $params = array())
     {
-        $select = new \Topi\Data\Adapters\Commands\SQL\Select($this->db);
+        $select = new \Elusim\Data\Adapters\Commands\SQL\Select($this->db);
         $select->from($this->params['table']);
 
         foreach (array(
@@ -74,7 +74,7 @@ class Files
 
     public function findById($id)
     {
-        $file = (new \Topi\Data\Adapters\Commands\SQL\Select($this->db))
+        $file = (new \Elusim\Data\Adapters\Commands\SQL\Select($this->db))
             ->from($this->params['table'])
             ->eq('id', $id)
             ->fetch()
@@ -85,6 +85,6 @@ class Files
             throw new \Exception("File {$id} can not be found.");
         }
 
-        return new \Topi\Files\File($file, $this->db);
+        return new \Elusim\Files\File($file, $this->db);
     }
 }

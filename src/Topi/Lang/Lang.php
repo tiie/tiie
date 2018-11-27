@@ -1,36 +1,40 @@
 <?php
-namespace Topi\Lang;
+namespace Elusim\Lang;
 
-class Lang implements \Topi\Lang\LangInterface
+use Elusim\Lang\LangInterface;
+
+class Lang implements LangInterface
 {
-    use \Topi\ComponentsTrait;
+    use \Elusim\ComponentsTrait;
 
-    private $config;
+    private $params;
     private $cache = array();
 
-    function __construct(array $config = array())
+    function __construct(array $params = array())
     {
-        if (!empty($config['dictionaries'])) {
-            if (is_array($config['dictionaries'])) {
-                if (!in_array("@lang.dictionaries.topi", $config['dictionaries'])) {
-                    $config['dictionaries'][] = "@lang.dictionaries.topi";
+        if (!empty($params['dictionaries'])) {
+            if (is_array($params['dictionaries'])) {
+                if (!in_array("@lang.dictionaries.elusim", $params['dictionaries'])) {
+                    $params['dictionaries'][] = "@lang.dictionaries.elusim";
                 }
             }else{
                 throw new \InvalidArgumentException("dictionaries should be array");
             }
         }
 
-        $config['default'] = !empty($config['default']) ? $config['default'] : null;
+        $params['default'] = !empty($params['default']) ? $params['default'] : null;
 
-        $this->config = $config;
+        $this->params = $params;
     }
 
-    public function translate(string $lang, string $token)
+    public function translate(string $lang, string $token) : ?string
     {
-        if (!array_key_exists("{$lang}-{$token}", $this->cache)) {
+        $langKey = "{$lang}-{$token}";
+
+        if (!array_key_exists("{$langKey}", $this->cache)) {
             $value = null;
 
-            foreach ($this->config['dictionaries'] as $dictionary) {
+            foreach ($this->params['dictionaries'] as $dictionary) {
                 $value = $this->component($dictionary)->get($lang, $token);
 
                 if (!is_null($value)) {
@@ -38,19 +42,16 @@ class Lang implements \Topi\Lang\LangInterface
                 }
             }
 
-            if (is_null($value)) {
-                if (empty($this->config['default'])) {
-                    throw new \Exception("Default dictionary is not defined.");
-                }
-
-                $this->component($this->config['default'])->create($lang, $token, $token);
-                $value = $this->component($this->config['default'])->get($lang, $token);
-            }
-
-            $this->cache["{$lang}-{$token}"] = $value;
+            $this->cache[$langKey] = $value;
         }
 
-        return $this->cache["{$lang}-{$token}"];
+        if (is_null($this->cache[$langKey])) {
+            trigger_error("There is not translation for '{$langKey}'.");
+
+            return null;
+        } else {
+            return $this->cache[$langKey];
+        }
     }
 
     /**

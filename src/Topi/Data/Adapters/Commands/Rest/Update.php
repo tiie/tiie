@@ -1,9 +1,9 @@
 <?php
-namespace Topi\Data\Adapters\Commands\SQL;
+namespace Elusim\Data\Adapters\Commands\SQL;
 
-use Topi\Data\Adapters\Commands\Command;
-use Topi\Data\Adapters\AdapterInterface;
-use Topi\Data\Adapters\Commands\SQL\Where;
+use Elusim\Data\Adapters\Commands\Command;
+use Elusim\Data\Adapters\AdapterInterface;
+use Elusim\Data\Adapters\Commands\SQL\Where;
 
 class Update extends Command
 {
@@ -250,7 +250,7 @@ class Update extends Command
             throw new \Exception("Insert can not be build, bacause table is not defined.");
         }
 
-        $command = new \Topi\Data\Adapters\Commands\BuiltCommand();
+        $command = new \Elusim\Data\Adapters\Commands\BuiltCommand();
 
         $params = array_merge(array(
             'quote' => '`'
@@ -261,7 +261,7 @@ class Update extends Command
         $sset = "set ";
 
         foreach ($this->values as $key => $value) {
-            $column = \Topi\Data\functions::columnStr($key, $params);
+            $column = \Elusim\Data\functions::columnStr($key, $params);
             $s = null;
 
             if (is_numeric($value)) {

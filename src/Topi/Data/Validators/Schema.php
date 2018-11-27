@@ -1,14 +1,28 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Validators\ComplexValidatorInterface;
+use Elusim\Validators\ComplexValidatorInterface;
+use Elusim\Data\Adapters\MetadataAccessibleInterface;
+
+use Elusim\Validators\NotNull;
+use Elusim\Validators\Integer;
+use Elusim\Validators\Tinyint;
+use Elusim\Validators\Smallint;
+use Elusim\Validators\Mediumint;
+use Elusim\Validators\Bigint;
+use Elusim\Validators\Decimal;
+use Elusim\Validators\Number;
+use Elusim\Validators\Time;
+use Elusim\Validators\Year;
+use Elusim\Validators\StringLength;
+use Elusim\Validators\Enum;
 
 class Schema implements ComplexValidatorInterface
 {
     private $adapter;
     private $column;
 
-    function __construct(\Topi\Data\Adapters\MetadataAccessibleInterface $adapter, $column)
+    function __construct(MetadataAccessibleInterface $adapter, string $column)
     {
         $this->adapter = $adapter;
         $this->column = $column;
@@ -16,64 +30,70 @@ class Schema implements ComplexValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Schema.Description)';
+        return '@(Elusim.Data.Validator.Schema.Description)';
     }
 
     public function validate($value)
     {
+        if (!($this->adapter instanceof MetadataAccessibleInterface)) {
+            trigger_error("There was an attempt to validate the schema for the adapter without the schema support.");
+
+            return null;
+        }
+
         $column = $this->adapter->metadata('column', $this->column);
-        // $column = $this->adapter->metadata('table', 'tmpfields');
-        // $column = $this->adapter->metadata('columns', 'tmpfields');
 
         if (is_null($column)) {
-            throw new \Exception("Column {$this->column} does not exists.");
+            trigger_error("There was an attempt to validate after the unstable schema for the column {$this->column}.");
+
+            return null;
         }
 
         $validators = array();
 
         if ($column['null']) {
-            $validators[] = new \Topi\Validators\NotNull();
+            $validators[] = new NotNull();
         }
 
         switch ($column['type']) {
         case 'int':
-            $validators[] = new \Topi\Validators\Integer($column['unsigned']);
+            $validators[] = new Integer($column['unsigned']);
             break;
         case 'tinyint':
-            $validators[] = new \Topi\Validators\Tinyint($column['unsigned']);
+            $validators[] = new Tinyint($column['unsigned']);
             break;
         case 'smallint':
-            $validators[] = new \Topi\Validators\Smallint($column['unsigned']);
+            $validators[] = new Smallint($column['unsigned']);
             break;
         case 'mediumint':
-            $validators[] = new \Topi\Validators\Mediumint($column['unsigned']);
+            $validators[] = new Mediumint($column['unsigned']);
             break;
         case 'bigint':
-            $validators[] = new \Topi\Validators\Bigint($column['unsigned']);
+            $validators[] = new Bigint($column['unsigned']);
             break;
         case 'float':
             $precision = empty($column['precision']) ? 10 : $column['precision'];
             $scale = empty($column['scale']) ? 2 : $column['scale'];
 
-            $validators[] = new \Topi\Validators\Decimal($precision, $scale);
+            $validators[] = new Decimal($precision, $scale);
             break;
         case 'double':
             $precision = empty($column['precision']) ? 10 : $column['precision'];
             $scale = empty($column['scale']) ? 2 : $column['scale'];
 
-            $validators[] = new \Topi\Validators\Decimal($precision, $scale);
+            $validators[] = new Decimal($precision, $scale);
             break;
         case 'decimal':
-            $validators[] = new \Topi\Validators\Decimal($column['precision'], $column['scale']);
+            $validators[] = new Decimal($column['precision'], $column['scale']);
             break;
         case 'timestamp':
-            $validators[] = new \Topi\Validators\Number(true);
+            $validators[] = new Number(true);
             break;
         case 'time':
-            $validators[] = new \Topi\Validators\Time();
+            $validators[] = new Time();
             break;
         case 'year':
-            $validators[] = new \Topi\Validators\Year();
+            $validators[] = new Year();
             break;
         case 'char':
         case 'varchar':
@@ -81,21 +101,23 @@ class Schema implements ComplexValidatorInterface
         case 'tinytext':
         case 'mediumtext':
         case 'longtext':
-            $validators[] = new \Topi\Validators\StringLength($column['length']);
+            $validators[] = new StringLength($column['length']);
             break;
         case 'enum':
-            $validators[] = new \Topi\Validators\Enum($column['values']);
+            $validators[] = new Enum($column['values']);
             break;
         default:
-            die(print_r($column, true));
-            throw new \Exception("Schema validator for {$column['type']} is not defined.");
+            if (empty($column['type'])) {
+                trigger_error("No column type for schema validation.");
+            } else {
+                trigger_error("The type of column is not known {$column['type']} for schema validation.");
+            }
         }
 
         $errors = array();
         foreach ($validators as $validator) {
             if (!is_null($error = $validator->validate($value))) {
                 $errors[] = $error;
-                // $errors[$error['code']] = $error['error'];
             }
         }
 

@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Router\Exceptions;
+namespace Elusim\Router\Exceptions;
 
 class RouteNotFound extends \Exception {}

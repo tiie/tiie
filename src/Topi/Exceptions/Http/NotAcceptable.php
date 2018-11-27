@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Exceptions\Http;
+namespace Elusim\Exceptions\Http;
 
-class NotAcceptable extends \Topi\Exceptions\Http\Base
+class NotAcceptable extends \Elusim\Exceptions\Http\Base
 {
     public function __construct($errors = null, \Exception $previous = null)
     {

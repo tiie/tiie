@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
-use Topi\Data\Validators\Number;
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Number;
 
 class Smallint extends Number
 {
@@ -17,7 +17,7 @@ class Smallint extends Number
 
     public function description()
     {
-        return '@(Topi.Data.Validators.Smallint.Description)';
+        return '@(Elusim.Data.Validators.Smallint.Description)';
     }
 
     public function validate($value)
@@ -32,14 +32,14 @@ class Smallint extends Number
             if ($value < 0 || $value > 65535) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                    'error' => '@(Topi.Data.Validators.Smallint.Invalid)',
+                    'error' => '@(Elusim.Data.Validators.Smallint.Invalid)',
                 );
             }
         }else{
             if ($value < -32768 || $value > 32767) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                    'error' => '@(Topi.Data.Validators.Smallint.Invalid)',
+                    'error' => '@(Elusim.Data.Validators.Smallint.Invalid)',
                 );
             }
         }

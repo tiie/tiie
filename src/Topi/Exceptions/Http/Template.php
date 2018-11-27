@@ -1,6 +1,6 @@
 <?php
-namespace Topi\Exceptions\Http;;
+namespace Elusim\Exceptions\Http;;
 
-class Template extends \Topi\Actions\Action
+class Template extends \Elusim\Actions\Action
 {
 }

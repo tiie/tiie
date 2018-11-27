@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Topi\Data\Validators\Email;
+use Elusim\Data\Validators\Email;
 
 class EmailTest extends \Tests\TestCase
 {

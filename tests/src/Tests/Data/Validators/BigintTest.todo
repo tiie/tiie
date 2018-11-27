@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Topi\Data\Validators\Bigint;
+use Elusim\Data\Validators\Bigint;
 
 class BigintTest extends \Tests\TestCase
 {

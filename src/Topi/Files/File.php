@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Files;
+namespace Elusim\Files;
 
 /**
  * Klasa do zarządzania plikami. Działa na bazie informacji zawartych w bazie.
@@ -24,7 +24,7 @@ class File
         $this->id = $id;
         $this->db = $db;
 
-        $this->data = (new \Topi\Data\Adapters\Commands\SQL\Select($this->db))
+        $this->data = (new \Elusim\Data\Adapters\Commands\SQL\Select($this->db))
             ->from($this->params['table'])
             ->eq('id', $id)
             ->fetch()
@@ -32,11 +32,11 @@ class File
         ;
 
         if (is_null($this->data)) {
-            throw new \Topi\Exceptions\DataNotFound("File {$id} not found.");
+            throw new \Elusim\Exceptions\DataNotFound("File {$id} not found.");
         }
 
         if (!is_readable($this->data['path'])) {
-            throw new \Topi\Exceptions\Unreadable("File {$this->data['path']} is unreadable.");
+            throw new \Elusim\Exceptions\Unreadable("File {$this->data['path']} is unreadable.");
         }
     }
 
@@ -68,7 +68,7 @@ class File
         $path = sprintf('%s/%s', $to, $filename);
 
         // first update database
-        $update = new \Topi\Data\Adapters\Commands\SQL\Update();
+        $update = new \Elusim\Data\Adapters\Commands\SQL\Update();
         $update
             ->table($this->params['table'])
             ->values(array(
@@ -82,7 +82,7 @@ class File
 
         // then move file
         if(rename($this->data['path'], $path) === false){
-            throw new \Topi\Exceptions\ProcessException("File can not be moved.");
+            throw new \Elusim\Exceptions\ProcessException("File can not be moved.");
         }
 
         $this->data['path'] = $path;

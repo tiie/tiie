@@ -5,7 +5,7 @@ class RouterTest extends \Tests\TestCase
 {
     private function router()
     {
-        $router = new \Topi\Router\Router(array(
+        $router = new \Elusim\Router\Router(array(
             "groups" => array(
                 "api" => array(
                     "domain" => "{(pl|en):locale}.app.{i:version}.com",
@@ -31,7 +31,7 @@ class RouterTest extends \Tests\TestCase
     {
         $router = $this->router();
 
-        $route = $router->match((new \Topi\Http\Request("get", "/api/users/10"))
+        $route = $router->match((new \Elusim\Http\Request("get", "/api/users/10"))
             ->domain("pl.app.10.com")
         );
 
@@ -53,7 +53,7 @@ class RouterTest extends \Tests\TestCase
         ), $route);
 
         // not found
-        $route = $router->match((new \Topi\Http\Request("get", "/api/users/10"))
+        $route = $router->match((new \Elusim\Http\Request("get", "/api/users/10"))
             ->domain("pl.app.10a.com")
         );
 
@@ -64,7 +64,7 @@ class RouterTest extends \Tests\TestCase
     {
         $router = $this->router();
 
-        $response = $router->run((new \Topi\Http\Request("get", "/api/users/5"))
+        $response = $router->run((new \Elusim\Http\Request("get", "/api/users/5"))
             ->domain("pl.app.10.com")
         );
 
@@ -73,7 +73,7 @@ class RouterTest extends \Tests\TestCase
             'name' => 'Pusia',
         ), $response->data());
 
-        $response = $router->run((new \Topi\Http\Request("get", "/api/users/10"))
+        $response = $router->run((new \Elusim\Http\Request("get", "/api/users/10"))
             ->domain("pl.app.10.com")
         );
 

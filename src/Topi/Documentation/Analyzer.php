@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Documentation;
+namespace Elusim\Documentation;
 
 class Analyzer
 {
@@ -16,10 +16,10 @@ class Analyzer
 
         foreach ($this->actions as $action) {
             if ($action['type'] == 'rest') {
-                $files = \Topi\func\scandirr($action['dir']);
+                $files = \Elusim\func\scandirr($action['dir']);
 
                 foreach ($files as $file) {
-                    if (\Topi\func\fileExtension($file) != 'php') {
+                    if (\Elusim\func\fileExtension($file) != 'php') {
                         continue;
                     }
 

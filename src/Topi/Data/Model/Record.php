@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Model;
+namespace Elusim\Data\Model;
 
 class Record implements RecordInterface
 {
@@ -40,7 +40,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::id()
+     * @see \Elusim\Data\Model\RecordInterface::id()
      */
     public function id() : ?string
     {
@@ -49,12 +49,12 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::run()
+     * @see \Elusim\Data\Model\RecordInterface::run()
      */
     public function run(string $command, array $params = array()) : RecordInterface
     {
         if (!is_null($errors = $this->model->validate($this, $command, $params))) {
-            throw new \Topi\Exceptions\ValidateException($errors);
+            throw new \Elusim\Exceptions\ValidateException($errors);
         }
 
         $this->model->run($this, $command);
@@ -64,12 +64,12 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::save()
+     * @see \Elusim\Data\Model\RecordInterface::save()
      */
     public function save(array $params = array()) : RecordInterface
     {
         if (! is_null($errors = $this->model->validate('save'))) {
-            throw new \Topi\Exceptions\ValidateException($errors);
+            throw new \Elusim\Exceptions\ValidateException($errors);
         }
 
         $this->model->save($this);
@@ -104,12 +104,12 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::remove()
+     * @see \Elusim\Data\Model\RecordInterface::remove()
      */
     public function remove(array $params = array()) : RecordInterface
     {
         if (! is_null($errors = $this->model->validate('remove'))) {
-            throw new \Topi\Exceptions\ValidateException($errors);
+            throw new \Elusim\Exceptions\ValidateException($errors);
         }
 
         $this->model->save($this);
@@ -119,7 +119,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::toArray()
+     * @see \Elusim\Data\Model\RecordInterface::toArray()
      */
     public function toArray(array $params = array()): array
     {
@@ -128,7 +128,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::export()
+     * @see \Elusim\Data\Model\RecordInterface::export()
      */
     public function export(array $params = array()): array
     {
@@ -147,7 +147,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::set()
+     * @see \Elusim\Data\Model\RecordInterface::set()
      */
     public function set(string $attribute, $value) : RecordInterface
     {
@@ -158,7 +158,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::get()
+     * @see \Elusim\Data\Model\RecordInterface::get()
      */
     public function get(string $attribute, int $modyfied = 1) : ?string
     {
@@ -175,7 +175,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::modyfied()
+     * @see \Elusim\Data\Model\RecordInterface::modyfied()
      */
     public function modyfied() : array
     {
@@ -184,7 +184,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::revert()
+     * @see \Elusim\Data\Model\RecordInterface::revert()
      */
     public function revert(): RecordInterface
     {
@@ -195,7 +195,7 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Topi\Data\Model\RecordInterface::is()
+     * @see \Elusim\Data\Model\RecordInterface::is()
      */
     public function is(string $name): int
     {

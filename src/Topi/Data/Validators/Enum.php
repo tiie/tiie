@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class Enum implements ValidatorInterface
 {
@@ -22,7 +22,7 @@ class Enum implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Enum.Description)';
+        return '@(Elusim.Data.Validator.Enum.Description)';
     }
 
     public function validate($value)
@@ -48,7 +48,7 @@ class Enum implements ValidatorInterface
         } else {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.Enum.Invalid)',
+                'error' => '@(Elusim.Data.Validator.Enum.Invalid)',
             );
         }
     }

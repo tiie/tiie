@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Adapters;
+namespace Elusim\Data\Adapters;
 
 interface MetadataAccessibleInterface
 {

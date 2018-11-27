@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Filters;
+namespace Elusim\Filters;
 
 interface FilterInterface
 {

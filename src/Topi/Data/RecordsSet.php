@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data;
+namespace Elusim\Data;
 
 /**
  *
@@ -83,7 +83,7 @@ class RecordsSet implements \Iterator, \Countable
             }
         }
 
-        $index = new \Topi\Data\Index($data, $joinKey, true);
+        $index = new \Elusim\Data\Index($data, $joinKey, true);
 
         if (count($key) == 1) {
             $key = $key[0];
@@ -139,7 +139,7 @@ class RecordsSet implements \Iterator, \Countable
             }
         }
 
-        $index = new \Topi\Data\Index($data, $joinKey, false);
+        $index = new \Elusim\Data\Index($data, $joinKey, false);
 
         if (count($key) == 1) {
             $key = $key[0];
@@ -185,7 +185,7 @@ class RecordsSet implements \Iterator, \Countable
 
     public function index($keys, $subArray = false)
     {
-        return new \Topi\Data\Index($this->data, $keys, $subArray);
+        return new \Elusim\Data\Index($this->data, $keys, $subArray);
     }
 
     public function column($name)

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class Date implements ValidatorInterface
 {
@@ -14,7 +14,7 @@ class Date implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validators.Date.Description)';
+        return '@(Elusim.Data.Validators.Date.Description)';
     }
 
     public function validate($value)
@@ -26,7 +26,7 @@ class Date implements ValidatorInterface
         if ($errors['warning_count'] + $errors['error_count'] > 0) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validators.Date.Invalid)',
+                'error' => '@(Elusim.Data.Validators.Date.Invalid)',
             );
         }
 

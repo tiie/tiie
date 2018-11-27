@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data;
+namespace Elusim\Data;
 
 class Container
 {
@@ -52,7 +52,7 @@ class Container
 
     public function merge($with)
     {
-        if ($with instanceof \Topi\Data\Container) {
+        if ($with instanceof \Elusim\Data\Container) {
             $with = $with->toArray();
         }
 

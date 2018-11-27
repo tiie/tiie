@@ -1,12 +1,80 @@
 <?php
 namespace Tests\Data;
 
+use Elusim\Data\Input;
+
 class InputTest extends \Tests\TestCase
 {
+    public function testPrepareData()
+    {
+        $input = new Input(array(
+            'id' => '90898',
+            'name' => 'Eva ',
+            'lastName' => 'Jan',
+            'bank' => array(
+                'id' => '102',
+                'name' => 'Idea Geting Bank',
+            ),
+            'emails' => array(
+                'vokuwibe-1569@yopmail.com',
+                'oniqipuh-0984@yopmail.com',
+                'issofussyk-5876@yopmail.com',
+            )
+        ), array(
+            'id' => array(
+                '@validators' => array(
+                    'notEmpty',
+                ),
+            ),
+            'name' => array(
+                '@validators' => array(
+                    'notEmpty',
+                ),
+            ),
+            'lastName' => array(
+                '@validators' => array(
+                    'notEmpty',
+                ),
+            ),
+            'bank' => array(
+                '@type' => Input::INPUT_DATA_TYPE_OBJECT,
+                'id' => array(
+                    '@validators' => array(
+                        'notEmpty',
+                    ),
+                ),
+                'name' => array(
+                    '@validators' => array(
+                        'notEmpty',
+                    ),
+                ),
+            ),
+            'emails' => array(
+                '@type' => Input::INPUT_DATA_TYPE_VECTOR,
+                '@validators' => array(
+                    'notEmpty',
+                ),
+            )
+        ));
+
+        $input->prepare();
+
+        // todo [debug] Debug to delete
+        die(print_r($input->errors(), true));
+        // todo [debug] Debug to delete
+        die(print_r($input->prepare(), true));
+        // $input->set('lastName', 'kowalski');
+
+        // $input->prepare();
+
+        // $input->all();
+        // $input->get();
+    }
+
     public function testSimpleValidate()
     {
         // case
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => 'Paweł',
             'age' => 12,
         ));
@@ -23,7 +91,7 @@ class InputTest extends \Tests\TestCase
         $this->assertEquals(null, $input->get('age'));
 
         // case
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => 'Paweł',
             'age' => 12,
         ));
@@ -41,7 +109,7 @@ class InputTest extends \Tests\TestCase
         $this->assertEquals(12, $input->get('age'));
 
         // case
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => '',
             'age' => 12,
         ));
@@ -61,7 +129,7 @@ class InputTest extends \Tests\TestCase
 
     public function testSimpleObject()
     {
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => 'Paweł',
             'client' => array(
                 'id' => 10,
@@ -84,7 +152,7 @@ class InputTest extends \Tests\TestCase
 
     public function testSimpleList()
     {
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => 'Paweł',
             'emails' => array(
                 array(
@@ -115,7 +183,7 @@ class InputTest extends \Tests\TestCase
         $this->assertEquals($this->variable("variable-9"), $input->prepare());
 
         // case
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => 'Paweł',
             'emails' => array(
                 array(
@@ -147,7 +215,7 @@ class InputTest extends \Tests\TestCase
         $this->assertEquals($this->variable("variable-10"), $input->prepare());
 
         // case
-        $input = new \Topi\Data\Input(array(
+        $input = new Input(array(
             'name' => 'Paweł',
             'emails' => array(
                 array(
@@ -174,7 +242,7 @@ class InputTest extends \Tests\TestCase
             "id" => array(),
             "email" => array(
                 '@validators' => array(
-                    new \Topi\Data\Validators\Email()
+                    new \Elusim\Data\Validators\Email()
                 )
             ),
             "private" => array()

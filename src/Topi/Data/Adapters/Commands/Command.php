@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Adapters\Commands;
+namespace Elusim\Data\Adapters\Commands;
 
-use Topi\Data\Adapters\AdapterInterface;
+use Elusim\Data\Adapters\AdapterInterface;
 
 /**
  * The abstract representation of the command to the adapter.
@@ -17,7 +17,7 @@ abstract class Command
      * Create build command.
      *
      * @param array $params
-     * @return \Topi\Data\Adapters\Commands\Command
+     * @return \Elusim\Data\Adapters\Commands\Command
      */
     abstract public function build(array $params = array());
 

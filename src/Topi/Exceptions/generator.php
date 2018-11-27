@@ -19,7 +19,7 @@ $class = array(
 
 foreach ($class as $def) {
     file_put_contents(sprintf("%s.php", $def[0]), sprintf("<?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
 class %s extends \Exception
 {

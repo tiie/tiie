@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Lang;
+namespace Elusim\Lang;
 
 interface LangInterface
 {

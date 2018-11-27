@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Adapters\Commands\SQL;
+namespace Elusim\Data\Adapters\Commands\SQL;
 
-use Topi\Data\Adapters\Commands\Command;
-use Topi\Data\Adapters\Commands\BuiltCommand;
+use Elusim\Data\Adapters\Commands\Command;
+use Elusim\Data\Adapters\Commands\BuiltCommand;
 
 class Where extends Command
 {
@@ -1084,7 +1084,7 @@ class Where extends Command
             } else {
 
                 // Parse column
-                $column = \Topi\Data\functions::columnStr($child->column, $params);
+                $column = \Elusim\Data\functions::columnStr($child->column, $params);
 
                 switch ($child->type) {
                 // in, not in
@@ -1328,10 +1328,10 @@ class Where extends Command
             $value = ":{$t}";
         }elseif(is_numeric($value)){
             // $value = $t;
-        // }elseif($value instanceof \Topi\Data\Statements\Statement){
+        // }elseif($value instanceof \Elusim\Data\Statements\Statement){
         //     $value = "({$value->slq()})";
         //     $command->merge($value->binds());
-        // }elseif($value instanceof \Topi\Data\Adapters\Commands\SQL\Select){
+        // }elseif($value instanceof \Elusim\Data\Adapters\Commands\SQL\Select){
         //     $t = $value->build();
         //     $s = "({$t->slq()})";
         //     $command->merge($t->binds());

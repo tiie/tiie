@@ -1,10 +1,10 @@
 <?php
-namespace Topi\Data\Adapters\Commands\SQL;
+namespace Elusim\Data\Adapters\Commands\SQL;
 
-use Topi\Data\Adapters\Commands\Command;
-use Topi\Data\Adapters\Commands\BuiltCommand;
-use Topi\Data\Adapters\AdapterInterface;
-use Topi\Data\Adapters\Commands\SQL\Where;
+use Elusim\Data\Adapters\Commands\Command;
+use Elusim\Data\Adapters\Commands\BuiltCommand;
+use Elusim\Data\Adapters\AdapterInterface;
+use Elusim\Data\Adapters\Commands\SQL\Where;
 
 class Select extends Command
 {
@@ -509,7 +509,7 @@ class Select extends Command
      * ;
      *
      * // Or we can use Expr
-     * $select->order(new \Topi\Data\Adapters\Commands\SQL\Expr("RAND()"));
+     * $select->order(new \Elusim\Data\Adapters\Commands\SQL\Expr("RAND()"));
      *
      * ```
      * @param mixed $column
@@ -895,7 +895,7 @@ class Select extends Command
         }else{
             foreach ($this->columns as $cid => $c) {
                 if (is_string($c['column'])) {
-                    $column = \Topi\Data\functions::columnStr($c['column'], $params);
+                    $column = \Elusim\Data\functions::columnStr($c['column'], $params);
                 }else{
                     $column = $c['column'];
                 }
@@ -985,7 +985,7 @@ class Select extends Command
 
         if (!empty($this->order)) {
             foreach ($this->order as $order) {
-                $column = \Topi\Data\functions::columnStr($order['column'], $params);
+                $column = \Elusim\Data\functions::columnStr($order['column'], $params);
 
                 $orderType = strtolower($order['type']);
 
@@ -1005,7 +1005,7 @@ class Select extends Command
 
         if (!empty($this->group)) {
             foreach ($this->group as $c) {
-                $column = \Topi\Data\functions::columnStr($c, $params);
+                $column = \Elusim\Data\functions::columnStr($c, $params);
                 $sgroup .= "{$column},";
             }
 
@@ -1074,7 +1074,7 @@ class Select extends Command
 
     public function random()
     {
-        $this->order(new \Topi\Data\Adapters\Commands\SQL\Expr("RAND()"));
+        $this->order(new \Elusim\Data\Adapters\Commands\SQL\Expr("RAND()"));
 
         return $this;
     }

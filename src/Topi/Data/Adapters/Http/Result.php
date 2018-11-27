@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Adapters\Http;
+namespace Elusim\Data\Adapters\Http;
 
-class Result extends \Topi\Data\Adapters\Result
+class Result extends \Elusim\Data\Adapters\Result
 {
     /**
      * Return value of code.
@@ -15,7 +15,7 @@ class Result extends \Topi\Data\Adapters\Result
         return $variables['code'] ?: null;
     }
 
-    public function header(string $name) : ?\Topi\Http\Headers\Header
+    public function header(string $name) : ?\Elusim\Http\Headers\Header
     {
         $variables = $this->variables();
 
@@ -26,7 +26,7 @@ class Result extends \Topi\Data\Adapters\Result
         return $variables['headers']->get($name);
     }
 
-    public function headers() : ?\Topi\Http\Headers\Headers
+    public function headers() : ?\Elusim\Http\Headers\Headers
     {
         $variables = $this->variables();
 

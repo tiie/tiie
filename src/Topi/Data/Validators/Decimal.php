@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
-use Topi\Data\Validators\Number;
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Number;
 
 class Decimal implements ValidatorInterface
 {
@@ -21,7 +21,7 @@ class Decimal implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Decimal.Description)';
+        return '@(Elusim.Data.Validator.Decimal.Description)';
     }
 
     public function validate($value)
@@ -33,7 +33,7 @@ class Decimal implements ValidatorInterface
         if (empty($matches)) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.Decimal.Invalid)',
+                'error' => '@(Elusim.Data.Validator.Decimal.Invalid)',
             );
         }
 
@@ -46,7 +46,7 @@ class Decimal implements ValidatorInterface
         if (strlen($value[0]) > $this->length - $this->decimals) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.Decimal.Invalid)',
+                'error' => '@(Elusim.Data.Validator.Decimal.Invalid)',
             );
         }
 
@@ -54,7 +54,7 @@ class Decimal implements ValidatorInterface
             if (strlen($value[1]) > $this->decimals) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                    'error' => '@(Topi.Data.Validator.Decimal.Invalid)',
+                    'error' => '@(Elusim.Data.Validator.Decimal.Invalid)',
                 );
             }
         }

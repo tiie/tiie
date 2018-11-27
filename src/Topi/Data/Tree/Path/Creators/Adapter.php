@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Tree\Path\Creators;
+namespace Elusim\Data\Tree\Path\Creators;
 
 class Adapter
 {
@@ -28,7 +28,7 @@ class Adapter
         $keyParent = $this->params['keyParent'];
         $table = $this->table;
 
-        $leaf = new \Topi\Data\Adapters\Commands\SQL\Select();
+        $leaf = new \Elusim\Data\Adapters\Commands\SQL\Select();
         $leaf
             ->from($table)
             ->eq($keyId, $this->leafId);
@@ -42,7 +42,7 @@ class Adapter
 
         $tree[] = $leaf;
 
-        $stmp = (new \Topi\Data\Adapters\Commands\SQL\Select())
+        $stmp = (new \Elusim\Data\Adapters\Commands\SQL\Select())
             ->from($table)
             ->expr("{$keyId} = :id")
             ->build()

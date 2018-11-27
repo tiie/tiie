@@ -1,14 +1,14 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class StringLength implements ValidatorInterface
 {
     private $min;
     private $max;
 
-    function __construct($max = null, $min = 0)
+    function __construct(int $max = null, int $min = 0)
     {
         $this->min = $min;
         $this->max = $max;
@@ -16,24 +16,27 @@ class StringLength implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validator.StringLength.Description)';
+        return '@(Elusim.Data.Validator.StringLength.Description)';
     }
 
     public function validate($value)
     {
-        if (is_string($value)) {
+        if (!is_string($value)) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                'error' => '@(Topi.Data.Validator.StringLength.WrongType)',
+                'error' => '@(Elusim.Data.Validator.StringLength.WrongType)',
             );
         }
+
+        // TODO StringLength unicode support
+        // Dorobić wsparcie dla znaków Unicode.
 
         $len = strlen($value);
 
         if ($len < $this->min) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.StringLength.Invalid)',
+                'error' => '@(Elusim.Data.Validator.StringLength.Invalid)',
             );
         }
 
@@ -41,7 +44,7 @@ class StringLength implements ValidatorInterface
             if ($len > $this->max) {
                 return array(
                     'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                    'error' => '@(Topi.Data.Validator.StringLength.Invalid)',
+                    'error' => '@(Elusim.Data.Validator.StringLength.Invalid)',
                 );
             }
         }

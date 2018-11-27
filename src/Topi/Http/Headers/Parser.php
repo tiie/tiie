@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Http\Headers;
+namespace Elusim\Http\Headers;
 
 
-use Topi\Data\Adapters\Commands\SQL\Select;
+use Elusim\Data\Adapters\Commands\SQL\Select;
 
 class Parser
 {

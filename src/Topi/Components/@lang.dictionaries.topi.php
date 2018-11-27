@@ -1,4 +1,4 @@
 <?php
-return function(\Topi\Components $components) {
-    return new \Topi\Lang\Dictionaries\Files(sprintf("%s/../lang-files", __DIR__));
+return function(\Elusim\Components $components) {
+    return new \Elusim\Lang\Dictionaries\Files(sprintf("%s/../lang-files", __DIR__));
 };

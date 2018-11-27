@@ -1,12 +1,12 @@
 <?php
-namespace Topi\Data\Model;
+namespace Elusim\Data\Model;
 
-use Topi\Data\Model\Record;
-use Topi\Data\Model\Records;
-use Topi\Data\Model\RecordInterface;
-use Topi\Data\Model\ModelInterface;
-use Topi\Data\Model\CreatorInterface;
-use Topi\Data\Model\Creator;
+use Elusim\Data\Model\Record;
+use Elusim\Data\Model\Records;
+use Elusim\Data\Model\RecordInterface;
+use Elusim\Data\Model\ModelInterface;
+use Elusim\Data\Model\CreatorInterface;
+use Elusim\Data\Model\Creator;
 
 abstract class Model implements ModelInterface
 {

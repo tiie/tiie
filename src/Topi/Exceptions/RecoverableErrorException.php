@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
-class RecoverableErrorException extends \Topi\Exceptions\PHPErrorException {}
+class RecoverableErrorException extends \Elusim\Exceptions\PHPErrorException {}

@@ -1,34 +1,45 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-class RowExists implements \Topi\Data\Validators\ValidatorInterface
+use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Adapters\AdapterInterface;
+use Elusim\Data\Adapters\Commands\SQL\Select;
+
+class RowExists implements ValidatorInterface
 {
     private $db;
-    private $table;
-    private $idColumn;
+    private $container;
+    private $fieldId;
 
-    function __construct($db, $table, $idColumn = 'id')
+    function __construct(AdapterInterface $db, string $container, string $fieldId = 'id')
     {
         $this->db = $db;
-        $this->table = $table;
-        $this->idColumn = $idColumn;
+        $this->container = $container;
+        $this->fieldId = $fieldId;
     }
 
     public function description()
     {
-        return '@(Topi.Data.Validator.RowExists.Description)';
+        return '@(Elusim.Data.Validator.RowExists.Description)';
     }
 
     public function validate($value)
     {
-        $select = new \Topi\Data\Adapters\Commands\SQL\Select($this->db);
+        $select = new Select($this->db);
 
         $row = $select
-            ->from($table)
-            ->eq($this->idColumn)
-            ->fetch('row')
+            ->from($this->container)
+            ->eq($this->fieldId, $value)
+            ->fetch()->format('row')
         ;
 
-        return !is_null($row);
+        if (is_null($row)) {
+            return array(
+                'code' => ValidatorInterface::ERROR_CODE_INVALID,
+                'error' => '@(Elusim.Data.Validator.Number.Invalid)',
+            );
+        } else {
+            return null;
+        }
     }
 }

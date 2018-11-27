@@ -1,18 +1,18 @@
 <?php
-namespace Topi\Response\Engines;
+namespace Elusim\Response\Engines;
 
-class Twig implements \Topi\Response\Engines\EngineInterface
+class Twig implements \Elusim\Response\Engines\EngineInterface
 {
-    use \Topi\ComponentsTrait;
+    use \Elusim\ComponentsTrait;
 
     private $config;
 
     function __construct()
     {
-        $this->config = $this->component("@config")->get("topi.twig");
+        $this->config = $this->component("@config")->get("elusim.twig");
     }
 
-    public function prepare(\Topi\Response\ResponseInterface $response, \Topi\Http\Request $request, array $accept)
+    public function prepare(\Elusim\Response\ResponseInterface $response, \Elusim\Http\Request $request, array $accept)
     {
         $loader = new \Twig_Loader_Filesystem();
 

@@ -32,9 +32,9 @@ $class = array(
 
 foreach ($class as $def) {
     file_put_contents(sprintf("%s.php", $def[1]), sprintf("<?php
-namespace Topi\Exceptions\Http;
+namespace Elusim\Exceptions\Http;
 
-class %s extends \Topi\Exceptions\Http\Base
+class %s extends \Elusim\Exceptions\Http\Base
 {
     public function __construct(\$errors = null, \Exception \$previous = null)
     {

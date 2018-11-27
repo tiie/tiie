@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Adapters\Mysql;
+namespace Elusim\Data\Adapters\Mysql;
 
-class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapters\MetadataAccessibleInterface
+class Adapter implements \Elusim\Data\Adapters\AdapterInterface, \Elusim\Data\Adapters\MetadataAccessibleInterface
 {
     private $pdo;
     private $name;
@@ -57,12 +57,12 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
     {
         $sql = null;
 
-        if ($command instanceof \Topi\Data\Adapters\Commands\Command) {
+        if ($command instanceof \Elusim\Data\Adapters\Commands\Command) {
             $buildCommand = $command->build();
             $sql = $buildCommand->command();
 
             $params = array_merge($params, $buildCommand->params());
-        }elseif($command instanceof \Topi\Data\Adapters\Commands\BuiltCommand){
+        }elseif($command instanceof \Elusim\Data\Adapters\Commands\BuiltCommand){
             $sql = $command->command();
 
             $params = array_merge($params, $command->params());
@@ -89,16 +89,16 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
      * @return mixed
      */
     // public function fetch($command, array $params = array()) : Result
-    public function fetch($command, array $params = array()) : \Topi\Data\Adapters\Result
+    public function fetch($command, array $params = array()) : \Elusim\Data\Adapters\Result
     {
         $sql = null;
 
-        if ($command instanceof \Topi\Data\Adapters\Commands\Command) {
+        if ($command instanceof \Elusim\Data\Adapters\Commands\Command) {
             $buildCommand = $command->build();
             $sql = $buildCommand->command();
 
             $params = array_merge($params, $buildCommand->params());
-        }elseif ($command instanceof \Topi\Data\Adapters\Commands\BuiltCommand){
+        }elseif ($command instanceof \Elusim\Data\Adapters\Commands\BuiltCommand){
             $sql = $command->command();
             $params = array_merge($params, $command->params());
         }elseif(is_string($command)){
@@ -110,19 +110,19 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
         $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
         $statement->closeCursor();
 
-        return new \Topi\Data\Adapters\Result($result);
+        return new \Elusim\Data\Adapters\Result($result);
     }
 
     public function count($command, $params = array())
     {
         $sql = null;
 
-        if ($command instanceof \Topi\Data\Adapters\Commands\Command) {
+        if ($command instanceof \Elusim\Data\Adapters\Commands\Command) {
             $buildCommand = $command->build();
             $sql = $buildCommand->command();
 
             $params = array_merge($params, $buildCommand->params());
-        }elseif($command instanceof \Topi\Data\Adapters\Commands\BuiltCommand){
+        }elseif($command instanceof \Elusim\Data\Adapters\Commands\BuiltCommand){
             $sql = $command->command();
 
             $params = array_merge($params, $command->params());
@@ -148,10 +148,10 @@ class Adapter implements \Topi\Data\Adapters\AdapterInterface, \Topi\Data\Adapte
     {
         if (is_array($command)) {
             foreach ($command as $table => $columns) {
-                $insert = new \Topi\Data\Adapters\Commands\SQL\Insert();
+                $insert = new \Elusim\Data\Adapters\Commands\SQL\Insert();
                 $insert->table($table);
 
-                if (\Topi\Data\functions::isVector($columns)) {
+                if (\Elusim\Data\functions::isVector($columns)) {
                     $insert->values($columns);
                 }else{
                     $insert->add($columns);

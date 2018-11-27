@@ -1,10 +1,10 @@
 <?php
-namespace Topi\Actions;
+namespace Elusim\Actions;
 
 /**
  * Remote Procedure Call Action.
  */
-abstract class RPC extends \Topi\Actions\Action
+abstract class RPC extends \Elusim\Actions\Action
 {
     protected $headers = array();
     protected $code = null;
@@ -23,7 +23,7 @@ abstract class RPC extends \Topi\Actions\Action
                     //     // 'default' => null,
 
                     //     'validators' => array(
-                    //         \Topi\Validators\IsNumeric::class
+                    //         \Elusim\Validators\IsNumeric::class
                     //     ),
                     //     'filters' => array(),
 
@@ -57,7 +57,7 @@ abstract class RPC extends \Topi\Actions\Action
         );
     }
 
-    public function action(\Topi\Http\Request $request, array $params = array())
+    public function action(\Elusim\Http\Request $request, array $params = array())
     {
         return $this->response($request, $this->run($request->id(), $request->params(), $request->input()));
     }
@@ -71,11 +71,11 @@ abstract class RPC extends \Topi\Actions\Action
      * Metoda tworzy obiekt odpowiedzi na postawie przychodzących danych.
      *
      * @param array $data
-     * @return \Topi\Response\ResponseInterface
+     * @return \Elusim\Response\ResponseInterface
      */
-    protected function response(\Topi\Http\Request $request, array $data)
+    protected function response(\Elusim\Http\Request $request, array $data)
     {
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
 
         if (is_null($data)) {
             // Odpowiedź jest nieznana

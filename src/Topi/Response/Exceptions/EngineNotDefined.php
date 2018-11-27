@@ -1,4 +1,4 @@
 <?php
-namespace Topi\Response\Exceptions;
+namespace Elusim\Response\Exceptions;
 
 class EngineNotDefined extends \Exception {}

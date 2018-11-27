@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Utils;
+namespace Elusim\Utils;
 
 class ArrayUtils {
     public function column(array $array, string $column)

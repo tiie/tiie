@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Documentation;
+namespace Elusim\Documentation;
 
 class Html
 {

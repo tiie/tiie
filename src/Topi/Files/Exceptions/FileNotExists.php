@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
 class DataNotFound extends \Exception
 {

@@ -1,6 +1,6 @@
 <?php
 return array(
-    'topi' => array(
+    'elusim' => array(
         'components' => array(
             'dirs' => array(
                 "./src/App/Components",

@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Validators;
+namespace Elusim\Data\Validators;
 
-use Topi\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\ValidatorInterface;
 
 class Number implements ValidatorInterface
 {
@@ -14,7 +14,7 @@ class Number implements ValidatorInterface
 
     public function description()
     {
-        return '@(Topi.Data.Validator.Number.Description)';
+        return '@(Elusim.Data.Validator.Number.Description)';
     }
 
     public function validate($value)
@@ -26,16 +26,18 @@ class Number implements ValidatorInterface
         ) {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.Number.Invalid)',
+                'error' => '@(Elusim.Data.Validator.Number.Invalid)',
             );
         }
 
         if (is_numeric($value)) {
             if ($this->unsigned) {
-                if ($value < 0) {
+                $value = (string) $value;
+
+                if ($value[0] == '-') {
                     return array(
                         'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                        'error' => '@(Topi.Data.Validator.Number.Invalid)',
+                        'error' => '@(Elusim.Data.Validator.Number.Invalid)',
                     );
                 } else {
                     return null;
@@ -46,7 +48,7 @@ class Number implements ValidatorInterface
         } else {
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Topi.Data.Validator.Number.Invalid)',
+                'error' => '@(Elusim.Data.Validator.Number.Invalid)',
             );
         }
     }

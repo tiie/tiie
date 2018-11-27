@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Encoders;
+namespace Elusim\Data\Encoders;
 
 interface EncoderInterface
 {

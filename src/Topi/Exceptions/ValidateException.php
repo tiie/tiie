@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
 /**
  * Wyjątek wyrzucany w przypadku błednych danych.

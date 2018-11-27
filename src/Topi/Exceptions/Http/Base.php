@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Exceptions\Http;
+namespace Elusim\Exceptions\Http;
 
 class Base extends \Exception
 {

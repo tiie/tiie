@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Http;
+namespace Elusim\Http;
 
 function validate() {
     if (empty($_SERVER['SERVER_SOFTWARE'])) {
@@ -24,7 +24,7 @@ function validate() {
         throw new \Exception("HTTP is not defined.");
     }
 
-    return new \Topi\Http\Request(
+    return new \Elusim\Http\Request(
         $_SERVER['REQUEST_METHOD'],
         $uri,
         $_GET,

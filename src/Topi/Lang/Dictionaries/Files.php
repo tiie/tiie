@@ -1,8 +1,10 @@
 <?php
-namespace Topi\Lang\Dictionaries;
+namespace Elusim\Lang\Dictionaries;
 
-class Files implements \Topi\Lang\Dictionaries\DictionaryInterface {
+use Elusim\Lang\Dictionaries\DictionaryInterface;
 
+class Files implements DictionaryInterface
+{
     private $dir;
     private $cache = array();
 
@@ -11,20 +13,22 @@ class Files implements \Topi\Lang\Dictionaries\DictionaryInterface {
         $this->dir = $dir;
     }
 
-    public function get(string $lang, string $token)
+    public function get(string $lang, string $token) : ?string
     {
         $path = $this->path($lang, $token);
 
-        if (!isset($this->cache[$path])) {
-            if (!is_readable($path)) {
-                return null;
-            }
-
+        if (!array_key_exists($path, $this->cache)) {
             if (!is_file($path)) {
                 return null;
             }
 
-            $this->cache[$path] = file_get_contents($path);
+            if (!is_readable($path)) {
+                trigger_error("File '{$path}' with translation is not readable.");
+
+                return null;
+            }
+
+            $this->cache[$path] = trim(file_get_contents($path), "\n\r");
         }
 
         return $this->cache[$path];

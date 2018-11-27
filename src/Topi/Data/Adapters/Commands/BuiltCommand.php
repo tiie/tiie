@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Data\Adapters\Commands;
+namespace Elusim\Data\Adapters\Commands;
 
 class BuiltCommand
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Exceptions;
+namespace Elusim\Exceptions;
 
 class InvalidData extends \Exception
 {

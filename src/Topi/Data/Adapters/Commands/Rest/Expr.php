@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Data\Adapters\Commands\SQL;
+namespace Elusim\Data\Adapters\Commands\SQL;
 
-use Topi\Data\Adapters\Commands\Command;
-use Topi\Data\Adapters\Commands\BuiltCommand;
+use Elusim\Data\Adapters\Commands\Command;
+use Elusim\Data\Adapters\Commands\BuiltCommand;
 
 class Expr extends Command
 {

@@ -1,8 +1,8 @@
 <?php
-namespace Topi\Response;
+namespace Elusim\Response;
 
-use Topi\Data\Model\RecordInterface;
-use Topi\Data\Model\Records;
+use Elusim\Data\Model\RecordInterface;
+use Elusim\Data\Model\Records;
 
 /**
  * Mechanizm do obsługi odpowiedzi.
@@ -166,7 +166,7 @@ class Response implements ResponseInterface
     /**
      * Ustawia lub zwraca akcję powiązaną z odpowiedzią.
      *
-     * @return \Topi\Actions\Action|$this
+     * @return \Elusim\Actions\Action|$this
      */
     public function template($template = null)
     {
@@ -198,7 +198,7 @@ class Response implements ResponseInterface
     /**
      * Ustawia lub zwraca akcję powiązaną z odpowiedzią.
      *
-     * @return \Topi\Actions\Action|$this
+     * @return \Elusim\Actions\Action|$this
      */
     public function layout($layout = null)
     {
@@ -215,7 +215,7 @@ class Response implements ResponseInterface
      * Set action associated with response. It is usefull for some response
      * engines.
      *
-     * @return \Topi\Actions\Action|$this
+     * @return \Elusim\Actions\Action|$this
      */
     public function action($action = null)
     {
@@ -233,7 +233,7 @@ class Response implements ResponseInterface
      * odpowiedzi. Jeśli wartość jest nie określona, to silnik zostanie wybrany
      * w trybie negocjacji lub pobrany z konfiguracji.
      *
-     * @return \Topi\Actions\Action|$this
+     * @return \Elusim\Actions\Action|$this
      */
     public function engine($engine = null)
     {
@@ -275,7 +275,7 @@ class Response implements ResponseInterface
      *
      * @return array
      */
-    public function response(\Topi\Http\Request $request)
+    public function response(\Elusim\Http\Request $request)
     {
         $engines = $this->params['engines'];
 
@@ -428,7 +428,7 @@ class Response implements ResponseInterface
         }
 
         if (is_null($accept['lang'])) {
-            throw new \Exception("Can not determine Accept-Language. Please define topi.response.lang.default at config.");
+            throw new \Exception("Can not determine Accept-Language. Please define elusim.response.lang.default at config.");
         }
 
         // content type
@@ -455,7 +455,7 @@ class Response implements ResponseInterface
         }
 
         if (is_null($accept['contentType'])) {
-            throw new \Exception("Can not determine Accept. Please define topi.response.contentType.default at config.");
+            throw new \Exception("Can not determine Accept. Please define elusim.response.contentType.default at config.");
         }
 
         return $accept;

@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Actions;
+namespace Elusim\Actions;
 
 abstract class Action
 {
@@ -11,23 +11,23 @@ abstract class Action
     /**
      * Action should return response or null if response is unknow.
      *
-     * @return \Topi\Response\ResponseInterface
+     * @return \Elusim\Response\ResponseInterface
      */
-    public function action(\Topi\Http\Request $request, array $params = array())
+    public function action(\Elusim\Http\Request $request, array $params = array())
     {
         return null;
-        // return new \Topi\Response\Response($this);
+        // return new \Elusim\Response\Response($this);
     }
 
     /**
      * Metoda tworzy obiekt odpowiedzi na postawie przychodzących danych.
      *
      * @param array $data
-     * @return \Topi\Response\ResponseInterface
+     * @return \Elusim\Response\ResponseInterface
      */
-    protected function response(\Topi\Http\Request $request, array $data)
+    protected function response(\Elusim\Http\Request $request, array $data)
     {
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
         $response->data($data);
 
         return $response;
@@ -37,12 +37,12 @@ abstract class Action
 
     public function forward($uri = null, $method = null, $params = null, $data = null)
     {
-        return new \Topi\Forward($this->component('router'), $this->request->chain());
+        return new \Elusim\Forward($this->component('router'), $this->request->chain());
     }
 
     public function redirect($url)
     {
-        $response = new \Topi\Response\Response($this);
+        $response = new \Elusim\Response\Response($this);
         $response->header('Location', $url);
         $response->code(301);
 

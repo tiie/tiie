@@ -1,11 +1,11 @@
 <?php
 namespace App\Models\Bookshop;
 
-use Topi\Data\Model\Model;
-use Topi\Data\Adapters\Commands\SQL\Select;
-use Topi\Data\Adapters\Commands\SQL\Update;
-use Topi\Data\Model\RecordInterface;
-use Topi\Data\Model\ModelInterface;
+use Elusim\Data\Model\Model;
+use Elusim\Data\Adapters\Commands\SQL\Select;
+use Elusim\Data\Adapters\Commands\SQL\Update;
+use Elusim\Data\Model\RecordInterface;
+use Elusim\Data\Model\ModelInterface;
 
 class Users extends Model
 {
@@ -42,7 +42,7 @@ class Users extends Model
     public function save(RecordInterface $record, array $params = array()) : ModelInterface
     {
         if (!is_null($errors = $this->validate($record, ModelInterface::PROCESS_SAVING))) {
-            throw new \Topi\Exceptions\ValidateException($errors);
+            throw new \Elusim\Exceptions\ValidateException($errors);
         }
 
         $update = (new Update($this->db))

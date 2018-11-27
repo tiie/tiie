@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Utils;
+namespace Elusim\Utils;
 
 class DateTime
 {

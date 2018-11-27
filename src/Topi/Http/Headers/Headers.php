@@ -1,5 +1,5 @@
 <?php
-namespace Topi\Http\Headers;
+namespace Elusim\Http\Headers;
 
 class Headers
 {

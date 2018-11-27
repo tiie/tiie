@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Filters;
+namespace Elusim\Filters;
 
-class Trim implements \Topi\Filters\FilterInterface
+class Trim implements \Elusim\Filters\FilterInterface
 {
     private $config = array();
 

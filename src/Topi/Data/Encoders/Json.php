@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Data\Encoders;
+namespace Elusim\Data\Encoders;
 
-use Topi\Data\Encoders\Encoder;
+use Elusim\Data\Encoders\Encoder;
 
 class Json extends Encoder
 {

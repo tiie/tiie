@@ -1,7 +1,7 @@
 <?php
-namespace Topi\Filters;
+namespace Elusim\Filters;
 
-class Htmlspecialchars implements \Topi\Filters\FilterInterface
+class Htmlspecialchars implements \Elusim\Filters\FilterInterface
 {
     private $config = array();
 

@@ -1,10 +1,10 @@
 <?php
-namespace Topi\Data\Adapters\Http;
+namespace Elusim\Data\Adapters\Http;
 
-use Topi\Data\Adapters\AdapterInterface;
-use Topi\Data\Adapters\Http\Result as HttpResut;
-use Topi\Data\Adapters\MetadataAccessibleInterface;
-use Topi\Http\Headers\Parser;
+use Elusim\Data\Adapters\AdapterInterface;
+use Elusim\Data\Adapters\Http\Result as HttpResut;
+use Elusim\Data\Adapters\MetadataAccessibleInterface;
+use Elusim\Http\Headers\Parser;
 
 class Adapter implements AdapterInterface
 {
@@ -37,7 +37,7 @@ class Adapter implements AdapterInterface
     {
     }
 
-    public function fetch($command, array $params = array()) : \Topi\Data\Adapters\Result
+    public function fetch($command, array $params = array()) : \Elusim\Data\Adapters\Result
     {
         if (is_array($command)) {
             if (array_key_exists('headers', $command)) {
