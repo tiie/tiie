@@ -1,7 +1,7 @@
 <?php
 namespace Elusim\Data\Validators;
 
-use Elusim\Validators\ComplexValidatorInterface;
+use Elusim\Data\Validators\ComplexValidatorInterface;
 use Elusim\Data\Adapters\MetadataAccessibleInterface;
 
 use Elusim\Validators\NotNull;
