@@ -2,75 +2,7 @@
 namespace Elusim\Data;
 
 use Elusim\Data\Validators\NotEmpty;
-// $data = $this->components->get('input', array('input' => $data))
-//     ->rules(array(
-//         'categoryId' => array(
-//             '@filters' => array('int'),
-//             '@validators' => array(
-//                 'exists',
-//                 'notEmpty',
-//                 new \Elusim\Data\Validators\Schema($db, 'dictionaries.id')
-//             ),
-//         ),
-//         'user' => array(
-//             '@type' => 'object',
-//             '@filters' => array('int'),
-//             '@validators' => array(
-//                 'exists',
-//             ),
-//
-//             'email' => array(
-//                 '@type' => 'object',
-//                 // '@default' => '',
-//                 // '@after' => '',
-//                 '@validators' => array(
-//                     'exists',
-//                 ),
-//
-//                 'values' => array(
-//                     '@validators' => array(
-//                         'exists',
-//                     ),
-//                 )
-//             ),
-//
-//             'name' => array(
-//                 '@filters' => array('int'),
-//                 '@validators' => array(
-//                     'exists',
-//                     'notEmpty',
-//                     // new \Elusim\Data\Validators\Schema($db, 'dictionaries.id')
-//                 ),
-//
-//             ),
-//
-//             'phones' => array(
-//                 '@type' => 'list',
-//                 '@validators' => array(
-//                     'exists',
-//                     'notEmpty',
-//                 ),
-//
-//                 'name' => array(
-//                     '@validators' => array(
-//                         'exists',
-//                         'notEmpty',
-//                     ),
-//
-//                 )
-//             )
-//         ),
-//         'email' => array(
-//             '@filters' => array('email'),
-//             '@validators' => array(
-//                 'email',
-//                 'exists',
-//                 'notEmpty'
-//             ),
-//         ),
-//     ))
-//     // ->prepare()
-// ;
+
 class Input
 {
     const INPUT_DATA_TYPE_VALUE = 'value';
@@ -249,7 +181,6 @@ class Input
             $validators = in_array('@validators', $rulesKeys) ? $rule['@validators'] : array();
 
             switch ($type) {
-            // case 'value':
             case self::INPUT_DATA_TYPE_VALUE:
                 if (!in_array($field, $dataKeys)) {
                     // Pole nie zostało podane, sprawdzam czy jest walidator
@@ -327,7 +258,6 @@ class Input
                 }
 
                 break;
-            // case 'object':
             case self::INPUT_DATA_TYPE_OBJECT:
                 if (!in_array($field, $dataKeys)) {
                     // Brak pola w obiekcie, sprawdzam czy klucz musi istniec.
@@ -373,7 +303,6 @@ class Input
                 }
 
                 break;
-            case 'list':
             case self::INPUT_DATA_TYPE_LIST_OF_OBJECTS:
                 if (!in_array($field, $dataKeys)) {
                     if (in_array('exists', $validators)) {
