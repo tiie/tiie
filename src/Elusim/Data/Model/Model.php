@@ -126,7 +126,7 @@ abstract class Model implements ModelInterface
         throw new \Exception("Save is not implemented");
     }
 
-    public function create(RecordInterface $record, array $params = array()) : string
+    public function create(RecordInterface $record, array $params = array()) : ?string
     {
         throw new \Exception("Create is not implemented");
     }

@@ -9,7 +9,7 @@ interface CreatorInterface
      * @param array $params
      * @return string
      */
-    public function create(array $params = array()) : string;
+    public function create(array $params = array()) : ?string;
 
     /**
      * Set value of attribute.

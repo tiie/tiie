@@ -15,7 +15,7 @@ class Creator implements CreatorInterface
         $this->model = $model;
     }
 
-    public function create(array $params = array()) : string
+    public function create(array $params = array()) : ?string
     {
         if (is_null($this->record)) {
             $this->record = $this->model->createRecord($this->data);

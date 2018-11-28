@@ -75,7 +75,7 @@ interface ModelInterface
      * @param RecordInterface $record;
      * @return string
      */
-    public function create(RecordInterface $record, array $params = array()) : string;
+    public function create(RecordInterface $record, array $params = array()) : ?string;
 
     public function creator() : CreatorInterface;
 
