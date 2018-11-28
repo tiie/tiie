@@ -5,70 +5,154 @@ use Elusim\Data\Input;
 
 class InputTest extends \Tests\TestCase
 {
-    public function testPrepareData()
+    public function testAllTypes()
     {
-        $input = new Input(array(
-            'id' => '90898',
-            'name' => 'Eva ',
-            'lastName' => 'Jan',
-            'bank' => array(
-                'id' => '102',
-                'name' => 'Idea Geting Bank',
-            ),
-            'emails' => array(
-                'vokuwibe-1569@yopmail.com',
-                'oniqipuh-0984@yopmail.com',
-                'issofussyk-5876@yopmail.com',
-            )
-        ), array(
-            'id' => array(
+        // const INPUT_DATA_TYPE_VALUE = 'value';
+        // const INPUT_DATA_TYPE_OBJECT = 'object';
+        // const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'list-of-objects';
+        // const INPUT_DATA_TYPE_LIST = 'vector';
+
+        $data = array();
+
+        // $errors = array(
+        //     '@object' => array(
+        //         'name' => array(),
+        //         'name' => array(),
+        //         'name' => array(),
+        //     )
+        // );
+
+        $input = new Input($data, array(
+            'value' => array(
                 '@validators' => array(
                     'notEmpty',
+                    'exists',
                 ),
             ),
-            'name' => array(
-                '@validators' => array(
-                    'notEmpty',
-                ),
-            ),
-            'lastName' => array(
-                '@validators' => array(
-                    'notEmpty',
-                ),
-            ),
-            'bank' => array(
+            'object' => array(
                 '@type' => Input::INPUT_DATA_TYPE_OBJECT,
-                'id' => array(
+                '@validators' => array(
+                    'exists',
+                ),
+                'value' => array(
                     '@validators' => array(
                         'notEmpty',
+                        'exists',
                     ),
                 ),
-                'name' => array(
+                'object' => array(
+                    '@type' => Input::INPUT_DATA_TYPE_OBJECT,
+                    'value' => array(
+                        '@validators' => array(
+                            'notEmpty',
+                            'exists',
+                        ),
+                    ),
+                ),
+                'listOfObject' => array(
+                    '@type' => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
+                    'value' => array(
+                        '@validators' => array(
+                            'notEmpty',
+                            'exists',
+                        ),
+                    ),
+                ),
+                'list' => array(
+                    '@type' => Input::INPUT_DATA_TYPE_LIST,
                     '@validators' => array(
                         'notEmpty',
+                        'exists',
                     ),
                 ),
             ),
-            'emails' => array(
-                '@type' => Input::INPUT_DATA_TYPE_VECTOR,
+            'listOfObject' => array(
+                '@type' => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
                 '@validators' => array(
                     'notEmpty',
+                    'exists',
                 ),
-            )
+                'value' => array(
+                    '@validators' => array(
+                        'notEmpty',
+                        'exists',
+                    ),
+                ),
+                'object' => array(
+                    '@type' => Input::INPUT_DATA_TYPE_OBJECT,
+                    'value' => array(
+                        '@validators' => array(
+                            'notEmpty',
+                            'exists',
+                        ),
+                    ),
+                ),
+                'listOfObject' => array(
+                    '@type' => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
+                    'value' => array(
+                        '@validators' => array(
+                            'notEmpty',
+                            'exists',
+                        ),
+                    ),
+                ),
+                'list' => array(
+                    '@type' => Input::INPUT_DATA_TYPE_LIST,
+                    '@validators' => array(
+                        'notEmpty',
+                        'exists',
+                    ),
+                ),
+            ),
+            'list' => array(
+                '@type' => Input::INPUT_DATA_TYPE_LIST,
+                '@validators' => array(
+                    'notEmpty',
+                    'exists',
+                ),
+            ),
         ));
 
         $input->prepare();
 
-        // todo [debug] Debug to delete
-        die(print_r($input->errors(), true));
-        // todo [debug] Debug to delete
-        die(print_r($input->prepare(), true));
-        // $input->set('lastName', 'kowalski');
+        // $this->createVariable('variable-110', $input->errors());
+        $this->assertEquals($this->variable('variable-110'), $input->errors());
 
-        // $input->prepare();
+        // -----------------------
+        $data['value'] = '';
+        $input->input($data);
 
-        // $input->all();
-        // $input->get();
+        $input->prepare();
+
+        // $this->createVariable('variable-111', $input->errors());
+        $this->assertEquals($this->variable('variable-111'), $input->errors());
+
+        // -----------------------
+        $data['value'] = 'foo';
+        $input->input($data);
+
+        $input->prepare();
+
+        // $this->createVariable('variable-112', $input->errors());
+        $this->assertEquals($this->variable('variable-112'), $input->errors());
+
+        // -----------------------
+        $data['object'] = array();
+        $input->input($data);
+
+        $input->prepare();
+
+        // $this->createVariable('variable-113', $input->errors());
+        $this->assertEquals($this->variable('variable-113'), $input->errors());
+
+        // -----------------------
+        $data['object']['value'] = '';
+        $input->input($data);
+
+        $input->prepare();
+
+        // $this->createVariable('variable-114', $input->errors());
+        $this->assertEquals($this->variable('variable-114'), $input->errors());
     }
 
     public function testSimpleValidate()
