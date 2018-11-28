@@ -46,7 +46,7 @@ class Lang implements LangInterface
         }
 
         if (is_null($this->cache[$langKey])) {
-            trigger_error("There is not translation for '{$langKey}'.");
+            trigger_error("There is not translation for '{$langKey}'.", E_USER_NOTICE);
 
             return null;
         } else {

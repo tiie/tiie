@@ -23,7 +23,7 @@ class Files implements DictionaryInterface
             }
 
             if (!is_readable($path)) {
-                trigger_error("File '{$path}' with translation is not readable.");
+                trigger_error("File '{$path}' with translation is not readable.", E_USER_NOTICE);
 
                 return null;
             }
