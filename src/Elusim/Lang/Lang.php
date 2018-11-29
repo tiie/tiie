@@ -29,7 +29,7 @@ class Lang implements LangInterface
 
     public function translate(string $lang, string $token) : ?string
     {
-        $langKey = "{$lang}-{$token}";
+        $langKey = "{$lang}.{$token}";
 
         if (!array_key_exists("{$langKey}", $this->cache)) {
             $value = null;
