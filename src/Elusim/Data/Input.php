@@ -46,6 +46,25 @@ class Input
         }
     }
 
+    public function exists(string $name)
+    {
+        return array_key_exists($name, $this->prepared) || array_key_exists($name, $this->input);
+    }
+
+    public function empty(string $name)
+    {
+        if (array_key_exists($name, $this->prepared)) {
+            return empty($this->prepared[$name]);
+        }
+
+        if (array_key_exists($name, $this->input)) {
+            return empty($this->input[$name]);
+        }
+
+        return 1;
+        // return array_key_exists($name, $this->prepared) || array_key_exists($name, $this->input);
+    }
+
     /**
      * Set one field for input.
      *
@@ -66,12 +85,16 @@ class Input
      * @param array $rules
      * @return $this|array
      */
-    public function rules(array $rules = null)
+    public function rules(array $rules = null, int $merge = 1)
     {
         if (is_null($rules)) {
             return $this->rules;
         }else{
-            $this->rules = $rules;
+            if ($merge) {
+                $this->rules = array_merge($this->rules, $rules);
+            } else {
+                $this->rules = $rules;
+            }
 
             return $this;
         }
@@ -113,7 +136,24 @@ class Input
      */
     public function get(string $field)
     {
-        return isset($this->prepared[$field]) ? $this->prepared[$field] : null;
+        if (array_key_exists($field, $this->prepared)) {
+            return $this->prepared[$field];
+        }
+
+        if (array_key_exists($field, $this->input)) {
+            return $this->input[$field];
+        }
+
+        return null;
+    }
+
+    public function data(int $prepared = 0)
+    {
+        if ($prepared) {
+            return $this->prepared;
+        } else {
+            return array_merge($this->input, $this->prepared);
+        }
     }
 
     /**
