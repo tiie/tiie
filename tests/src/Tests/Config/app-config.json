@@ -1,0 +1,33 @@
+{
+    "response" : {
+        "headers" :  {
+            "Access-Control-Allow-Headers" : "Cache-Control, X-Requested-With, Content-Type"
+        },
+        "engines" : {
+            "default" : "application/json"
+        },
+        "contentType" : {
+            "priorities" : [
+                "application/json"
+            ]
+        },
+        "lang" : {
+            "priorities" : [
+                "pl-PL,pl",
+                "en-US,en"
+            ]
+        }
+    },
+
+    "elusim" : {
+        "errors" : {
+            "errorReporting" : [
+                "E_PARSE",
+                "E_NOTICE",
+                "E_CORE_ERROR",
+                "E_CORE_WARNING"
+            ]
+        },
+        "errorReportingSilently" : true
+    }
+}

@@ -1,0 +1,30 @@
+{
+  "value": "foo",
+  "object": {
+    "value": "boo",
+    "list": [
+      "a",
+      "b",
+      {
+        "value": "coo"
+      }
+    ],
+    "object": {
+      "value": "boo",
+      "list": [
+        "a",
+        "b",
+        {
+          "value": "coo"
+        }
+      ]
+    }
+  },
+  "list": [
+    "a",
+    "b",
+    {
+      "value": "coo"
+    }
+  ]
+}

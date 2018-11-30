@@ -1,0 +1,21 @@
+response:
+    headers:
+        Access-Control-Allow-Origin: '*'
+    engines:
+        application/json: json
+    contentType:
+        negotiation: 1
+    lang:
+        negotiation: 1
+elusim:
+    errors:
+        errorReporting:
+            - E_ERROR,
+            - E_WARNING,
+            - E_PARSE,
+    lang:
+        dictionaries:
+            - '@lang.dictionaries.elusim'
+    router:
+        error:
+            action: \Elusim\Actions\Error::class
