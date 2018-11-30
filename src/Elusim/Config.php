@@ -9,6 +9,8 @@
  */
 namespace Elusim;
 
+use Symfony\Component\Yaml\Yaml;
+
 /**
  * Basic class for managing config.
  *
@@ -100,6 +102,10 @@ class Config implements \ArrayAccess
 
                 $this->config = $tconfig;
                 break;
+            case 'yaml':
+                $this->config = Yaml::parseFile($config);
+
+                break;
             default:
                 throw new \InvalidArgumentException(sprintf('Not supported type of extension %s', $config));
             }
@@ -155,25 +161,36 @@ class Config implements \ArrayAccess
         return $this;
     }
 
-    private function arrayMerge($arrayA, $arrayB)
+    public function arrayMerge(array $a = array(), array $b = array())
     {
-        foreach ($arrayB as $key => $value) {
-            if (!array_key_exists($key, $arrayA)) {
-                $arrayA[$key] = $value;
+        foreach ($b as $key => $value) {
+            if (is_numeric($key)) {
+                if (!in_array($b[$key], $a)) {
+                    $a[] = $b[$key];
+                }
+
                 continue;
             }
 
-            if (is_array($value) && is_array($arrayA[$key])) {
-                $arrayA[$key] = $this->arrayMerge($arrayA[$key], $value);
+            if (!array_key_exists($key, $a)) {
+                $a[$key] = $value;
+
                 continue;
             }
 
-            // copy value
-            $arrayA[$key] = $value;
-            unset($arrayB[$key]);
+            if(is_array($a[$key]) && is_array($b[$key])) {
+                $a[$key] = $this->arrayMerge($a[$key], $value);
+
+                continue;
+            }
+
+            $a[$key] = $value;
+            unset($b[$key]);
         }
 
-        return $arrayA;
+        // todo [debug] Debug to delete
+        // die(print_r($a, true));
+        return $a;
     }
 
     /**
@@ -207,7 +224,6 @@ class Config implements \ArrayAccess
             throw new \Exception("I can't export config to {$path}.");
         }
 
-        die('a');
         return $this;
     }
 

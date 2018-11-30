@@ -8,6 +8,7 @@ use Elusim\Http\Request;
 use Elusim\Response\ResponseInterface;
 use Elusim\Errors\Error;
 use Elusim\Errors\ErrorHandlerInterface;
+use Elusim\Config;
 
 class App
 {
@@ -25,12 +26,11 @@ class App
     );
 
     /**
-     * Podstawowe żadanie. Jest tworzone na początku, może wystąpić sytuacja
-     * gdy takie żądanie nie powstanie.
+     * Base request.
      */
     private $request;
 
-    function __construct(array $params = array(), \Elusim\Config $config = null)
+    function __construct(array $params = array(), Config $config = null)
     {
         $this->loadParams($params);
 
@@ -64,12 +64,6 @@ class App
         set_error_handler(array($this, '_errorHandler'));
         set_exception_handler(array($this, '_exceptionHandler'));
 
-        // trigger_error('E_USER_ERROR', E_USER_ERROR);
-        // trigger_error('E_USER_WARNING', E_USER_WARNING);
-        // trigger_error('E_USER_NOTICE', E_USER_NOTICE);
-        // trigger_error('E_USER_DEPRECATED', E_USER_DEPRECATED);
-        // throw new \Exception("Pawel");
-
         // Próbuje stworzyć żądanie
         try {
             if (is_null($request)) {
@@ -91,108 +85,10 @@ class App
     private function initConfig(Config $config = null)
     {
         if (is_null($config)) {
-            // todo Base config
-            // Create config base on params.
+            $config = new Config();
         }
 
-        // config
-        $config->merge(array(
-            'response' => array(
-                'headers' => array(
-                    'Access-Control-Allow-Origin' => '*',
-                    'Access-Control-Allow-Headers' => ' Cache-Control, X-Requested-With, Content-Type',
-
-                    // Dodatkowe naglowki ktore mogą byc odczytane przez
-                    // przeglądarkę
-                    'Access-Control-Expose-Headers' => ' X-Rows-Number, X-Page-Size, X-Page, X-Page-Offset, X-Pages-Number',
-                ),
-                'engines' => array(
-                    'application/json' => 'json',
-                    'application/xml' => 'xml',
-                    'text/html' => 'twig',
-                ),
-                'contentType' => array(
-                    'negotiation' => 1,
-                    'default' => 'application/json',
-                    // 'priorities' => array('text/html; charset=UTF-8', 'application/json', 'application/xml;q=0.5'),
-                    'priorities' => array(
-                        'application/json',
-                        'application/xml',
-                        'text/html',
-                    ),
-                ),
-                'lang' => array(
-                    'negotiation' => 1,
-                    'default' => 'en-US,en',
-                    // 'priorities' => array('text/html; charset=UTF-8', 'application/json', 'application/xml;q=0.5'),
-                    'priorities' => array(
-                        'pl-PL,pl',
-                        'en-US,en'
-                    ),
-                ),
-            ),
-
-            'elusim' => array(
-                'errors' => array(
-                    'errorReporting' => array(
-                        // List of errors to display
-                        E_ERROR,
-                        E_WARNING,
-                        E_PARSE,
-                        E_NOTICE,
-                        E_CORE_ERROR,
-                        E_CORE_WARNING,
-                        E_COMPILE_ERROR,
-                        E_COMPILE_WARNING,
-                        E_USER_ERROR,
-                        E_USER_WARNING,
-                        E_USER_NOTICE,
-                        E_STRICT,
-                        E_RECOVERABLE_ERROR,
-                        E_DEPRECATED,
-                        E_USER_DEPRECATED,
-                    ),
-
-                    'errorReportingSilently' => true,
-                ),
-                'lang' => array(
-                    'dictionaries' => array(
-                        '@lang.dictionaries.elusim',
-                    )
-                ),
-                'twig' => array(
-                    'loader' => array(
-                        './src/App/templates',
-                    ),
-
-                    // 'layouts' => array(
-                    //     'main' => 'layouts/main.html'
-                    // ),
-                ),
-                'router' => array(
-                    'error' => array(
-                        'action' => \Elusim\Actions\Error::class
-                    )
-                ),
-                'components' => array(
-                    // 'dirs' => array(
-                    //     "../src/Components"
-                    // )
-                ),
-                'actions' => array(
-                    // 'default' => array(
-
-                    // ),
-                    // 'rest' => array(
-                    //     'requireParameterDescription' => true,
-                    //     'requireFieldsDescription' => true,
-                    // ),
-                ),
-                'http' => array(
-
-                ),
-            )
-        ), true);
+        $config->merge(__DIR__."/Config/app.php", true);
 
         return $config;
     }
@@ -214,56 +110,6 @@ class App
     public function _errorHandler($severity, $message, $file, $line)
     {
         $this->_error(new Error($message, 0, $severity, $file, $line));
-
-        // switch($code){
-        // case E_ERROR :
-        //     $error = new \Elusim\Exceptions\ErrorException($message, $code, $file, $line);
-        //     break;
-        // case E_WARNING :
-        //     $error = new \Elusim\Exceptions\WarningException($message, $code, $file, $line);
-        //     break;
-        // case E_PARSE :
-        //     $error = new \Elusim\Exceptions\ParseException($message, $code, $file, $line);
-        //     break;
-        // case E_NOTICE :
-        //     $error = new \Elusim\Exceptions\NoticeException($message, $code, $file, $line);
-        //     break;
-        // case E_CORE_ERROR :
-        //     $error = new \Elusim\Exceptions\CoreErrorException($message, $code, $file, $line);
-        //     break;
-        // case E_CORE_WARNING :
-        //     $error = new \Elusim\Exceptions\CoreWarningException($message, $code, $file, $line);
-        //     break;
-        // case E_COMPILE_ERROR :
-        //     $error = new \Elusim\Exceptions\CompileErrorException($message, $code, $file, $line);
-        //     break;
-        // case E_COMPILE_WARNING :
-        //     $error = new \Elusim\Exceptions\CoreWarningException($message, $code, $file, $line);
-        //     break;
-        // case E_USER_ERROR :
-        //     $error = new \Elusim\Exceptions\UserErrorException($message, $code, $file, $line);
-        //     break;
-        // case E_USER_WARNING :
-        //     $error = new \Elusim\Exceptions\UserWarningException($message, $code, $file, $line);
-        //     break;
-        // case E_USER_NOTICE :
-        //     $error = new \Elusim\Exceptions\UserNoticeException($message, $code, $file, $line);
-        //     break;
-        // case E_STRICT :
-        //     $error = new \Elusim\Exceptions\StrictException($message, $code, $file, $line);
-        //     break;
-        // case E_RECOVERABLE_ERROR :
-        //     $error = new \Elusim\Exceptions\RecoverableErrorException($message, $code, $file, $line);
-        //     break;
-        // case E_DEPRECATED :
-        //     $error = new \Elusim\Exceptions\DeprecatedException($message, $code, $file, $line);
-        //     break;
-        // case E_USER_DEPRECATED :
-        //     $error = new \Elusim\Exceptions\UserDeprecatedException($message, $code, $file, $line);
-        //     break;
-        // }
-
-        // $this->error($error);
     }
 
     /**

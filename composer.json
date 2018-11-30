@@ -22,6 +22,7 @@
         "aura/session": "3.x-dev",
         "tedivm/stash": "dev-master",
         "symfony/console": "^4.1@dev",
-        "twig/twig": "^2.0"
+        "twig/twig": "^2.0",
+        "symfony/yaml": "^4.3@dev"
     }
 }
