@@ -72,7 +72,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return include($file);
     }
 
-    protected function createVariable($name, $variable)
+    protected function createVariable(string $name, $variable)
     {
         file_put_contents(sprintf("./src/Tests/variables/%s.php", $name), sprintf("<?php return %s;", var_export($variable, 1)));
     }

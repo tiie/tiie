@@ -18,4 +18,4 @@ elusim:
             - '@lang.dictionaries.elusim'
     router:
         error:
-            action: \Elusim\Actions\Error::class
+            action: '\Elusim\Actions\Error'

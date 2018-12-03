@@ -64,55 +64,22 @@ class ConfigTest extends TestCase
     {
         $config = new Config();
 
-        $merged = $config->arrayMerge(array(
-            // 'name' => 'Pawel',
-            'emails' => array(
-                'a@o2.pl',
-                'b@o2.pl',
-                'c@o2.pl',
-            ),
-        ), array(
-            // 'lastName' => 'Gaweł',
-            'emails' => array(
-                'd@o2.pl',
-            ),
-        ));
+        // $this->createVariable('variable-115', $config->toArray());
+        $this->assertEquals($this->variable('variable-115'), $config->toArray());
 
-        // todo [debug] Debug to delete
-        die(print_r($merged, true));
-        // $configYaml = new Config(__DIR__."/app-config.yaml");
-        // $configJson = new Config(__DIR__."/app-config.json");
-        // $configPhp = new Config(__DIR__."/app-config.php");
+        $config->merge(__DIR__."/app-config.yaml");
 
-        // $config = new Config();
+        // $this->createVariable('variable-116', $config->toArray());
+        $this->assertEquals($this->variable('variable-116'), $config->toArray());
 
-        // $config->merge($configYaml);
-        // $config->merge($configJson);
-        // $config->merge($configPhp);
+        $config->merge(__DIR__."/app-config.json");
 
-        // todo [debug] Debug to delete
-        die(print_r($config, true));
-        // todo [debug] Debug to delete
-        // die(print_r(array(
-        //     $configYaml,
-        //     $configJson,
-        //     $configPhp,
-        // ), true));
-        // // todo [debug] Debug to delete
-        // die(print_r($config, true));
+        // $this->createVariable('variable-117', $config->toArray());
+        $this->assertEquals($this->variable('variable-117'), $config->toArray());
+
+        $config->merge(__DIR__."/app-config.php");
+
+        // $this->createVariable('variable-118', $config->toArray());
+        $this->assertEquals($this->variable('variable-118'), $config->toArray());
     }
-    // public function load($config)
-    // public function offsetSet($offset, $value)
-    // public function offsetExists($offset)
-    // public function offsetUnset($offset)
-    // public function offsetGet($offset)
-    // public function merge($config, $reverse = false)
-    // public function export($path)
-    // public function defined($key)
-    // public function toArray()
-    // public function keys($name)
-    // public function is($key)
-    // public function get($key, $default = null)
-    // public function set($key, $value)
-    // public function config($key)
 }

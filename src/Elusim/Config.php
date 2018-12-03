@@ -161,9 +161,15 @@ class Config implements \ArrayAccess
         return $this;
     }
 
-    public function arrayMerge(array $a = array(), array $b = array())
+    private function arrayMerge(array $a = array(), array $b = array())
     {
         foreach ($b as $key => $value) {
+            if ($key[0] == '_') {
+                $a[substr($key, 1)] = $value;
+
+                continue;
+            }
+
             if (is_numeric($key)) {
                 if (!in_array($b[$key], $a)) {
                     $a[] = $b[$key];
@@ -198,7 +204,7 @@ class Config implements \ArrayAccess
      *
      * @param string $path
      */
-    public function export($path)
+    public function export(string $path)
     {
         // create dir, if not exists
         $dir = explode("/", $path);

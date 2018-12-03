@@ -8,27 +8,27 @@ return array(
             'text/html' => 'twig',
         ),
         'contentType' => array(
-            'priorities' => array(
-                'application/json',
+            '_priorities' => array(
                 'text/html',
+                'application/pdf',
             ),
         ),
         'lang' => array(
             'negotiation' => 0,
             'priorities' => array(
-                'en-US,en'
+                'ar-EG,eg'
             ),
         ),
     ),
 
     'elusim' => array(
         'errors' => array(
-            'errorReporting' => array(
+            '_errorReporting' => array(
                 // List of errors to display
-                E_STRICT,
-                E_RECOVERABLE_ERROR,
-                E_DEPRECATED,
-                E_USER_DEPRECATED,
+                'E_STRICT',
+                'E_RECOVERABLE_ERROR',
+                'E_DEPRECATED',
+                'E_USER_DEPRECATED',
             ),
 
             'errorReportingSilently' => false,
@@ -48,7 +48,7 @@ return array(
         ),
         'router' => array(
             'error' => array(
-                'action' => \Elusim\Actions\Error::class
+                'action' => '\Elusim\Actions\Error',
             )
         ),
         'components' => array(

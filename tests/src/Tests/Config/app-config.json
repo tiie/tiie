@@ -11,7 +11,7 @@
                 "application/json"
             ]
         },
-        "lang" : {
+        "_lang" : {
             "priorities" : [
                 "pl-PL,pl",
                 "en-US,en"
@@ -21,7 +21,7 @@
 
     "elusim" : {
         "errors" : {
-            "errorReporting" : [
+            "_errorReporting" : [
                 "E_PARSE",
                 "E_NOTICE",
                 "E_CORE_ERROR",
