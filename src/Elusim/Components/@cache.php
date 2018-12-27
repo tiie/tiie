@@ -1,13 +1,11 @@
 <?php
-return function(\Elusim\Components $components) {
+use Elusim\Components;
 
-    // Create Driver with default options
-    // $driver = new Stash\Driver\FileSystem();
+return function(Components $components) {
     $driver = new Stash\Driver\FileSystem(array(
         'path' => '../tmp/cache'
     ));
 
-    // Create pool and inject driver
     $pool = new Stash\Pool($driver);
 
     return $pool;
