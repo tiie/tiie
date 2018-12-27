@@ -27,6 +27,13 @@ class Records implements \Countable, Iterator
         $this->pointer = 0;
     }
 
+    public function shuffle()
+    {
+        shuffle($this->records);
+
+        return $this;
+    }
+
     public function rewind()
     {
         $this->pointer = 0;
