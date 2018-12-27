@@ -4,6 +4,7 @@ namespace Elusim\Files;
 class Creator
 {
     private $file = null;
+    private $error = 0;
     private $db;
 
     private $params = array(
@@ -14,27 +15,45 @@ class Creator
     {
         $this->db = $db;
 
-        if (isset($file['tmp_name'])) {
+        if (array_key_exists('tmp_name', $file)) {
+            // Get file from $_FILES table.
             $file['path'] = $file['tmp_name'];
+
+            unset($file['tmp_name']);
         }
 
-        if (!isset($file['path'])) {
-            throw new \Exception("File needs path relative to runpath.");
+        if (!array_key_exists('path', $file)) {
+            trigger_error("There is no path for file.", E_USER_NOTICE);
+
+            $this->error = 1;
         }
 
-        if (!is_readable($file['path'])) {
-            throw new \Exception("File {$file['path']} is not readable.");
-        }
+        // todo Poprawic
+        // if (!is_readable($file['path'])) {
+        //     trigger_error("File '{$file['path']}' is not readable.", E_USER_NOTICE);
 
-        if (!is_file($file['path'])) {
-            throw new \Exception("File {$file['path']} is not file.");
-        }
+        //     $this->error = 1;
+        // }
 
-        if (!isset($file['size'])) {
-            $file['size'] = null;
-        }
+        if (!$this->error) {
+            if (!array_key_exists('size', $file)) {
+                $file['size'] = strlen(file_get_contents($file['path']));
+            }
 
-        $this->file = $file;
+            if (!array_key_exists('name', $file)) {
+                $exploded = explode('/', $file['path']);
+                $file['name'] = array_pop($exploded);
+            } else {
+                if (empty($file['name'])) {
+                    trigger_error("File name for '{$file['path']}' is empty.", E_USER_NOTICE);
+
+                    // Get name from path.
+                    $file['name'] = array_pop(explode('/', $file['path']));
+                }
+            }
+
+            $this->file = $file;
+        }
     }
 
     public function param($name, $value = null)

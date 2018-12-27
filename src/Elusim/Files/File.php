@@ -129,8 +129,54 @@ class File
         return $this->data['name'];
     }
 
-    public function copy($dir)
+    public function copy(string $to, string $filename = null)
     {
+        $tmp = explode('/', $this->data['path']);
+
+        if (is_null($filename)) {
+            // pobieram nazwe z aktualnej sciezki
+            $filename = array_pop($tmp);
+        }else{
+            // usuwam nazwe pliku
+            array_pop($tmp);
+        }
+
+        // tworze nazwe katalogu
+        $dir = implode('/', $tmp);
+
+        $isDir = is_dir($to);
+
+        if (file_exists($to) && !$isDir) {
+            throw new \InvalidArgumentException("To {$to} is not dir.");
+        }
+
+        if (!$isDir) {
+            mkdir($to, 0700, true);
+        }
+
+        $path = sprintf('%s/%s', $to, $filename);
+
+        // first update database
+        $update = new \Elusim\Data\Adapters\Commands\SQL\Update();
+        $update
+            ->table($this->params['table'])
+            ->values(array(
+                'path' => $path
+            ))
+
+            ->eq('id', $this->data['id'])
+        ;
+
+        $this->db->update($update);
+
+        // then move file
+        if(copy($this->data['path'], $path) === false){
+            throw new \Elusim\Exceptions\ProcessException("File can not be moved.");
+        }
+
+        $this->data['path'] = $path;
+
+        return $this;
 
     }
 

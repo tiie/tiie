@@ -7,13 +7,13 @@ class Files
         'table' => 'files',
     );
 
-    function __construct($db, $params = array())
+    function __construct($db, array $params = array())
     {
         $this->db = $db;
         $this->params = array_replace($this->params, $params);
     }
 
-    public function create($data)
+    public function create(array $data)
     {
         if (empty($data['extension'])) {
             // try get extension from file name
