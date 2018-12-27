@@ -441,7 +441,7 @@ class Select extends Command
     public function page($page, $pageSize = null)
     {
         if (is_array($page)) {
-            if (isset($page['page']) && isset($page['pageSize'])) {
+            if (array_key_exists('page', $page) && array_key_exists('pageSize', $page)) {
                 return $this->page($page['page'], $page['pageSize']);
             } else {
                 return $this;
@@ -467,7 +467,8 @@ class Select extends Command
                 throw new \InvalidArgumentException("Page should be 0 or larger and pageSize should be large then 0.");
             }
         }else{
-            throw new \InvalidArgumentException("Page and pageSize shuld be number.");
+            return $this;
+            // throw new \InvalidArgumentException("Page and pageSize shuld be number.");
         }
 
         return $this;
@@ -535,12 +536,12 @@ class Select extends Command
             $type = strtolower($type);
 
             $this->order[] = array(
-                'column' => $column[0],
+                'field' => $column[0],
                 'type' => $type,
             );
         } else {
             $this->order[] = array(
-                'column' => $column,
+                'field' => $column,
                 'type' => $type,
             );
         }
@@ -550,6 +551,148 @@ class Select extends Command
         // }
 
         return $this;
+    }
+
+    public function sort($sort = null)
+    {
+        if(is_null($sort)) {
+            return $this->order;
+        } elseif (is_array($sort)) {
+            if (empty($sort)) {
+                $this->order = array();
+
+                return $this;
+            }
+
+            if (!is_numeric(array_keys($sort)[0])) {
+                $sort = array($sort);
+            }
+
+            $this->order = array();
+
+            // $this->sort("firstName asc");
+            // $this->sort(array('firstName' => 'asc'));
+            // $this->sort(array(
+            //     array('firstName' => 'asc'),
+            //     array('firstName' => 'asc'),
+            //     array('firstName' => 'asc'),
+            // ));
+            // $this->sort(array(
+            //     'field' => 'firstName',
+            //     'type' => 'asc',
+            // ));
+
+            // $this->sort(array(
+            //     array(
+            //         'field' => 'firstName',
+            //         'type' => 'asc',
+            //     ),
+            //     array(
+            //         'field' => 'firstName',
+            //         'type' => 'asc',
+            //     ),
+            // ));
+            // $this->sort(array(
+            //     "firstName asc",
+            //     array("firstName" => 'asc'),
+            //     array(
+            //         'field' => 'firstName',
+            //         'type' => 'asc',
+            //     ),
+            // );
+
+            // if (count($sort) == 1) {
+            //     $sort = array($sort);
+            // }
+
+            foreach ($sort as $key => $value) {
+                if (is_string($value)) {
+                    // $this->sort(array("name asc"));
+                    $value = explode(' ', trim($value));
+
+                    $field = array_shift($value);
+                    $type = 'asc';
+
+                    foreach ($value as $e) {
+                        if (!empty($e)) {
+                            $type = $e;
+                            break;
+                        }
+                    }
+
+                    $this->order[] = array(
+                        'field' => $field,
+                        'type' => $type,
+                    );
+                } elseif(is_array($value)){
+                    // $this->sort(array(
+                    //     array('name asc'),
+                    //     array('name' => 'asc'),
+                    //     array(
+                    //         'field' => 'name',
+                    //         'type' => 'asc',
+                    //     ),
+                    // ));
+
+                    $keys = array_keys($value);
+
+                    if (count($keys) == 1 && is_numeric($keys[0])) {
+                        // $this->sort(array("name asc"));
+                        $value = explode(' ', trim($value[$keys[0]]));
+
+                        $field = array_shift($value);
+                        $type = 'asc';
+
+                        foreach ($value as $e) {
+                            if (!empty($e)) {
+                                $type = $e;
+                                break;
+                            }
+                        }
+
+                        $this->order[] = array(
+                            'field' => $field,
+                            'type' => $type,
+                        );
+                    } elseif (count($keys) == 1 && !is_numeric($keys[0])) {
+                        $this->order[] = array(
+                            'field' => $keys[0],
+                            'type' => $value[$keys[0]],
+                        );
+                    } else if(!empty($value['field']) && !empty($value['type'])) {
+                        $this->order[] = array(
+                            'field' => $value['field'],
+                            'type' => $value['type'],
+                        );
+                    } else {
+                        trigger_error("No order field.", E_USER_NOTICE);
+                    }
+                }
+            }
+
+            return $this;
+        } elseif (is_string($sort)) {
+            $sort = explode(' ', trim($sort));
+
+            $field = array_shift($sort);
+            $type = 'asc';
+
+            foreach ($sort as $value) {
+                if (!empty($value)) {
+                    $type = $value;
+                    break;
+                }
+            }
+
+            $this->order = array(
+                array(
+                    'field' => $field,
+                    'type' => $type,
+                )
+            );
+
+            return $this;
+        }
     }
 
     /**
@@ -709,28 +852,29 @@ class Select extends Command
 
     public function params(array $values = array(), array $fields = array())
     {
-        if (array_key_exists('order', $values)) {
-            $this->order($values['order']);
-
-            unset($values['order']);
-        } elseif (array_key_exists('sort', $values)) {
-            $this->order($values['sort']);
-
-            unset($values['sort']);
-        }
-
         $this->where->params($values, $fields);
 
-        if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
-            $this->page($values['page'], $values['pageSize']);
-        } elseif (array_key_exists('page', $values)) {
-            $this->page($values['page']);
-        }
+        // todo [delete] Parametry obsługiwane przez Select.
+        // if (array_key_exists('order', $values)) {
+        //     $this->order($values['order']);
 
-        if (array_key_exists('limit', $values)) {
-            $this->limit($values['limit']);
-            unset($values['limit']);
-        }
+        //     unset($values['order']);
+        // } elseif (array_key_exists('sort', $values)) {
+        //     $this->order($values['sort']);
+
+        //     unset($values['sort']);
+        // }
+
+        // if (array_key_exists('page', $values) && array_key_exists('pageSize', $values)) {
+        //     $this->page($values['page'], $values['pageSize']);
+        // } elseif (array_key_exists('page', $values)) {
+        //     $this->page($values['page']);
+        // }
+
+        // if (array_key_exists('limit', $values)) {
+        //     $this->limit($values['limit']);
+        //     unset($values['limit']);
+        // }
 
         return $this;
     }
@@ -985,7 +1129,7 @@ class Select extends Command
 
         if (!empty($this->order)) {
             foreach ($this->order as $order) {
-                $column = \Elusim\Data\functions::columnStr($order['column'], $params);
+                $column = \Elusim\Data\functions::columnStr($order['field'], $params);
 
                 $orderType = strtolower($order['type']);
 
@@ -1061,7 +1205,7 @@ class Select extends Command
         return $buildCommand;
     }
 
-    public function count($params = array())
+    public function count(array $params = array())
     {
         $adapter = $this->adapter();
 
