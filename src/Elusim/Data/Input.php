@@ -2,12 +2,14 @@
 namespace Elusim\Data;
 
 use Elusim\Data\Validators\NotEmpty;
+use Elusim\Messages\MessagesInterface;
+use Elusim\Messages\Helper as MessagesHelper;
 
 class Input
 {
     const INPUT_DATA_TYPE_VALUE = 'value';
     const INPUT_DATA_TYPE_OBJECT = 'object';
-    const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'list-of-objects';
+    const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'listOfObjects';
     const INPUT_DATA_TYPE_LIST = 'vector';
 
     private $data = array();
@@ -15,6 +17,8 @@ class Input
     private $errors = array();
     private $rules = array();
     private $notEmpty = null;
+
+    private $messages;
 
     private $processed = 0;
 
@@ -46,6 +50,19 @@ class Input
         }
     }
 
+    public function messages(MessagesInterface $messages = null) : Input
+    {
+        if (is_null($messages)) {
+            return $this->messages;
+        } else {
+            $this->messages = new MessagesHelper($messages, array(
+                "prefix" => "@Input"
+            ));
+
+            return $this;
+        }
+    }
+
     public function exists(string $name)
     {
         return array_key_exists($name, $this->prepared) || array_key_exists($name, $this->input);
@@ -62,7 +79,6 @@ class Input
         }
 
         return 1;
-        // return array_key_exists($name, $this->prepared) || array_key_exists($name, $this->input);
     }
 
     /**
@@ -174,36 +190,12 @@ class Input
         }
     }
 
-    // /**
-    //  * Returns the prepared data.
-    //  *
-    //  * @return array
-    //  */
-    // public function prepared()
-    // {
-    //     return $this->prepared;
-    // }
-
-    // /**
-    //  * Validates data according to specific rules. The value of 'null' is
-    //  * returned in the absence of errors or 'array' if any.
-    //  *
-    //  * @return array|null
-    //  */
-    // public function validate()
-    // {
-    //     $this->process();
-
-    //     return empty($this->errors) ? null : $this->errors;
-    // }
-
     private function process()
     {
         $result = $this->processRules($this->rules, $this->input);
 
         $this->errors = $result['errors'];
         $this->prepared = $result['prepared'];
-        // return $this->prepared;
     }
 
     private function processRules($rules, $data)
@@ -224,11 +216,12 @@ class Input
             case self::INPUT_DATA_TYPE_VALUE:
                 if (!in_array($field, $dataKeys)) {
                     // Pole nie zostało podane, sprawdzam czy jest walidator
-                    // exists
+                    // exists.
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Elusim.Data.Input.NotExists)',
+                            // 'error' => $this->messageForCode('notExists'),
+                            'error' => $this->messages->get("notExists"),
                         );
                     }
 
@@ -240,22 +233,22 @@ class Input
                     // więc nie mogę zastosować walidatorów dla wartości.
                     $errors[$field][] = array(
                         'code' => 'wrongType',
-                        'error' => '@(Elusim.Data.Input.WrongType)',
+                        'error' => $this->messages->get("wrongType"),
                     );
 
                     continue;
                 }
 
-                if (in_array('notEmpty', $validators)) {
-                    // Mamy wartość, ale też mamy walidator nie pusty.
-                    $error = $this->notEmpty->validate($data[$field]);
+                // if (in_array('notEmpty', $validators)) {
+                //     // Mamy wartość, ale też mamy walidator nie pusty.
+                //     $error = $this->notEmpty->validate($data[$field]);
 
-                    if (!is_null($error)) {
-                        $errors[$field][] = $error;
+                //     if (!is_null($error)) {
+                //         $errors[$field][] = $error;
 
-                        continue;
-                    }
-                }
+                //         continue;
+                //     }
+                // }
 
                 // Podstawowe walidatory zostały sprawdzone, filtruje wartość.
                 $prepared[$field] = $data[$field];
@@ -285,14 +278,20 @@ class Input
                             foreach ($error as $code => $error) {
                                 $errors[$field][] = $error;
                             }
+
+                            break;
                         }
                     }elseif($validator instanceof \Elusim\Data\Validators\ValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             $errors[$field][] = $error;
+
+                            break;
                         }
                     }elseif(is_string($validator)){
                         if(!is_null($error = $this->keyValidate($validator, $prepared[$field]))){
                             $errors[$field][] = $error;
+
+                            break;
                         }
                     }
                 }
@@ -304,25 +303,27 @@ class Input
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Elusim.Data.Input.NotExists)',
+                            // 'error' => '@(Elusim.Data.Input.NotExists)',
+                            'error' => $this->messages->get("notExists"),
                         );
                     }
 
                     continue;
                 }
 
-                if (in_array('notEmpty', $validators)) {
-                    $error = $this->notEmpty->validate($data[$field]);
+                // if (in_array('notEmpty', $validators)) {
+                //     $error = $this->notEmpty->validate($data[$field]);
 
-                    if (!is_null($error)) {
-                        $errors[$field][] = $error;
+                //     if (!is_null($error)) {
+                //         $errors[$field][] = $error;
 
-                        continue;
-                    }
-                }
+                //         continue;
+                //     }
+                // }
 
                 if (!is_array($data[$field])) {
-                    $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
+                    // $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
+                    $errors[$field]['wrongType'] = $this->messages->get("notExists");
 
                     continue;
                 }
@@ -348,7 +349,8 @@ class Input
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Elusim.Data.Input.NotExists)',
+                            // 'error' => '@(Elusim.Data.Input.NotExists)',
+                            'error' => $this->messages->get("notExists"),
                         );
                     }
 
@@ -359,7 +361,8 @@ class Input
                     // $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
                     $errors[$field][] = array(
                         'code' => 'wrongType',
-                        'error' => '@(Elusim.Data.Input.WrongType)',
+                        // 'error' => '@(Elusim.Data.Input.WrongType)',
+                        'error' => $this->messages->get("wrongType"),
                     );
 
                     continue;
@@ -401,7 +404,8 @@ class Input
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
                             'code' => 'notExists',
-                            'error' => '@(Elusim.Data.Input.NotExists)',
+                            // 'error' => '@(Elusim.Data.Input.NotExists)',
+                            'error' => $this->messages->get("notExists"),
                         );
                     }
 
@@ -412,7 +416,8 @@ class Input
                     // $errors[$field]['wrongType'] = '@(Elusim.Data.Input.WrongType)';
                     $errors[$field][] = array(
                         'code' => 'wrongType',
-                        'error' => '@(Elusim.Data.Input.WrongType)',
+                        // 'error' => '@(Elusim.Data.Input.WrongType)',
+                        'error' => $this->messages->get("wrongType"),
                     );
 
                     continue;
