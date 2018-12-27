@@ -2,8 +2,9 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class StringLength implements ValidatorInterface
+class StringLength extends Validator
 {
     private $min;
     private $max;

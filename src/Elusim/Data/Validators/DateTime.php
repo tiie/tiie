@@ -2,8 +2,9 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class DateTime implements ValidatorInterface
+class DateTime extends Validator
 {
     private $format;
 

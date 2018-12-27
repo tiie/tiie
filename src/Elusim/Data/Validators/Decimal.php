@@ -2,9 +2,10 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 use Elusim\Data\Validators\Number;
 
-class Decimal implements ValidatorInterface
+class Decimal extends Validator
 {
     private $length;
     private $decimals;

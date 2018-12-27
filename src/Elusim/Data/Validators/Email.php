@@ -2,15 +2,11 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 use Elusim\Data\Validators\Number;
 
-class Email implements ValidatorInterface
+class Email extends Validator
 {
-    public function description()
-    {
-        return '@(Elusim.Data.Validators.Email.Description)';
-    }
-
     public function validate($value)
     {
         if(filter_var($value, FILTER_VALIDATE_EMAIL)) {
@@ -18,7 +14,7 @@ class Email implements ValidatorInterface
         }else{
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => '@(Elusim.Data.Validators.Email.Invalid)',
+                'error' => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
     }

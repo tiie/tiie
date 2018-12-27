@@ -2,8 +2,9 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class NotNull implements ValidatorInterface
+class NotNull extends Validator
 {
     public function description()
     {

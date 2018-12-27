@@ -2,8 +2,9 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class IsIP implements ValidatorInterface
+class IsIP extends Validator
 {
     public function description()
     {

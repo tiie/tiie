@@ -2,10 +2,11 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 use Elusim\Data\Adapters\AdapterInterface;
 use Elusim\Data\Adapters\Commands\SQL\Select;
 
-class RowExists implements ValidatorInterface
+class RowExists extends Validator
 {
     private $db;
     private $container;

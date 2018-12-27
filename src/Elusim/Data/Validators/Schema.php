@@ -2,6 +2,7 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ComplexValidatorInterface;
+use Elusim\Data\Validators\Validator;
 use Elusim\Data\Adapters\MetadataAccessibleInterface;
 
 use Elusim\Validators\NotNull;
@@ -17,7 +18,7 @@ use Elusim\Validators\Year;
 use Elusim\Validators\StringLength;
 use Elusim\Validators\Enum;
 
-class Schema implements ComplexValidatorInterface
+class Schema extends Validator implements ComplexValidatorInterface
 {
     private $adapter;
     private $column;

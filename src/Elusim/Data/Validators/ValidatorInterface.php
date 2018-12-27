@@ -1,6 +1,9 @@
 <?php
 namespace Elusim\Data\Validators;
 
+use Elusim\Messages\Helper as MessagesHelper;
+use Elusim\Messages\MessagesInterface;
+
 interface ValidatorInterface
 {
     const ERROR_CODE_REQUIRED = 'required';
@@ -10,6 +13,8 @@ interface ValidatorInterface
     const ERROR_CODE_IS_EMPTY = 'isEmpty';
 
     public function description();
+
+    public function messages(MessagesInterface $messages = null);
 
     /**
      * Check if given value is valid. If jest then null value should be

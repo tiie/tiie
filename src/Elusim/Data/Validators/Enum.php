@@ -2,8 +2,9 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class Enum implements ValidatorInterface
+class Enum extends Validator
 {
     private $enum;
     private $hasObject = 0;

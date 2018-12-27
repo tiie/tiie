@@ -2,21 +2,18 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class NotEmpty implements ValidatorInterface
+class NotEmpty extends Validator
 {
-    public function description()
-    {
-        return '@(Elusim.Data.Validators.NotEmpty.Description)';
-    }
-
     public function validate($value)
     {
         if (is_array($value)) {
             if (empty($value)) {
                 return array(
-                    'code' => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                    'error' => "@(Elusim.Data.Validators.NotEmpty.IsEmpty)",
+                    "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
+                    "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
+                    // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                 );
             }else{
                 return null;
@@ -24,8 +21,9 @@ class NotEmpty implements ValidatorInterface
         }elseif(is_string($value)){
             if ($value == "") {
                 return array(
-                    'code' => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                    'error' => "@(Elusim.Data.Validators.NotEmpty.IsEmpty)",
+                    "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
+                    // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
+                    "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                 );
             }else{
                 return null;
@@ -34,15 +32,17 @@ class NotEmpty implements ValidatorInterface
             return null;
         }elseif(is_null($value)){
             return array(
-                'code' => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                'error' => "@(Elusim.Data.Validators.NotEmpty.IsEmpty)",
+                "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
+                // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
+                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
             );
         }else{
             if($value instanceof \Countable) {
                 if ($value->count() == 0) {
                     return array(
-                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                        'error' => "@(Elusim.Data.Validators.NotEmpty.WrongType)",
+                        "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
+                        // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
+                        "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                     );
                 } else {
                     return null;

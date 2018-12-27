@@ -2,8 +2,9 @@
 namespace Elusim\Data\Validators;
 
 use Elusim\Data\Validators\ValidatorInterface;
+use Elusim\Data\Validators\Validator;
 
-class Number implements ValidatorInterface
+class Number extends Validator
 {
     private $unsigned;
 
