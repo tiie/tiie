@@ -7,6 +7,8 @@ use Elusim\Data\Model\RecordInterface;
 use Elusim\Data\Model\ModelInterface;
 use Elusim\Data\Model\CreatorInterface;
 use Elusim\Data\Model\Creator;
+use Elusim\Data\Model\Projection;
+use Elusim\Data\Model\Relational\SelectableInterface;
 
 abstract class Model implements ModelInterface
 {
@@ -18,15 +20,38 @@ abstract class Model implements ModelInterface
 
     private $records = array();
 
-    public function find(array $params = array()) : Records
+    // public function find(array $params = array()) : Records
+    public function find(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : Records
     {
         $records = array();
 
-        foreach ($this->fetch($params) as $item) {
+        foreach ($this->fetch($params, $fields, $sort, $size, $page) as $item) {
             $records[] = $this->createRecord($item);
         }
 
         return new Records($this, $records, $this->id);
+    }
+
+    public function counter(array $params = array(), int $size = null, int $page = 0) : array
+    {
+        $counter = array();
+
+        $number = $this->count($params);
+        $counter['total'] = $number;
+
+        if (!is_null($size)) {
+            $counter['size'] = $size;
+            $counter['page'] = $page;
+            $counter['offset'] = $page * $size;
+            $counter['pages'] = ceil($number / $size);
+        }
+
+        return $counter;
+    }
+
+    public function projection() : Projection
+    {
+        return new Projection($this);
     }
 
     public function generator(array $params = array()) : iterable
@@ -43,10 +68,11 @@ abstract class Model implements ModelInterface
 
     public function count(array $params = array()) : string
     {
-        unset($params[$this->pagingParameters['page']]);
-        unset($params[$this->pagingParameters['pageSize']]);
-
-        return $this->find($params)->count();
+        if ($this instanceof SelectableInterface) {
+            return $this->select($params)->count();
+        } else {
+            return $this->find($params)->count();
+        }
     }
 
     public function createRecord(array $data = array()) : RecordInterface
@@ -74,9 +100,9 @@ abstract class Model implements ModelInterface
     /**
      * Return record with given id.
      */
-    public function record(string $id, array $params = array()) : ?RecordInterface
+    public function record(string $id, array $params = array(), array $fields = array()) : ?RecordInterface
     {
-        $row = $this->fetchById($id, $params);
+        $row = $this->fetchById($id, $params, $fields);
 
         if (is_null($row)) {
             return null;
@@ -85,11 +111,11 @@ abstract class Model implements ModelInterface
         return $this->createRecord($row);
     }
 
-    public function fetchById(string $id, array $params = array()) : ?array
+    public function fetchById(string $id, array $params = array(), array $fields = array()) : ?array
     {
         $params[$this->id] = $id;
 
-        return empty($rows = $this->fetch($params)) ? null : $rows[0];
+        return empty($rows = $this->fetch($params, $fields)) ? null : $rows[0];
     }
 
     public function fetchByIds(array $ids, array $params = array()) : ?array

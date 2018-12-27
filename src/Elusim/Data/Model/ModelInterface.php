@@ -2,6 +2,7 @@
 namespace Elusim\Data\Model;
 
 use Elusim\Data\Model\CreatorInterface;
+use Elusim\Data\Model\Projection;
 
 interface ModelInterface
 {
@@ -9,24 +10,30 @@ interface ModelInterface
     const PROCESS_SAVING = 'saving';
     const PROCESS_REMOVING = 'removing';
 
-    /**
-     * Find and return records.
-     *
-     * @param array $params
-     * @return Records
-     */
-    public function find(array $params = array()) : Records;
-
     public function generator(array $params = array()) : iterable;
 
     /**
      * Fetch data from source.
      *
      * @param array $params
+     * @param int $limit
+     * @param array $sort
+     * @param int $offset
      * @return array
      */
-    // public function fetch(array $params = array(), int $onlyId = 0) : array;
-    public function fetch(array $params = array(), int $limit = null, int $offset = 0) : array;
+    // public function fetch(array $params = array(), int $limit = null, array $sort = array(), int $offset = 0) : array;
+    public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : array;
+
+    public function projection() : Projection;
+    public function counter(array $params = array(), int $size = null, int $page = 0) : array;
+
+    /**
+     * Find and return records.
+     *
+     * @param array $params
+     * @return Records
+     */
+    public function find(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : Records;
 
     /**
      * Fetch data by id.
@@ -35,7 +42,7 @@ interface ModelInterface
      * @param array $params
      * @return array|NULL
      */
-    public function fetchById(string $id, array $params = array()) : ?array;
+    public function fetchById(string $id, array $params = array(), array $fields = array()) : ?array;
 
     /**
      * Fetch data by ids.
@@ -97,5 +104,5 @@ interface ModelInterface
     /**
      * Return record with given id.
      */
-    public function record(string $id, array $params = array()) : ?RecordInterface;
+    public function record(string $id, array $params = array(), array $fields = array()) : ?RecordInterface;
 }
