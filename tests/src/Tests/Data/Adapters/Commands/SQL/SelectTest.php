@@ -32,6 +32,104 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-16'), $row);
     }
 
+    public function testSort()
+    {
+        $this->initDatabase('bookshop');
+
+        $select = (new Select($this->adapter('bookshop')))
+            ->from('users')
+            ->columns(array(
+                'id',
+                'firstName',
+                'lastName',
+            ))
+        ;
+
+        $select->sort('name     desc    ');
+
+        // $this->createVariable('variable-123', $select->sort());
+        $this->assertEquals($this->variable('variable-123'), $select->sort());
+
+        $select->sort(array(
+            'field' => 'name',
+            'type' => 'asc',
+        ));
+
+        // $this->createVariable('variable-124', $select->sort());
+        $this->assertEquals($this->variable('variable-124'), $select->sort());
+
+        $select->sort(array('name' => 'asc'));
+
+        //$this->createVariable('variable-125', $select->sort());
+        $this->assertEquals($this->variable('variable-125'), $select->sort());
+
+        $select->sort(array(
+            array(
+                'field' => 'lastName',
+                'type' => 'asc',
+            ), array(
+                'field' => 'firstName',
+                'type' => 'desc',
+            ),
+        ));
+
+        $this->createVariable('variable-126', $select->sort());
+        $this->assertEquals($this->variable('variable-126'), $select->sort());
+
+        $select->sort(array(
+            "name asc",
+            array('lastName' => 'desc'),
+            array(
+                'field' => 'age',
+                'type' => 'asc',
+            ),
+        ));
+
+        $this->createVariable('variable-127', $select->sort());
+        $this->assertEquals($this->variable('variable-127'), $select->sort());
+
+        // Check result
+        $select->limit(10);
+
+        $select->sort("firstName asc");
+
+        // $this->createVariable('variable-128', $select->fetch()->data());
+        $this->assertEquals($this->variable('variable-128'), $select->fetch()->data());
+
+        $select->sort("firstName desc");
+
+        // $this->createVariable('variable-129', $select->fetch()->data());
+        $this->assertEquals($this->variable('variable-129'), $select->fetch()->data());
+
+        $select->sort(array(
+            'field' => 'firstName',
+            'type' => 'asc',
+        ));
+
+        // $this->createVariable('variable-130', $select->fetch()->data());
+        $this->assertEquals($this->variable('variable-130'), $select->fetch()->data());
+
+        $select->sort(array(
+            'field' => 'firstName',
+            'type' => 'desc',
+        ));
+
+        // $this->createVariable('variable-131', $select->fetch()->data());
+        $this->assertEquals($this->variable('variable-131'), $select->fetch()->data());
+
+        $select->sort(array(
+            "lastName desc",
+            array('firstName' => 'asc'),
+            array(
+                'field' => 'id',
+                'type' => 'asc',
+            )
+        ));
+
+        // $this->createVariable('variable-132', $select->fetch()->data());
+        $this->assertEquals($this->variable('variable-132'), $select->fetch()->data());
+    }
+
     // public function test__clone()
     // {
 
