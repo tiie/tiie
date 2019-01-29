@@ -5,7 +5,7 @@ class FilesTest extends \Tests\TestCase
 {
     public function testGet()
     {
-        $files = new \Elusim\Lang\Dictionaries\Files(sprintf("%s/../App/lang", $this->dir()));
+        $files = new \Tiie\Lang\Dictionaries\Files(sprintf("%s/../App/lang", $this->dir()));
 
         $this->assertEquals(null, $files->get('pl', 'app.title'));
 

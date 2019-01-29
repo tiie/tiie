@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Config;
 
-use Elusim\Config;
+use Tiie\Config;
 use Tests\TestCase;
 
 class ConfigTest extends TestCase

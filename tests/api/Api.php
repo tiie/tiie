@@ -2,7 +2,7 @@
 
 // Array
 // (
-//     [DOCUMENT_ROOT] => F:\workspace\ofiko.api\vendor\ttmdear\php-elusim\tests\api
+//     [DOCUMENT_ROOT] => F:\workspace\ofiko.api\vendor\ttmdear\php-tiie\tests\api
 //     [REMOTE_ADDR] => ::1
 //     [REMOTE_PORT] => 62807
 //     [SERVER_SOFTWARE] => PHP 7.1.7 Development Server
@@ -12,7 +12,7 @@
 //     [REQUEST_URI] => /clients
 //     [REQUEST_METHOD] => GET
 //     [SCRIPT_NAME] => /index.php
-//     [SCRIPT_FILENAME] => F:\workspace\ofiko.api\vendor\ttmdear\php-elusim\tests\api\index.php
+//     [SCRIPT_FILENAME] => F:\workspace\ofiko.api\vendor\ttmdear\php-tiie\tests\api\index.php
 //     [PATH_INFO] => /clients
 //     [PHP_SELF] => /index.php/clients
 //     [HTTP_HOST] => localhost

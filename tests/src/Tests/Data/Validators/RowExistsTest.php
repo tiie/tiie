@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\RowExists;
+use Tiie\Data\Validators\RowExists;
 
 class RowExistsTest extends \Tests\TestCase
 {

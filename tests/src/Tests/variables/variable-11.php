@@ -10,7 +10,7 @@ return array (
         0 =>
         array (
           'code' => 'invalid',
-          'error' => '@(Elusim.Data.Validators.Email.Invalid)',
+          'error' => '@(Tiie.Data.Validators.Email.Invalid)',
         ),
       ),
     ),

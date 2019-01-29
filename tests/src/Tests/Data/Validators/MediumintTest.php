@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\Mediumint;
+use Tiie\Data\Validators\Mediumint;
 
 class MediumintTest extends \Tests\TestCase
 {

@@ -1,9 +1,9 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\Tinyint;
-use Elusim\Data\Validators\ValidatorsManager;
-use Elusim\Messages\MessagesInterface;
+use Tiie\Data\Validators\Tinyint;
+use Tiie\Data\Validators\ValidatorsManager;
+use Tiie\Messages\MessagesInterface;
 use Tests\TestCase;
 
 class ValidatorsManagerTest extends TestCase
@@ -12,7 +12,7 @@ class ValidatorsManagerTest extends TestCase
     {
         return new ValidatorsManager(array(
             array(
-                'namespace' => '\\Elusim\\Data\\Validators'
+                'namespace' => '\\Tiie\\Data\\Validators'
             ),
         ), new class implements MessagesInterface {
             public function get(string $code, array $params = array()) : ?string
@@ -32,7 +32,7 @@ class ValidatorsManagerTest extends TestCase
     {
         $validators = $this->initValidatorsManager();
 
-        $this->assertEquals(true, $validators->get('IsIP') instanceof \Elusim\Data\Validators\IsIP);
-        $this->assertEquals(true, $validators->get('Email') instanceof \Elusim\Data\Validators\Email);
+        $this->assertEquals(true, $validators->get('IsIP') instanceof \Tiie\Data\Validators\IsIP);
+        $this->assertEquals(true, $validators->get('Email') instanceof \Tiie\Data\Validators\Email);
     }
 }

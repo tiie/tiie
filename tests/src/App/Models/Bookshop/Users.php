@@ -1,11 +1,11 @@
 <?php
 namespace App\Models\Bookshop;
 
-use Elusim\Data\Model\Model;
-use Elusim\Data\Adapters\Commands\SQL\Select;
-use Elusim\Data\Adapters\Commands\SQL\Update;
-use Elusim\Data\Model\RecordInterface;
-use Elusim\Data\Model\ModelInterface;
+use Tiie\Data\Model\Model;
+use Tiie\Data\Adapters\Commands\SQL\Select;
+use Tiie\Data\Adapters\Commands\SQL\Update;
+use Tiie\Data\Model\RecordInterface;
+use Tiie\Data\Model\ModelInterface;
 
 class Users extends Model
 {
@@ -44,7 +44,7 @@ class Users extends Model
     public function save(RecordInterface $record, array $params = array()) : ModelInterface
     {
         if (!is_null($errors = $this->validate($record, ModelInterface::PROCESS_SAVING))) {
-            throw new \Elusim\Exceptions\ValidateException($errors);
+            throw new \Tiie\Exceptions\ValidateException($errors);
         }
 
         $update = (new Update($this->db))

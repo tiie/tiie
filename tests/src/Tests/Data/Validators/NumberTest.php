@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\Number;
+use Tiie\Data\Validators\Number;
 
 class NumberTest extends \Tests\TestCase
 {

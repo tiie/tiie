@@ -21,7 +21,7 @@ return array(
         ),
     ),
 
-    'elusim' => array(
+    'tiie' => array(
         'errors' => array(
             '_errorReporting' => array(
                 // List of errors to display
@@ -35,9 +35,9 @@ return array(
         ),
         'lang' => array(
             'dictionaries' => array(
-                '@lang.dictionaries.elusim',
-                '@lang.dictionaries.elusim-a',
-                '@lang.dictionaries.elusim-b',
+                '@lang.dictionaries.tiie',
+                '@lang.dictionaries.tiie-a',
+                '@lang.dictionaries.tiie-b',
             )
         ),
         'twig' => array(
@@ -48,7 +48,7 @@ return array(
         ),
         'router' => array(
             'error' => array(
-                'action' => '\Elusim\Actions\Error',
+                'action' => '\Tiie\Actions\Error',
             )
         ),
         'components' => array(

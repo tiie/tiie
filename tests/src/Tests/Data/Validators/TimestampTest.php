@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\Timestamp;
+use Tiie\Data\Validators\Timestamp;
 
 class TimestampTest extends \Tests\TestCase
 {

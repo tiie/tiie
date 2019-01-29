@@ -2,11 +2,11 @@
 namespace Tests\Data\Adapters\Commands\SQL;
 
 use Tests\TestCase;
-use Elusim\Data\Adapters\Commands\SQL\Select;
-use Elusim\Data\Adapters\Commands\SQL\Insert;
-use Elusim\Data\Adapters\Commands\SQL\Expr;
-use Elusim\Data\Adapters\Commands\SQL\Update;
-use Elusim\Data\Adapters\Commands\BuiltCommand;
+use Tiie\Data\Adapters\Commands\SQL\Select;
+use Tiie\Data\Adapters\Commands\SQL\Insert;
+use Tiie\Data\Adapters\Commands\SQL\Expr;
+use Tiie\Data\Adapters\Commands\SQL\Update;
+use Tiie\Data\Adapters\Commands\Built;
 
 class UpdateTest extends TestCase
 {
@@ -70,7 +70,7 @@ class UpdateTest extends TestCase
     // public function testNotExists()
     // public function testBetween()
 
-    public function testBuild()
+    public function testBuilt()
     {
         $update = new Update();
 
@@ -81,7 +81,7 @@ class UpdateTest extends TestCase
             ))
         ;
 
-        $this->assertEquals(true, $update->build() instanceof BuiltCommand);
+        $this->assertEquals(true, $update->build() instanceof Built);
     }
 
     public function testUpdateRow()

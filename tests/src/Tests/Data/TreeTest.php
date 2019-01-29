@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Tree;
+use Tiie\Data\Tree;
 use Tests\TestCase;
 
 use PHPUnit\Framework\Error\Notice;

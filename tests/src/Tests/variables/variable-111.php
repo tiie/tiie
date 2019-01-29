@@ -4,7 +4,7 @@
     0 => 
     array (
       'code' => 'isEmpty',
-      'error' => '@(Elusim.Data.Validator.NotEmpty.IsEmpty)',
+      'error' => '@(Tiie.Data.Validator.NotEmpty.IsEmpty)',
     ),
   ),
   'object' => 
@@ -12,7 +12,7 @@
     0 => 
     array (
       'code' => 'notExists',
-      'error' => '@(Elusim.Data.Input.NotExists)',
+      'error' => '@(Tiie.Data.Input.NotExists)',
     ),
   ),
   'listOfObject' => 
@@ -20,7 +20,7 @@
     0 => 
     array (
       'code' => 'notExists',
-      'error' => '@(Elusim.Data.Input.NotExists)',
+      'error' => '@(Tiie.Data.Input.NotExists)',
     ),
   ),
   'list' => 
@@ -28,7 +28,7 @@
     0 => 
     array (
       'code' => 'notExists',
-      'error' => '@(Elusim.Data.Input.NotExists)',
+      'error' => '@(Tiie.Data.Input.NotExists)',
     ),
   ),
 );

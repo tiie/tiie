@@ -1,13 +1,13 @@
 <?php
 namespace App\Actions;
 
-use Elusim\Actions\ActionInterface;
+use Tiie\Actions\ActionInterface;
 
 class Clients implements ActionInterface
 {
-    public function get(\Elusim\Http\Request $request)
+    public function get(\Tiie\Http\Request $request)
     {
-        $response = new \Elusim\Response\Response();
+        $response = new \Tiie\Response\Response();
         $response->data(null);
 
         foreach ($this->collection() as $client) {

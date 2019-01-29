@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\StringLength;
+use Tiie\Data\Validators\StringLength;
 
 class StringLengthTest extends \Tests\TestCase
 {

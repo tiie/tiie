@@ -2,39 +2,14 @@
 namespace Tests\Data\Adapters\Commands\SQL;
 
 use Tests\TestCase;
-use Elusim\Data\Adapters\Commands\SQL\Select;
-use Elusim\Data\Adapters\Commands\SQL\Insert;
-use Elusim\Data\Adapters\Commands\SQL\Expr;
-use Elusim\Data\Adapters\Commands\BuiltCommand;
+use Tiie\Data\Adapters\Commands\SQL\Select;
+use Tiie\Data\Adapters\Commands\SQL\Insert;
+use Tiie\Data\Adapters\Commands\SQL\Expr;
+use Tiie\Data\Adapters\Commands\Built;
 
 // $this->createVariable('variable-38', $rows);
 class InsertTest extends TestCase
 {
-    // public function testEq()
-    // {
-    //     // $this->initDatabase('bookshop');
-
-    //     // $row = (new Select($this->adapter('bookshop')))
-    //     //     ->from('users')
-    //     //     ->column('id')
-    //     //     ->column('firstName')
-    //     //     ->column('lastName')
-    //     //     ->column('email')
-    //     //     ->column('genderId')
-    //     //     ->column('birthDate')
-    //     //     ->column('ip')
-    //     //     ->column('countryId')
-    //     //     ->column('cityId')
-    //     //     ->column('phone')
-    //     //     ->eq('id', 1)
-    //     //     ->fetch('row')
-    //     //     -> data()
-    //     // ;
-
-    //     // // $this->createVariable('variable-38', $rows);
-    //     // $this->assertEquals($this->variable('variable-16'), $row);
-    // }
-
     public function testInto()
     {
         $insert = new Insert();
@@ -119,7 +94,7 @@ class InsertTest extends TestCase
         $this->assertEquals($this->variable('variable-66'), $insert->columns());
     }
 
-    public function testBuild()
+    public function testBuilt()
     {
         $insert = new Insert();
 
@@ -133,7 +108,7 @@ class InsertTest extends TestCase
             ))
         ;
 
-        $this->assertEquals(true, $insert->build() instanceof BuiltCommand);
+        $this->assertEquals(true, $insert->build() instanceof Built);
     }
 
     public function testCreateRow()
@@ -174,7 +149,7 @@ class InsertTest extends TestCase
                 'cityId',
                 'phone',
             ))
-            ->eq('id', $id)
+            ->equal('id', $id)
             ->fetch()
             ->data()
         ;
@@ -221,7 +196,7 @@ class InsertTest extends TestCase
                 'cityId',
                 'phone',
             ))
-            ->eq('id', 3000)
+            ->equal('id', 3000)
             ->fetch()
             ->data()
         ;

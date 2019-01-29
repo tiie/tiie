@@ -28,7 +28,7 @@
       ),
     ),
   ),
-  'elusim' => 
+  'tiie' => 
   array (
     'errors' => 
     array (
@@ -44,14 +44,14 @@
     array (
       'dictionaries' => 
       array (
-        0 => '@lang.dictionaries.elusim',
+        0 => '@lang.dictionaries.tiie',
       ),
     ),
     'router' => 
     array (
       'error' => 
       array (
-        'action' => '\\Elusim\\Actions\\Error',
+        'action' => '\\Tiie\\Actions\\Error',
       ),
     ),
     'errorReportingSilently' => true,

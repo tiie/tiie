@@ -1,6 +1,6 @@
 <?php
 return array(
-    'elusim' => array(
+    'tiie' => array(
         'components' => array(
             'dirs' => array(
                 "./src/App/Components",

@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\IsIP;
+use Tiie\Data\Validators\IsIP;
 
 class IsIPTest extends \Tests\TestCase
 {

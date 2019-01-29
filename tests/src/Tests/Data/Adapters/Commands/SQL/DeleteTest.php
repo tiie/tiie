@@ -2,12 +2,12 @@
 namespace Tests\Data\Adapters\Commands\SQL;
 
 use Tests\TestCase;
-use Elusim\Data\Adapters\Commands\SQL\Select;
-use Elusim\Data\Adapters\Commands\SQL\Insert;
-use Elusim\Data\Adapters\Commands\SQL\Expr;
-use Elusim\Data\Adapters\Commands\SQL\Update;
-use Elusim\Data\Adapters\Commands\SQL\Delete;
-use Elusim\Data\Adapters\Commands\BuiltCommand;
+use Tiie\Data\Adapters\Commands\SQL\Select;
+use Tiie\Data\Adapters\Commands\SQL\Insert;
+use Tiie\Data\Adapters\Commands\SQL\Expr;
+use Tiie\Data\Adapters\Commands\SQL\Update;
+use Tiie\Data\Adapters\Commands\SQL\Delete;
+use Tiie\Data\Adapters\Commands\Built;
 
 class DeleteTest extends TestCase
 {

@@ -1,13 +1,13 @@
 <?php
 
-use Elusim\Components;
+use Tiie\Components;
 use Tests\Components\Users;
 
 return array(
-    'init' => function(\Elusim\Components $components, array $params = array()) {
+    'init' => function(\Tiie\Components $components, array $params = array()) {
         return new \Tests\Components\Users($components->get('@email'));
     },
-    'after' => function($component, \Elusim\Components\Scope $components, array $params = array()) {
+    'after' => function($component, \Tiie\Components\Scope $components, array $params = array()) {
         $component->categories($components->get('model.users.categories'));
     },
 );

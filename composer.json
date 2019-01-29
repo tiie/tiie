@@ -1,5 +1,5 @@
 {
-    "name": "elusim/elusim",
+    "name": "tiie/tiie",
     "description": "PHP Framework",
     "type": "library",
     "license": "MIT",
@@ -11,7 +11,7 @@
     }],
     "autoload": {
         "psr-4": {
-            "Elusim\\": "src/Elusim"
+            "Tiie\\": "src/Tiie"
         }
     },
     "require": {

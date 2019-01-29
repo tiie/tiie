@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\Schema;
+use Tiie\Data\Validators\Schema;
 
 class SchemaTest extends \Tests\TestCase
 {

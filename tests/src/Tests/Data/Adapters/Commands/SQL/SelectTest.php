@@ -2,13 +2,13 @@
 namespace Tests\Data\Adapters\Commands\SQL;
 
 use Tests\TestCase;
-use Elusim\Data\Adapters\Commands\SQL\Select;
-use Elusim\Data\Adapters\Commands\SQL\Expr;
+use Tiie\Data\Adapters\Commands\SQL\Select;
+use Tiie\Data\Adapters\Commands\SQL\Expr;
 
 // $this->createVariable('variable-38', $rows);
 class SelectTest extends TestCase
 {
-    public function testEq()
+    public function testEqual()
     {
         $this->initDatabase('bookshop');
 
@@ -24,7 +24,7 @@ class SelectTest extends TestCase
             ->column('countryId')
             ->column('cityId')
             ->column('phone')
-            ->eq('id', 1)
+            ->equal('id', 1)
             ->fetch()
             ->format('row')
         ;
@@ -45,49 +45,6 @@ class SelectTest extends TestCase
             ))
         ;
 
-        $select->sort('name     desc    ');
-
-        // $this->createVariable('variable-123', $select->sort());
-        $this->assertEquals($this->variable('variable-123'), $select->sort());
-
-        $select->sort(array(
-            'field' => 'name',
-            'type' => 'asc',
-        ));
-
-        // $this->createVariable('variable-124', $select->sort());
-        $this->assertEquals($this->variable('variable-124'), $select->sort());
-
-        $select->sort(array('name' => 'asc'));
-
-        //$this->createVariable('variable-125', $select->sort());
-        $this->assertEquals($this->variable('variable-125'), $select->sort());
-
-        $select->sort(array(
-            array(
-                'field' => 'lastName',
-                'type' => 'asc',
-            ), array(
-                'field' => 'firstName',
-                'type' => 'desc',
-            ),
-        ));
-
-        $this->createVariable('variable-126', $select->sort());
-        $this->assertEquals($this->variable('variable-126'), $select->sort());
-
-        $select->sort(array(
-            "name asc",
-            array('lastName' => 'desc'),
-            array(
-                'field' => 'age',
-                'type' => 'asc',
-            ),
-        ));
-
-        $this->createVariable('variable-127', $select->sort());
-        $this->assertEquals($this->variable('variable-127'), $select->sort());
-
         // Check result
         $select->limit(10);
 
@@ -100,34 +57,6 @@ class SelectTest extends TestCase
 
         // $this->createVariable('variable-129', $select->fetch()->data());
         $this->assertEquals($this->variable('variable-129'), $select->fetch()->data());
-
-        $select->sort(array(
-            'field' => 'firstName',
-            'type' => 'asc',
-        ));
-
-        // $this->createVariable('variable-130', $select->fetch()->data());
-        $this->assertEquals($this->variable('variable-130'), $select->fetch()->data());
-
-        $select->sort(array(
-            'field' => 'firstName',
-            'type' => 'desc',
-        ));
-
-        // $this->createVariable('variable-131', $select->fetch()->data());
-        $this->assertEquals($this->variable('variable-131'), $select->fetch()->data());
-
-        $select->sort(array(
-            "lastName desc",
-            array('firstName' => 'asc'),
-            array(
-                'field' => 'id',
-                'type' => 'asc',
-            )
-        ));
-
-        // $this->createVariable('variable-132', $select->fetch()->data());
-        $this->assertEquals($this->variable('variable-132'), $select->fetch()->data());
     }
 
     // public function test__clone()
@@ -696,11 +625,6 @@ class SelectTest extends TestCase
         }
     }
 
-    // public function testParamsBetween()
-    // {
-
-    // }
-
     public function testLimit()
     {
         $this->initDatabase('bookshop');
@@ -728,27 +652,6 @@ class SelectTest extends TestCase
         ;
 
         $this->assertEquals($this->variable('variable-18'), $rows);
-
-        // ---------------
-        $this->expectException(\InvalidArgumentException::class);
-
-        (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->limit(-1)
-            ->fetch()
-            ->data()
-        ;
-
-        (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->limit(-10, -11)
-            ->fetch()
-            ->data()
-        ;
     }
 
     public function testPage()
@@ -888,7 +791,7 @@ class SelectTest extends TestCase
         $rows = (new Select($this->adapter('bookshop')))
             ->from('users')
             ->column('id')
-            ->order('id', 'asc')
+            ->order('id asc')
             ->limit(10)
             ->fetch()
             ->data()
@@ -900,7 +803,7 @@ class SelectTest extends TestCase
         $rows = (new Select($this->adapter('bookshop')))
             ->from('users')
             ->column('id')
-            ->order('id', 'desc')
+            ->order('id desc')
             ->limit(10)
             ->fetch()
             ->data()
@@ -912,7 +815,7 @@ class SelectTest extends TestCase
         $rows = (new Select($this->adapter('bookshop')))
             ->from('users')
             ->column('id')
-            ->order('id', 'DESC')
+            ->order('id desc')
             ->limit(10)
             ->fetch()
             ->data()
@@ -920,18 +823,6 @@ class SelectTest extends TestCase
 
         $this->assertEquals($this->variable('variable-22'), $rows);
 
-    }
-
-    public function testOrderInvalidArgumentException()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id', 'DESCC')
-            ->build()
-        ;
     }
 
     public function testOrderExpr()
@@ -1088,25 +979,6 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-30'), $rows);
     }
 
-    public function testFromInvalidAlias()
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $sub = (new Select())
-            ->from('users', 'sub')
-            ->column('id')
-            ->column('email')
-            ->limit(10)
-        ;
-
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from($sub)
-            ->order('base.id asc')
-            ->fetch()
-            ->data()
-        ;
-    }
-
     public function testIn()
     {
         $this->initDatabase('bookshop');
@@ -1257,6 +1129,22 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
+        // $rows = (new Select($this->adapter('bookshop')))
+        //     ->from('users', 'u')
+        //     ->column('u.id')
+        //     ->column('u.countryId')
+        //     ->column('u.firstName')
+        //     ->column('u.lastName')
+        //     ->isNotNull('u.countryId')
+        //     ->startWith('u.firstName', 'Ali')
+        //     ->order('id asc')
+        //     ->limit(2)
+        //     ->fetch()
+        //     ->data()
+        // ;
+
+        // $this->assertEquals($this->variable('variable-39'), $rows);
+
         $rows = (new Select($this->adapter('bookshop')))
             ->from('users', 'u')
             ->column('u.id')
@@ -1264,25 +1152,10 @@ class SelectTest extends TestCase
             ->column('u.firstName')
             ->column('u.lastName')
             ->isNotNull('u.countryId')
-            ->startWith('u.firstName', 'Ali')
+            ->startWith('u.firstName', "Aliz")
             ->order('id asc')
             ->limit(2)
-            ->fetch()
-            ->data()
-        ;
-
-        $this->assertEquals($this->variable('variable-39'), $rows);
-
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.countryId')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->isNotNull('u.countryId')
-            ->startWith('u.firstName', new Expr('"Aliz"'))
-            ->order('id asc')
-            ->limit(2)
+            // ->build()
             ->fetch()
             ->data()
         ;
@@ -1312,7 +1185,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->endWith('u.firstName', new Expr('"trée"'))
+            ->endWith('u.firstName', "trée")
             ->order('id asc')
             ->limit(2)
             ->fetch()
@@ -1345,7 +1218,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->contains('u.firstName', new Expr('"ébec"'))
+            ->contains('u.firstName', "ébec")
             ->order('id asc')
             ->limit(2)
             ->fetch()
@@ -1391,7 +1264,7 @@ class SelectTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        // // ---------------
+        // ---------------
         $rows = (new Select($this->adapter('bookshop')))
             ->from('users', 'u')
             ->column('u.id')
@@ -1454,7 +1327,7 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-50'), $rows);
     }
 
-    public function testNeq()
+    public function testNotEqual()
     {
         $this->initDatabase('bookshop');
 
@@ -1463,7 +1336,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->neq('u.id', 1)
+            ->notEqual('u.id', 1)
             ->order('id asc')
             ->limit(2)
             ->fetch()
@@ -1476,7 +1349,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->neq('u.id', new Expr('1'))
+            ->notEqual('u.id', new Expr('1'))
             ->order('id asc')
             ->limit(2)
             ->fetch()
@@ -1486,7 +1359,7 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-52'), $rows);
     }
 
-    public function testLt()
+    public function testLowerThan()
     {
         $this->initDatabase('bookshop');
 
@@ -1495,7 +1368,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->lt('u.id', 5)
+            ->lowerThan('u.id', 5)
             ->order('id asc')
             ->limit(4)
             ->fetch()
@@ -1508,7 +1381,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->lt('u.id', new Expr('5'))
+            ->lowerThan('u.id', new Expr('5'))
             ->order('id asc')
             ->limit(4)
             ->fetch()
@@ -1518,7 +1391,7 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-54'), $rows);
     }
 
-    public function testLte()
+    public function testLowerThanEqual()
     {
         $this->initDatabase('bookshop');
 
@@ -1527,7 +1400,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->lte('u.id', 5)
+            ->lowerThanEqual('u.id', 5)
             ->order('id asc')
             ->limit(5)
             ->fetch()
@@ -1540,7 +1413,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->lte('u.id', new Expr('5'))
+            ->lowerThanEqual('u.id', new Expr('5'))
             ->order('id asc')
             ->limit(5)
             ->fetch()
@@ -1550,7 +1423,7 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-56'), $rows);
     }
 
-    public function testGt()
+    public function testGreaterThan()
     {
         $this->initDatabase('bookshop');
 
@@ -1559,7 +1432,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->gt('u.id', 5)
+            ->greaterThan('u.id', 5)
             ->order('id asc')
             ->limit(5)
             ->fetch()
@@ -1572,7 +1445,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->gt('u.id', new Expr('5'))
+            ->greaterThan('u.id', new Expr('5'))
             ->order('id asc')
             ->limit(5)
             ->fetch()
@@ -1582,7 +1455,7 @@ class SelectTest extends TestCase
         $this->assertEquals($this->variable('variable-58'), $rows);
     }
 
-    public function testGte()
+    public function testGreaterThanEqual()
     {
         $this->initDatabase('bookshop');
 
@@ -1591,7 +1464,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->gte('u.id', 5)
+            ->greaterThanEqual('u.id', 5)
             ->order('id asc')
             ->limit(5)
             ->fetch()
@@ -1604,7 +1477,7 @@ class SelectTest extends TestCase
             ->from('users', 'u')
             ->column('u.id')
             ->column('u.firstName')
-            ->gte('u.id', new Expr('5'))
+            ->greaterThanEqual('u.id', new Expr('5'))
             ->order('id asc')
             ->limit(5)
             ->fetch()

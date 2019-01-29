@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Validators\NotNull;
+use Tiie\Data\Validators\NotNull;
 
 class NotNullTest extends \Tests\TestCase
 {

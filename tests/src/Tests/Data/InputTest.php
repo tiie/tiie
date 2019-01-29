@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Elusim\Data\Input;
+use Tiie\Data\Input;
 
 class InputTest extends \Tests\TestCase
 {
@@ -326,7 +326,7 @@ class InputTest extends \Tests\TestCase
             "id" => array(),
             "email" => array(
                 '@validators' => array(
-                    new \Elusim\Data\Validators\Email()
+                    new \Tiie\Data\Validators\Email()
                 )
             ),
             "private" => array()

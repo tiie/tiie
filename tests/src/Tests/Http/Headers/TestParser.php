@@ -2,7 +2,7 @@
 namespace Tests\Http\Headers;
 
 use Tests\TestCase;
-use Elusim\Http\Headers\Parser;
+use Tiie\Http\Headers\Parser;
 
 class TestParser extends TestCase
 {

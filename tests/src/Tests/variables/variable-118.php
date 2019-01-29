@@ -33,7 +33,7 @@
       'negotiation' => 0,
     ),
   ),
-  'elusim' => 
+  'tiie' => 
   array (
     'errors' => 
     array (
@@ -50,16 +50,16 @@
     array (
       'dictionaries' => 
       array (
-        0 => '@lang.dictionaries.elusim',
-        1 => '@lang.dictionaries.elusim-a',
-        2 => '@lang.dictionaries.elusim-b',
+        0 => '@lang.dictionaries.tiie',
+        1 => '@lang.dictionaries.tiie-a',
+        2 => '@lang.dictionaries.tiie-b',
       ),
     ),
     'router' => 
     array (
       'error' => 
       array (
-        'action' => '\\Elusim\\Actions\\Error',
+        'action' => '\\Tiie\\Actions\\Error',
       ),
     ),
     'errorReportingSilently' => true,
