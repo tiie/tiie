@@ -811,16 +811,16 @@ class Select extends Command
         return $this;
     }
 
-    public function ando()
+    public function and()
     {
-        $this->where->ando();
+        $this->where->and();
 
         return $this;
     }
 
-    public function oro()
+    public function or()
     {
-        $this->where->oro();
+        $this->where->or();
 
         return $this;
     }
@@ -1004,6 +1004,8 @@ class Select extends Command
             }
 
             if (!empty($on)) {
+                $on = substr($on, 0, strlen($on) - 5);
+
                 $command .= "\n{$type} JOIN {$table} on {$on}";
             } else {
                 $command .= "\n{$type} JOIN {$table}";
