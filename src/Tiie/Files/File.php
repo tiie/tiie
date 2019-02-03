@@ -26,7 +26,7 @@ class File
 
         $this->data = (new \Tiie\Data\Adapters\Commands\SQL\Select($this->db))
             ->from($this->params['table'])
-            ->eq('id', $id)
+            ->equal('id', $id)
             ->fetch()
             ->format('row')
         ;
@@ -75,7 +75,7 @@ class File
                 'path' => $path
             ))
 
-            ->eq('id', $this->data['id'])
+            ->equal('id', $this->data['id'])
         ;
 
         $this->db->update($update);
@@ -164,7 +164,7 @@ class File
                 'path' => $path
             ))
 
-            ->eq('id', $this->data['id'])
+            ->equal('id', $this->data['id'])
         ;
 
         $this->db->update($update);

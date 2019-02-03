@@ -64,7 +64,7 @@ class Files
                 if (is_array($params[$name])) {
                     $select->in($name, $params[$name]);
                 }else{
-                    $select->eq($name, $params[$name]);
+                    $select->equal($name, $params[$name]);
                 }
             }
         }
@@ -76,7 +76,7 @@ class Files
     {
         $file = (new \Tiie\Data\Adapters\Commands\SQL\Select($this->db))
             ->from($this->params['table'])
-            ->eq('id', $id)
+            ->equal('id', $id)
             ->fetch()
             ->format('row')
         ;
