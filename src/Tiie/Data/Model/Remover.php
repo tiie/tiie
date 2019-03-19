@@ -1,12 +1,13 @@
 <?php
 namespace Tiie\Data\Model;
 
-class Records
+use Tiie\Data\Adapters\AdapterInterface;
+
+class Remover
 {
-    private $records = array();
     private $adapter;
 
-    function __construct($adapter)
+    function __construct(AdapterInterface $adapter)
     {
         $this->adapter = $adapter;
     }

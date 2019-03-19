@@ -90,9 +90,23 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         return $this;
     }
 
+    public function notEndWith($column, $value)
+    {
+        $this->where->notEndWith($column, $value);
+
+        return $this;
+    }
+
     public function contains($column, $value)
     {
         $this->where->contains($column, $value);
+
+        return $this;
+    }
+
+    public function notContains($column, $value)
+    {
+        $this->where->notContains($column, $value);
 
         return $this;
     }
@@ -104,6 +118,13 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         return $this;
     }
 
+    public function notLike($column, $value)
+    {
+        $this->where->notLike($column, $value);
+
+        return $this;
+    }
+
     public function conditions($column, $conditions, array $params = array())
     {
         $this->where->conditions($column, $conditions, $params);
@@ -111,15 +132,33 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         return $this;
     }
 
-    public function eq($column, $value)
+    public function equal($column, $value)
     {
-        $this->where->eq($column, $value);
+        $this->where->equal($column, $value);
 
         return $this;
     }
 
+    public function notEqual($column, $value)
+    {
+        $this->where->notEqual($column, $value);
+
+        return $this;
+    }
+
+    public function eq($column, $value)
+    {
+        // todo Remove Delete::eq()
+        trigger_error("Remove Delete::eq().", E_USER_NOTICE);
+
+        return $this->equal($column, $value);
+    }
+
     public function neq($column, $value)
     {
+        // todo Remove Delete::neq()
+        trigger_error("Remove Delete::neq().", E_USER_NOTICE);
+
         $this->where->neq($column, $value);
 
         return $this;
@@ -181,6 +220,76 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         return $this;
     }
 
+    public function params(array $values = array(), array $fields = array())
+    {
+        $this->where->params($values, $fields);
+
+        return $this;
+    }
+
+    public function lowerThan($column, $value)
+    {
+        $this->where->lowerThan($column, $value);
+
+        return $this;
+    }
+
+    public function notLowerThan($column, $value)
+    {
+        $this->where->notLowerThan($column, $value);
+
+        return $this;
+    }
+
+    public function lowerThanEqual($column, $value)
+    {
+        $this->where->lowerThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function notLowerThanEqual($column, $value)
+    {
+        $this->where->notLowerThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function greaterThan($column, $value)
+    {
+        $this->where->greaterThan($column, $value);
+
+        return $this;
+    }
+
+    public function notGreaterThan($column, $value)
+    {
+        $this->where->notGreaterThan($column, $value);
+
+        return $this;
+    }
+
+    public function greaterThanEqual($column, $value)
+    {
+        $this->where->greaterThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function notGreaterThanEqual($column, $value)
+    {
+        $this->where->notGreaterThanEqual($column, $value);
+
+        return $this;
+    }
+
+    public function notBetween($column, $begin, $end)
+    {
+        $this->where->notBetween($column, $begin, $end);
+
+        return $this;
+    }
+
     public function build(array $params = array()) : Built
     {
         if (is_null($this->from)) {
@@ -200,7 +309,7 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         $where = $this->where->build($params);
 
         if (!is_null($where->command())) {
-            $sql .= " {$where->command()}";
+            $sql .= " WHERE {$where->command()}";
             $command->params($where->params(), 1);
         }
 

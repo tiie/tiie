@@ -55,6 +55,6 @@ class Creator implements CreatorInterface
             $this->record = $this->model->createRecord($this->data);
         }
 
-        return $this->model->validate($this->record, ModelInterface::PROCESS_CREATING, $params);
+        return $this->model->validate($this->record, ModelInterface::COMMAND_CREATE, $params);
     }
 }

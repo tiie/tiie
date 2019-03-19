@@ -42,7 +42,7 @@ interface RecordInterface
      * @param int $modyfied
      * @return string
      */
-    public function get(string $attribute, int $modyfied = 1) : ?string;
+    public function get(string $attribute, int $modyfied = 1);
 
     /**
      * Set attribute with given value.

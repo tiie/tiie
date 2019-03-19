@@ -3,6 +3,13 @@ namespace Tiie\Http;
 
 class RequestCreator
 {
+    private $params;
+
+    function __construct(array $params = array())
+    {
+        $this->params = $params;
+    }
+
     public function create(\Tiie\Env $env, $emergency = 0)
     {
         switch ($env->get('sapi')) {
@@ -85,7 +92,8 @@ class RequestCreator
                     'ip' => empty($_SERVER['REMOTE_ADDR']) ? null : $_SERVER['REMOTE_ADDR'],
                 ),
                 $domain,
-                $emergency
+                $emergency,
+                $this->params
             );
         }
     }

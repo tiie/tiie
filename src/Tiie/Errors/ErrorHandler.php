@@ -1,28 +1,27 @@
 <?php
 namespace Tiie\Errors;
 
-use Tiie\Response\ResponseInterface;
-use Tiie\Http\Request;
-use Psr\Log\LoggerInterface;
 use ErrorException;
 use Exception;
+use Error;
+use Psr\Log\LoggerInterface;
 use Tiie\Errors\ErrorHandlerInterface;
+use Tiie\Http\Request;
+use Tiie\Response\ResponseInterface;
 
 class ErrorHandler
 {
     private $response;
-    private $log;
+    private $logger;
 
-    function __construct(ResponseInterface $response, LoggerInterface $log = null)
+    function __construct(ResponseInterface $response, LoggerInterface $logger = null)
     {
         $this->response = $response;
-        $this->log = $log;
+        $this->logger = $logger;
     }
 
     public function handle($error)
     {
-        // todo [debug] Debug to delete
-        die(print_r($error, true));
         // emergency($message, array $context = array());
         // alert($message, array $context = array());
         // critical($message, array $context = array());
@@ -43,25 +42,32 @@ class ErrorHandler
             case E_COMPILE_ERROR :
             case E_RECOVERABLE_ERROR :
             case E_USER_ERROR :
-                $this->log->error($error->getMessage());
+                $this->logger->error($error->getMessage(), $error->getTrace());
                 $result = ErrorHandlerInterface::PROCESS_EXIT;
                 break;
             case E_WARNING :
             case E_CORE_WARNING :
             case E_COMPILE_WARNING :
             case E_USER_WARNING :
-                $this->log->warning($error->getMessage());
+                $this->logger->warning($error->getMessage(), $error->getTrace());
                 break;
             case E_NOTICE :
             case E_STRICT :
             case E_DEPRECATED :
             case E_USER_NOTICE :
             case E_USER_DEPRECATED :
-                $this->log->notice($error->getMessage());
+                $this->logger->notice($error->getMessage(), $error->getTrace());
+                break;
+            default:
+                $this->logger->notice($error->getMessage(), $error->getTrace());
                 break;
             }
+
         } else if ($error instanceof Exception){
-            $this->log->error($error->getMessage());
+            $this->logger->error($error->getMessage(), $error->getTrace());
+            $result = ErrorHandlerInterface::PROCESS_EXIT;
+        } else if ($error instanceof Error){
+            $this->logger->error($error->getMessage(), $error->getTrace());
             $result = ErrorHandlerInterface::PROCESS_EXIT;
         }
 
@@ -74,18 +80,25 @@ class ErrorHandler
             $this->response->code($error->code());
             $this->response->data($error->errors());
 
-        }elseif($error instanceof \Tiie\Exceptions\ValidateException){
+        }else if($error instanceof \Tiie\Exceptions\ValidateException){
             // todo : ValidateException zmianiam na InvalidData
             $this->response->code('400');
             $this->response->data($error->errors());
 
-        }elseif($error instanceof \Tiie\Exceptions\InvalidData){
+        }else if($error instanceof \Tiie\Exceptions\InvalidData){
             $this->response->code('400');
             $this->response->data($error->errors());
 
-        }elseif($error instanceof \Tiie\Router\Exceptions\ActionNotFound){
+        // Router
+        }else if(
+            $error instanceof \Tiie\Router\Exceptions\ActionNotFound ||
+            $error instanceof \Tiie\Router\Exceptions\MethodNotFound ||
+            $error instanceof \Tiie\Router\Exceptions\RouteNotFound
+        ){
             $this->response->code('404');
-        }elseif($error instanceof \Tiie\Exceptions\PHPErrorException){
+            $this->response->layout('layouts/main.html');
+            $this->response->template('notFound.html');
+        }else if($error instanceof \Tiie\Exceptions\PHPErrorException){
             $this->response->code(500);
 
             $niceTrace = new \Tiie\NiceTrace($error->getTrace());
@@ -98,7 +111,7 @@ class ErrorHandler
                 'trace' => $niceTrace->create(),
             ));
 
-        }elseif($error instanceof \Exception){
+        }else if($error instanceof \Exception){
             $this->response->code(500);
 
             $niceTrace = new \Tiie\NiceTrace($error->getTrace());
@@ -110,7 +123,7 @@ class ErrorHandler
                 'line' => $error->getLine(),
                 'trace' => $niceTrace->create(),
             ));
-        }elseif($error instanceof \Error){
+        }else if($error instanceof \Error){
             $this->response->code(500);
 
             $niceTrace = new \Tiie\NiceTrace($error->getTrace());

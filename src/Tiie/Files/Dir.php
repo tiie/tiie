@@ -9,6 +9,8 @@ namespace Tiie\Files;
 class Dir
 {
     private $dir;
+    private $path;
+    private $name;
     private $filename;
     private $new = false;
     private $content;

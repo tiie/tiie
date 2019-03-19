@@ -1,7 +1,7 @@
 <?php
 namespace Tiie\Data\Validators;
 
-use Tiie\Validators\Number;
+use Tiie\Data\Validators\Number;
 
 class Bigint extends Number
 {

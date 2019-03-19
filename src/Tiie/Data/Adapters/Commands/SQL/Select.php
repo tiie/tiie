@@ -24,6 +24,7 @@ class Select extends Command
     protected $limit = null;
     protected $having = null;
     protected $where = null;
+    protected $common = null;
 
     private $rules = array();
 
@@ -290,14 +291,14 @@ class Select extends Command
 
     public function between($column, $begin, $end)
     {
-        $this->where->between($column, $value);
+        $this->where->between($column, $begin, $end);
 
         return $this;
     }
 
     public function notBetween($column, $begin, $end)
     {
-        $this->where->notBetween($column, $value);
+        $this->where->notBetween($column, $begin, $end);
 
         return $this;
     }
@@ -842,8 +843,8 @@ class Select extends Command
     public function build(array $params = array()) : Built
     {
         $command = "SELECT";
-        $string;
-        $bl;
+        $string = "";
+        $bl = "";
         $vars = $this->binds();
 
         if (!empty($this->columns)) {

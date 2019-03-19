@@ -32,18 +32,18 @@ class Container
 
     }
 
-    public function string($with)
-    {
-        // $offer->get("name")->int();
-        // $offer->get("name", array(), 'int');
+    // public function string($with)
+    // {
+    //     // $offer->get("name")->int();
+    //     // $offer->get("name", array(), 'int');
 
-        $offer->int("name");
-        $offer->get("name");
-        $offer->get("user")->get("name");
-        $offer->get("emails", array());
+    //     $offer->int("name");
+    //     $offer->get("name");
+    //     $offer->get("user")->get("name");
+    //     $offer->get("emails", array());
 
-        $offer->user->name;
-    }
+    //     $offer->user->name;
+    // }
 
     public function int($with)
     {

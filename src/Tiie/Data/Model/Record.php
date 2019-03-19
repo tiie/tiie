@@ -1,6 +1,8 @@
 <?php
 namespace Tiie\Data\Model;
 
+use Tiie\Data\Model\ModelInterface;
+
 class Record implements RecordInterface
 {
     /**
@@ -53,25 +55,23 @@ class Record implements RecordInterface
      */
     public function run(string $command, array $params = array()) : RecordInterface
     {
-        if (!is_null($errors = $this->model->validate($this, $command, $params))) {
-            throw new \Tiie\Exceptions\ValidateException($errors);
-        }
-
         $this->model->run($this, $command);
 
         return $this;
     }
 
+    public function validate(string $process, array $params = array()) : ?array
+    {
+        return $this->model->validate($this, $process, $params);
+    }
+
     /**
      * {@inheritDoc}
+     *
      * @see \Tiie\Data\Model\RecordInterface::save()
      */
     public function save(array $params = array()) : RecordInterface
     {
-        if (! is_null($errors = $this->model->validate('save'))) {
-            throw new \Tiie\Exceptions\ValidateException($errors);
-        }
-
         $this->model->save($this);
 
         return $this;
@@ -108,11 +108,7 @@ class Record implements RecordInterface
      */
     public function remove(array $params = array()) : RecordInterface
     {
-        if (! is_null($errors = $this->model->validate('remove'))) {
-            throw new \Tiie\Exceptions\ValidateException($errors);
-        }
-
-        $this->model->save($this);
+        $this->model->remove($this);
 
         return $this;
     }
@@ -124,6 +120,18 @@ class Record implements RecordInterface
     public function toArray(array $params = array()): array
     {
         return $this->export($params);
+    }
+
+    public function toXML(array $params = array()) : string
+    {
+        trigger_error("Implement toXML method.", E_USER_WARNING);
+
+        return "";
+    }
+
+    public function toJSON(array $params = array()) : string
+    {
+        return json_encode($this->toArray($params));
     }
 
     /**
@@ -160,7 +168,7 @@ class Record implements RecordInterface
      * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::get()
      */
-    public function get(string $attribute, int $modyfied = 1) : ?string
+    public function get(string $attribute, int $modyfied = 1)
     {
         if (array_key_exists($attribute, $this->modyfied) && $modyfied) {
             return $this->modyfied[$attribute];

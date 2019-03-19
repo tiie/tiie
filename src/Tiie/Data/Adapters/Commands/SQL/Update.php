@@ -271,6 +271,8 @@ class Update extends Command
                 $uid = $this->uid();
                 $s = ":{$uid}";
                 $command->param($uid, $value);
+            }else if(is_null($value)){
+                $s = "null";
             }else{
                 throw new \Exception(sprintf("Unsupported type of update value %s", gettype($value)));
             }

@@ -4,6 +4,8 @@ namespace Tiie\Data;
 use Tiie\Data\Validators\NotEmpty;
 use Tiie\Messages\MessagesInterface;
 use Tiie\Messages\Helper as MessagesHelper;
+use Tiie\Data\Validators\ValidatorInterface;
+use Tiie\Data\Filters\FilterInterface;
 
 class Input
 {
@@ -17,6 +19,7 @@ class Input
     private $errors = array();
     private $rules = array();
     private $notEmpty = null;
+    private $input;
 
     private $messages;
 
@@ -219,9 +222,8 @@ class Input
                     // exists.
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
-                            'code' => 'notExists',
-                            // 'error' => $this->messageForCode('notExists'),
-                            'error' => $this->messages->get("notExists"),
+                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
@@ -232,8 +234,8 @@ class Input
                     // W tym miejscu powiniśmy mieć wartość, a mamy cos innego,
                     // więc nie mogę zastosować walidatorów dla wartości.
                     $errors[$field][] = array(
-                        'code' => 'wrongType',
-                        'error' => $this->messages->get("wrongType"),
+                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
                     );
 
                     continue;
@@ -264,7 +266,7 @@ class Input
                         $prepared[$field] = filter_var($prepared[$field], $filter);
                     }elseif(is_string($filter)){
 
-                    }elseif($filter instanceof \Tiie\Data\FilterInterface){
+                    }elseif($filter instanceof FilterInterface){
                         $prepared[$field] = $filter->filter($prepared[$field]);
                     }else{
                         throw new \Exception("Unsported type of filter.");
@@ -302,9 +304,8 @@ class Input
                     // Brak pola w obiekcie, sprawdzam czy klucz musi istniec.
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
-                            'code' => 'notExists',
-                            // 'error' => '@(Tiie.Data.Input.NotExists)',
-                            'error' => $this->messages->get("notExists"),
+                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
@@ -322,8 +323,11 @@ class Input
                 // }
 
                 if (!is_array($data[$field])) {
-                    // $errors[$field]['wrongType'] = '@(Tiie.Data.Input.WrongType)';
-                    $errors[$field]['wrongType'] = $this->messages->get("notExists");
+                    // $errors[$field][ValidatorInterface::ERROR_CODE_WRONG_TYPE] = $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS);
+                    $errors[$field] = array(
+                        "code" => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
+                    );
 
                     continue;
                 }
@@ -346,11 +350,10 @@ class Input
                 break;
             case self::INPUT_DATA_TYPE_LIST_OF_OBJECTS:
                 if (!in_array($field, $dataKeys)) {
-                    if (in_array('exists', $validators)) {
+                    if (in_array("exists", $validators)) {
                         $errors[$field][] = array(
-                            'code' => 'notExists',
-                            // 'error' => '@(Tiie.Data.Input.NotExists)',
-                            'error' => $this->messages->get("notExists"),
+                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
@@ -358,11 +361,9 @@ class Input
                 }
 
                 if (!is_array($data[$field])) {
-                    // $errors[$field]['wrongType'] = '@(Tiie.Data.Input.WrongType)';
                     $errors[$field][] = array(
-                        'code' => 'wrongType',
-                        // 'error' => '@(Tiie.Data.Input.WrongType)',
-                        'error' => $this->messages->get("wrongType"),
+                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
                     );
 
                     continue;
@@ -375,6 +376,30 @@ class Input
                         $errors[$field][] = $error;
 
                         continue;
+                    }
+                }
+
+                foreach ($validators as $validator) {
+                    if ($validator instanceof \Tiie\Data\Validators\ComplexValidatorInterface) {
+                        if(!is_null($error = $validator->validate($data[$field]))){
+                            foreach ($error as $code => $error) {
+                                $errors[$field][] = $error;
+                            }
+
+                            break;
+                        }
+                    }elseif($validator instanceof \Tiie\Data\Validators\ValidatorInterface) {
+                        if(!is_null($error = $validator->validate($data[$field]))){
+                            $errors[$field][] = $error;
+
+                            break;
+                        }
+                    }elseif(is_string($validator)){
+                        if(!is_null($error = $this->keyValidate($validator, $data[$field]))){
+                            $errors[$field][] = $error;
+
+                            break;
+                        }
                     }
                 }
 
@@ -403,9 +428,8 @@ class Input
                 if (!in_array($field, $dataKeys)) {
                     if (in_array('exists', $validators)) {
                         $errors[$field][] = array(
-                            'code' => 'notExists',
-                            // 'error' => '@(Tiie.Data.Input.NotExists)',
-                            'error' => $this->messages->get("notExists"),
+                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
@@ -413,11 +437,9 @@ class Input
                 }
 
                 if (!is_array($data[$field])) {
-                    // $errors[$field]['wrongType'] = '@(Tiie.Data.Input.WrongType)';
                     $errors[$field][] = array(
-                        'code' => 'wrongType',
-                        // 'error' => '@(Tiie.Data.Input.WrongType)',
-                        'error' => $this->messages->get("wrongType"),
+                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
                     );
 
                     continue;
@@ -453,7 +475,7 @@ class Input
                             $prepared[$field][$key] = filter_var($prepared[$field], $filter);
                         }elseif(is_string($filter)){
 
-                        }elseif($filter instanceof \Tiie\Data\FilterInterface){
+                        }elseif($filter instanceof FilterInterface){
                             $prepared[$field][$key] = $filter->filter($prepared[$field]);
                         }else{
                             throw new \Exception("Unsported type of filter.");

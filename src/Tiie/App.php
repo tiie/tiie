@@ -1,28 +1,37 @@
 <?php
 namespace Tiie;
 
+define("FLAT_TRUE", "1");
+define("FLAT_FALSE", "0");
+
+use Exception;
 use Tiie\Components;
+use Tiie\Config;
+use Tiie\Config\Finder as ConfigFinder;
 use Tiie\Env;
-use Tiie\Http\RequestCreator;
-use Tiie\Http\Request;
-use Tiie\Response\ResponseInterface;
 use Tiie\Errors\Error;
 use Tiie\Errors\ErrorHandlerInterface;
-use Tiie\Config;
+use Tiie\Http\Request;
+use Tiie\Http\RequestCreator;
+use Tiie\Response\ResponseInterface;
 
 class App
 {
+    use \Tiie\Performance\TimerTrait;
+
     private $config;
     private $env;
     private $router;
+    private $logger;
+    private $performance;
     private $components;
     private $params = array(
-        // env
-        'env' => 'dev',
-
         // output
         'output' => 'buffer',
         'outputFile' => null,
+
+        'configDir' => "../configs",
+        'env' => Env::NAME_DEVELOPMENT,
     );
 
     /**
@@ -30,67 +39,104 @@ class App
      */
     private $request;
 
-    function __construct(array $params = array(), Config $config = null)
+    /**
+     * Init Application
+     */
+    function __construct(array $params = array())
     {
         $this->loadParams($params);
 
-        $this->config = $this->initConfig($config);
+        // Env
+        $this->env = new Env(isset($_SERVER) ? $_SERVER : array());
+        $this->env->set('sapi', php_sapi_name());
+        $this->env->set('name', $this->params["env"]);
 
-        // write components
-        $this->components = new Components($this->config->get('tiie.components'));
+        // Init Config
+        $this->config = $this->initConfig($this->params["configDir"]);
+
+        // Write components
+        $this->components = new Components($this->config->get('components'));
         $this->components->set('@app', $this);
         $this->components->set('@config', $this->config);
+        $this->components->set('@env', $this->env);
 
-        // export components to global scope
+        // Export components to global scope
         global $components;
         $components = $this->components;
 
-        // env
-        $this->env = new Env(isset($_SERVER) ? $_SERVER : array());
-        $this->env->set('sapi', php_sapi_name());
-
-        $this->components->set('@env', $this->env);
-
-        // router
+        // Router
         $this->router = $this->components->get("@router");
+
+        // Logger
+        $this->logger = $this->components->get("@logger");
+
+        $this->performance = $this->components->get("@performance");
     }
 
     public function run(array $params = array(), $request = null)
     {
-        // prepare params
+        $this->timer()->start(__METHOD__, array(
+            "REQUEST_URI" => $_SERVER["REQUEST_URI"],
+        ));
+
         $this->loadParams($params);
 
-        // run
+        // Run
         set_error_handler(array($this, '_errorHandler'));
         set_exception_handler(array($this, '_exceptionHandler'));
 
-        // Próbuje stworzyć żądanie
         try {
             if (is_null($request)) {
-                $this->request = (new RequestCreator())->create($this->env);
+                $this->request = (new RequestCreator($this->config->get("request")))->create($this->env);
             } else {
                 $this->request = $request;
             }
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             return $this->_error($error);
         }
 
         try {
-            return $this->response($this->router->run($this->request), $this->request);
-        } catch (\Exception $error) {
+            $this->router->prepare($this->request);
+
+            $this->loadMode();
+
+            $response = $this->response($this->router->run(), $this->request);
+
+            $this->timer()->stop();
+            $this->components->get("@performance")->save();
+
+            return $response;
+        } catch (Exception $error) {
             return $this->_error($error);
         }
     }
 
-    private function initConfig(Config $config = null)
+    private function initConfig(string $dir)
     {
-        if (is_null($config)) {
-            $config = new Config();
-        }
+        // Load default config.
+        $config = new Config($dir);
 
-        $config->merge(__DIR__."/Config/app.php", true);
+        $config->merge(include(__DIR__."/config.app.php"));
+        $config->merge(new ConfigFinder("general"));
+
+        // Load env config.
+        $config->merge(new ConfigFinder($this->env->get("name")));
 
         return $config;
+    }
+
+    private function loadMode()
+    {
+        // Load group.
+        $group = $this->router->group();
+
+        if (!is_null($group)) {
+            $this->config->merge(new ConfigFinder("config.{$group->name()}"));
+            $this->config->merge(new ConfigFinder("config.{$group->name()}.{$this->env->get("name")}"));
+        }
+
+        // Reload services
+        $this->components->reload();
     }
 
     private function loadParams(array $params = array())
@@ -124,7 +170,7 @@ class App
         try {
             if (is_null($request)) {
                 // request does not exists i create new with emergency mode
-                $request = (new \Tiie\Http\RequestCreator())->create($this->env, 1);
+                $request = (new \Tiie\Http\RequestCreator($this->config->get("request")))->create($this->env, 1);
             }
 
             $result = $this->components->get("@error.handler")->handle($error);
@@ -132,16 +178,16 @@ class App
             if ($result == ErrorHandlerInterface::PROCESS_EXIT) {
                 $this->response($this->components->get("@error.handler")->response($error, $request), $request);
             }
-        } catch (\Exception $error) {
+        } catch (Exception $error) {
             // oznacza to ze nie jest mozliwe odpowiednie przekierowanie bledu
             // akcje bledu
-            echo "Fatal error : \n";
-            die($error);
+            $this->logger->emergency($error->getMessage(), $error->getTrace());
+            exit("Fatal error");
         } catch (\Error $error) {
             // oznacza to ze nie jest mozliwe odpowiednie przekierowanie bledu
             // akcje bledu
-            echo "Fatal error : \n";
-            die($error);
+            $this->logger->emergency($error->getMessage(), $error->getTrace());
+            exit("Fatal error");
         }
     }
 
@@ -156,8 +202,9 @@ class App
      */
     private function response(ResponseInterface $response, Request $request)
     {
+        $this->timer()->start(__METHOD__);
+
         $config = $this->components->get('@config');
-        // $accept = $this->accept($request);
 
         $result = $response->response($request);
 
@@ -177,6 +224,8 @@ class App
                 }
             }
 
+            $this->timer()->stop();
+
             echo $result['body'];
 
             return null;
@@ -186,6 +235,8 @@ class App
                     $result['headers'][$header] = $value;
                 }
             }
+
+            $this->timer()->stop();
 
             return $result;
         } elseif ($this->params['output'] == 'std') {
@@ -198,9 +249,13 @@ class App
                 }
             }
 
+            $this->timer()->stop();
+
             return $result;
         } else {
-            throw new \Exception("Unknown type of output '{$this->params['output']}'.");
+            $this->components->get("@performance")->save();
+
+            throw new Exception("Unknown type of output '{$this->params['output']}'.");
         }
     }
 
@@ -235,7 +290,7 @@ class App
         }
 
         if (is_null($accept['lang'])) {
-            throw new \Exception("Can not determine Accept-Language. Please define response.lang.default at config.");
+            throw new Exception("Can not determine Accept-Language. Please define response.lang.default at config.");
         }
 
         // content type
@@ -262,7 +317,7 @@ class App
         }
 
         if (is_null($accept['contentType'])) {
-            throw new \Exception("Can not determine Accept. Please define response.contentType.default at config.");
+            throw new Exception("Can not determine Accept. Please define response.contentType.default at config.");
         }
 
         return $accept;

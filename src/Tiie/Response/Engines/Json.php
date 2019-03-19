@@ -12,23 +12,6 @@ class Json implements \Tiie\Response\Engines\EngineInterface
 
         $body = "";
 
-        // $tocode = array();
-        // foreach($response->data() as $key => $row) {
-        //     // unset($row['id']);
-        //     // unset($row['name']);
-        //     unset($row['parentId']);
-        //     unset($row['icon']);
-        //     unset($row['path']);
-        //     $tocode[$key] = $row;
-
-        //     $body = json_encode($tocode);
-
-        //     if ($body === false) {
-        //         // todo [debug] Debug to delete
-        //         die(var_export($row, true));
-        //     }
-        // }
-
         if (!is_null($response->data())) {
             $body = json_encode($response->data());
         }

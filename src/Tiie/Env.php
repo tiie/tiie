@@ -1,6 +1,11 @@
 <?php
 namespace Tiie;
 
-class Env extends \Tiie\Data\Container
+use Tiie\Data\Container;
+
+class Env extends Container
 {
+    const NAME_DEVELOPMENT = "development";
+    const NAME_PRODUCTION = "production";
+
 }

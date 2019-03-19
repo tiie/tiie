@@ -6,17 +6,18 @@ class Twig implements \Tiie\Response\Engines\EngineInterface
     use \Tiie\ComponentsTrait;
 
     private $config;
+    private $params;
 
-    function __construct()
+    function __construct(array $params = array())
     {
-        $this->config = $this->component("@config")->get("tiie.twig");
+        $this->params = $params;
     }
 
     public function prepare(\Tiie\Response\ResponseInterface $response, \Tiie\Http\Request $request, array $accept)
     {
         $loader = new \Twig_Loader_Filesystem();
 
-        foreach ($this->config["loader"] as $key => $dir) {
+        foreach ($this->params["loader"] as $key => $dir) {
             if (is_numeric($key)) {
                 $loader->addPath($dir);
             }else{
@@ -71,7 +72,7 @@ class Twig implements \Tiie\Response\Engines\EngineInterface
         $layout = $response->layout();
 
         if (is_null($layout)) {
-            $layout = $this->config['layout'];
+            $layout = $this->params['layout'];
         }
 
         if (!is_null($response->template())) {

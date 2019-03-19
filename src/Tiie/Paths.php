@@ -3,6 +3,8 @@ namespace Tiie;
 
 class Paths
 {
+    private $paths;
+
     function __construct($paths = array())
     {
         $this->paths = $paths;

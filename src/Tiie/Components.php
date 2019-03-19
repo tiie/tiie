@@ -38,6 +38,7 @@ class Components
     public function get(string $name, array $params = array(), string $scope = null)
     {
         if ($name[0] == '@' && array_key_exists($name, $this->services)) {
+            // echo "get service {$name}\n";
             return $this->services[$name];
         }
 
@@ -53,7 +54,11 @@ class Components
             // Scope is defined. I check if there is component at scope. If not
             // then I init component, otherwise I return inited component.
             if (!array_key_exists($name, $this->scopes[$scope])) {
-                $this->scopes[$scope][$name] = $this->initComponent($name, $params);
+                $component = $this->scopes[$scope][$name] = $this->initComponent($name, $params);
+
+                if ($name[0] == '@' && !array_key_exists($name, $this->services)) {
+                    $this->services[$name] = $component['object'];
+                }
             }
 
             return $this->scopes[$scope][$name]['object'];
@@ -65,10 +70,8 @@ class Components
         $this->scopes[$scope] = array();
         $component = $this->scopes[$scope][$name] = $this->initComponent($name, $params);
 
-        if ($name[0] == '@') {
-            if (!array_key_exists($name, $this->services)) {
-                $this->services[$name] = $component['object'];
-            }
+        if ($name[0] == '@' && !array_key_exists($name, $this->services)) {
+            $this->services[$name] = $component['object'];
         }
 
         if (array_key_exists('after', $component['initer'])) {
@@ -177,5 +180,19 @@ class Components
         }
 
         throw new \Exception("Component {$name} is not defined.");
+    }
+
+    public function reload()
+    {
+        $this->services = array(
+            "@app" => $this->services["@app"],
+            "@config" => $this->services["@config"],
+            "@env" => $this->services["@env"],
+            "@router" => $this->services["@router"],
+            "@performance" => $this->services["@performance"],
+            "@performance.timer" => $this->services["@performance.timer"],
+        );
+
+        return $this;
     }
 }

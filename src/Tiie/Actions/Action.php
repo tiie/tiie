@@ -35,10 +35,10 @@ abstract class Action
 
     public function init() {}
 
-    public function forward($uri = null, $method = null, $params = null, $data = null)
-    {
-        return new \Tiie\Forward($this->component('router'), $this->request->chain());
-    }
+    // public function forward($uri = null, $method = null, $params = null, $data = null)
+    // {
+    //     return new \Tiie\Forward($this->component('router'), $this->request->chain());
+    // }
 
     public function redirect($url)
     {

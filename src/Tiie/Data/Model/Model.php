@@ -9,6 +9,7 @@ use Tiie\Data\Model\CreatorInterface;
 use Tiie\Data\Model\Creator;
 use Tiie\Data\Model\Projection;
 use Tiie\Data\Model\Relational\SelectableInterface;
+use Tiie\Data\Model\Pagination;
 
 abstract class Model implements ModelInterface
 {
@@ -20,8 +21,7 @@ abstract class Model implements ModelInterface
 
     private $records = array();
 
-    // public function find(array $params = array()) : Records
-    public function find(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : Records
+    public function find(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : Records
     {
         $records = array();
 
@@ -30,6 +30,11 @@ abstract class Model implements ModelInterface
         }
 
         return new Records($this, $records, $this->id);
+    }
+
+    public function pagination(array $params = array()) : Pagination
+    {
+        return new Pagination($this, $params);
     }
 
     public function counter(array $params = array(), int $size = null, int $page = 0) : array
@@ -83,18 +88,18 @@ abstract class Model implements ModelInterface
     /**
      * Return list of records from model.
      */
-    public function records(array $ids = array(), array $params = array()) : Records
+    public function records(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : Records
     {
         $items = array();
 
-        foreach ($this->fetchByIds($ids, $params) as $row) {
+        foreach ($this->fetchByIds($ids, $params, $fields) as $row) {
             $items[] = array(
                 'id' => $row[$this->id],
                 'record' => $this->createRecord($row),
             );
         }
 
-        return new Records($this, $items, $params, $this->id);
+        return new Records($this, $items, $this->id);
     }
 
     /**
@@ -118,20 +123,22 @@ abstract class Model implements ModelInterface
         return empty($rows = $this->fetch($params, $fields)) ? null : $rows[0];
     }
 
-    public function fetchByIds(array $ids, array $params = array()) : ?array
+    public function fetchByIds(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : ?array
     {
         $params[$this->id] = $ids;
 
-        return $this->fetch($params);
+        return $this->fetch($params, $fields, $sort);
     }
 
-    public function run(RecordInterface $record, string $command, array $params = array()) : ModelInterface
+    public function run(RecordInterface $record, string $command, array $params = array()) : ?string
     {
         switch ($command) {
-        case 'save':
-            return $this->save($record, $this, $params);
-        case 'remove':
-            return $this->remove($record, $this, $params);
+        case self::COMMAND_SAVE:
+            return $this->save($record, $params);
+        case self::COMMAND_REMOVE:
+            return $this->remove($record, $params);
+        case self::COMMAND_CREATE:
+            return $this->create($record, $params);
         }
 
         return $this;
@@ -147,7 +154,7 @@ abstract class Model implements ModelInterface
         return new Creator($this);
     }
 
-    public function save(RecordInterface $record, array $params = array()) : ModelInterface
+    public function save(RecordInterface $record, array $params = array()) : ?string
     {
         throw new \Exception("Save is not implemented");
     }

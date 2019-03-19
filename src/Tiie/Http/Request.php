@@ -15,6 +15,8 @@ class Request
     private $id;
     private $chain = null;
 
+    private $options;
+
     function __construct(
         string $method,
         string $urn,
@@ -22,8 +24,9 @@ class Request
         array $input = array(),
         array $data = array(),
         string $domain = null,
-        int $emergency = 0)
-    {
+        int $emergency = 0,
+        array $options = array()
+    ) {
         $this->method = strtolower($method);
         $this->urn = $urn;
         $this->params = $params;
@@ -31,6 +34,17 @@ class Request
         $this->data = $data;
         $this->domain = $domain;
         $this->emergency = $emergency;
+
+        $this->options = $options;
+
+        // Init default params.
+        if (!empty($this->options["params"]["default"])) {
+            foreach ($this->options["params"]["default"] as $name => $value) {
+                if (!array_key_exists($name, $this->params)) {
+                    $this->params[$name] = $value;
+                }
+            }
+        }
     }
 
     public function __toString()
@@ -69,7 +83,7 @@ class Request
         return $this->emergency;
     }
 
-    public function set($name, $value)
+    public function set(string $name, $value)
     {
         if (in_array($name, array('headers'))) {
             throw new \Exception("You can not overwrite headers at request.");
@@ -80,7 +94,7 @@ class Request
         return $this;
     }
 
-    public function get($name)
+    public function get(string $name)
     {
         if (array_key_exists($name, $this->data)) {
             return $this->data[$name];
@@ -94,7 +108,7 @@ class Request
      *
      * @param string $domain
      */
-    public function domain($domain = null)
+    public function domain(string $domain = null)
     {
         if (is_null($domain)) {
             return $this->domain;
@@ -105,7 +119,7 @@ class Request
         }
     }
 
-    public function method($method = null)
+    public function method(string $method = null)
     {
         if (is_null($method)) {
             return $this->method;
@@ -116,7 +130,7 @@ class Request
         }
     }
 
-    public function urn($urn = null)
+    public function urn(string $urn = null)
     {
         if (is_null($urn)) {
             return $this->urn;

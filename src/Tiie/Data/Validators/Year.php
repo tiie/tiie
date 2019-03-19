@@ -2,21 +2,14 @@
 namespace Tiie\Data\Validators;
 
 use Tiie\Data\Validators\ValidatorInterface;
+use Tiie\Data\Validators\Validator;
 
-class Year implements ValidatorInterface
+class Year extends Validator
 {
-    function __construct()
-    {
-    }
-
-    public function description()
-    {
-        return '@(Tiie.Data.Validator.Year.Description)';
-    }
-
     public function validate($value)
     {
-        // todo
-        throw new \Exception("Dorobic");
+        trigger_error("Implements Year validator.", E_USER_NOTICE);
+
+        return null;
     }
 }

@@ -38,6 +38,10 @@ class File
         if (!is_readable($this->data['path'])) {
             throw new \Tiie\Exceptions\Unreadable("File {$this->data['path']} is unreadable.");
         }
+
+        if (!empty($params["table"])) {
+            $this->params["table"] = $params["table"];
+        }
     }
 
     public function move($to, $filename = null)

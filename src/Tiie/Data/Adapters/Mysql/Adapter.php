@@ -343,3 +343,5 @@ class Adapter implements \Tiie\Data\Adapters\AdapterInterface, \Tiie\Data\Adapte
         return $statement;
     }
 }
+
+

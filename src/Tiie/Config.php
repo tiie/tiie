@@ -10,6 +10,9 @@
 namespace Tiie;
 
 use Symfony\Component\Yaml\Yaml;
+use Tiie\Config\Finder;
+use Tiie\Config\Exceptions\FileUnreadable as ExceptionFileUnreadable;
+use Tiie\Config\Exceptions\UnsupportedFromat as ExceptionUnsupportedFromat;
 
 /**
  * Basic class for managing config.
@@ -40,78 +43,146 @@ use Symfony\Component\Yaml\Yaml;
 class Config implements \ArrayAccess
 {
     private $config = array();
+    private $directory;
 
     /**
      * @param mixed $config - Options in one of allowed formats.
      * you will not use it.
      */
-    function __construct($config = null)
+    // function __construct($config = null)
+    function __construct(string $directory)
     {
-        if (!is_null($config)) {
-            $this->load($config);
-        }
+        $this->directory = $directory;
+        // if (!is_null($config)) {
+        //     $this->load($config);
+        // }
     }
 
     /**
      * Loads config.
      *
      * @param mixed $config - Options in one of allowed formats.
-     * @return self
+     * @return $this
+     *
+     * @throws \Tiie\Config\Exceptions\FileUnreadable
+     * @throws \Tiie\Config\Exceptions\UnsupportedFromat
      */
     public function load($config)
     {
-        if (is_array($config)) {
-            $this->config = $config;
+        $this->config = $this->read($config);
 
-            return $this;
-        }
+        return $this;
+    }
 
-        if ($config instanceof \Tiie\Config) {
-            $this->config = $config->toArray();
+    /**
+     * Read config.
+     *
+     * @param mixed $config
+     * @return array
+     *
+     * @throws \Tiie\Config\Exceptions\FileUnreadable
+     * @throws \Tiie\Config\Exceptions\UnsupportedFromat
+     */
+    private function read($config)
+    {
+        // Config is other Config
+        if ($config instanceof Config) {
+            $config = $config->toArray();
+        } else if($config instanceof Finder) {
+            $find = $this->path($config->path());
 
-            return $this;
+            if (is_null($find)) {
+                $config = array();
+            } else {
+                $config = $config->path();
+            }
         }
 
         if (is_string($config)) {
-            if (!is_readable($config)) {
-                throw new \Exception(sprintf('Can not read %s', $config));
+            $config = $this->path($config);
+
+            // Path is given.
+            if (is_null($config)) {
+                throw new ExceptionFileUnreadable(sprintf("Config '%s' is unreadable.", $config));
             }
 
             switch ($this->fileExtension($config)) {
             case 'php':
-                $tconfig = include($config);
+                $decoded = include($config);
 
-                if (!is_array($tconfig)) {
-                    throw new \InvalidArgumentException(sprintf('Can not read file %s', $config));
+                if (!is_array($decoded)) {
+                    throw new ExceptionFileUnreadable(sprintf("Config '%s' is unreadable.", $config));
                 }
 
-                $this->config = $tconfig;
+                $config = $decoded;
+
                 break;
             case 'json':
-                $tconfig = file_get_contents($config);
+                $decoded = file_get_contents($config);
 
-                if ($tconfig === false) {
-                    throw new \Exception(sprintf('Can not read %s', $config));
+                if ($decoded === false) {
+                    throw new ExceptionFileUnreadable(sprintf("Config '%s' is unreadable.", $config));
                 }
 
-                $tconfig = json_decode($tconfig, 1);
+                $decoded = json_decode($decoded, 1);
 
-                if ($tconfig === false) {
-                    throw new \InvalidArgumentException(sprintf('Can not read file %s', $config));
+                if ($decoded === false) {
+                    throw new ExceptionFileUnreadable(sprintf("Config '%s' is unreadable.", $config));
                 }
 
-                $this->config = $tconfig;
+                $config = $decoded;
                 break;
             case 'yaml':
-                $this->config = Yaml::parseFile($config);
+                $decoded = Yaml::parseFile($config);
 
+                $config = $decoded;
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf('Not supported type of extension %s', $config));
+                throw new ExceptionUnsupportedFromat(sprintf("Config '%s' is not supported.", $config));
             }
         }
 
-        return $this;
+        return $this->parse($config);
+    }
+
+    private function parse(array $config)
+    {
+        foreach ($config as $key => $value) {
+            if (is_array($value)) {
+                $config[$key] = $this->parse($value);
+            } elseif (is_string($value) && !empty($value) && $value[0] == "@") {
+                preg_match_all('/@include\((.*?)\)/m', $value, $matches, PREG_SET_ORDER, 0);
+
+                if (!empty($matches)) {
+                    $config[$key] = $this->read($matches[0][1]);
+                }
+            }
+        }
+
+        return $config;
+    }
+
+    private function path(string $path)
+    {
+        $exploded = explode('.', $path);
+
+        if (in_array($exploded[count($exploded)-1], array("php", "json", "yaml"))) {
+            array_pop($exploded);
+
+            $path = implode('.', $exploded);
+        }
+
+        $path = "{$this->directory}/{$path}";
+
+        if (is_readable("{$path}.php")) {
+            return "{$path}.php";
+        } else if (is_readable("{$path}.json")) {
+            return "{$path}.json";
+        } else if (is_readable("{$path}.yaml")) {
+            return "{$path}.yaml";
+        } else {
+            return null;
+        }
     }
 
     public function offsetSet($offset, $value)
@@ -130,7 +201,7 @@ class Config implements \ArrayAccess
 
     public function offsetUnset($offset)
     {
-        throw new \Exception("TODO");
+        throw new \Exception('TODO');
     }
 
     public function offsetGet($offset)
@@ -141,21 +212,24 @@ class Config implements \ArrayAccess
     /**
      * It binds the base config with config from the parameter. Basic
      * behavior overrides the base config with those that come with the
-     * parameter. This behavior can be changed by setting "reverse" to "1"
+     * parameter. This behavior can be changed by setting 'reverse' to '1'
      *
      * @param mixed $config - Options in one of allowed formats.
-     * @param bool $reverse - Setting this configion causes the config from the
+     * @param int $reverse - Setting this configion causes the config from the
      * parameters to be written by the base config.
-     * @return self
+     * @return $this
+     *
+     * @throws \Tiie\Config\Exceptions\FileUnreadable
+     * @throws \Tiie\Config\Exceptions\UnsupportedFromat
      */
-    public function merge($config, $reverse = false)
+    public function merge($config, $reverse = false) : Config
     {
-        $config = new static($config);
+        $config = $this->read($config);
 
         if ($reverse) {
-            $this->config = $this->arrayMerge($config->toArray(), $this->config);
+            $this->config = $this->arrayMerge($config, $this->config);
         }else{
-            $this->config = $this->arrayMerge($this->config, $config->toArray());
+            $this->config = $this->arrayMerge($this->config, $config);
         }
 
         return $this;
@@ -194,8 +268,6 @@ class Config implements \ArrayAccess
             unset($b[$key]);
         }
 
-        // todo [debug] Debug to delete
-        // die(print_r($a, true));
         return $a;
     }
 
@@ -213,7 +285,7 @@ class Config implements \ArrayAccess
         $dir = implode("/", $dir);
 
         // error_reporting(E_ALL);
-        if ($dir != "") {
+        if ($dir != '') {
             if (!is_dir($dir)) {
                 mkdir($dir, 0777, 1);
             }
@@ -307,12 +379,12 @@ class Config implements \ArrayAccess
         }
 
         if ($founded) {
-            // key is find at local config
-            if (is_string($vpointer)) {
-                if (substr($vpointer, 0, 1) == "@") {
-                    return $this->dynamic(substr($vpointer, 1), $default);
-                }
-            }
+            // // key is find at local config
+            // if (is_string($vpointer)) {
+            //     if (substr($vpointer, 0, 1) == "@") {
+            //         return $this->dynamic(substr($vpointer, 1), $default);
+            //     }
+            // }
 
             return $vpointer;
         }else{

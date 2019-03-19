@@ -105,7 +105,7 @@ class Records implements \Countable, Iterator
         return $column;
     }
 
-    public function first() : RecordInterface
+    public function first() : ?RecordInterface
     {
         if (count($this->records) == 0) {
             return null;
@@ -121,6 +121,11 @@ class Records implements \Countable, Iterator
         }
 
         return $this->records[count($this->records)-1];
+    }
+
+    public function empty()
+    {
+        return empty($this->records);
     }
 
     public function toArray(array $params = array()) : array

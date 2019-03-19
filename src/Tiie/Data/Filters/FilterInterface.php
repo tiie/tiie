@@ -1,5 +1,5 @@
 <?php
-namespace \Tiie\Data\Filters;
+namespace Tiie\Data\Filters;
 
 interface FilterInterface
 {

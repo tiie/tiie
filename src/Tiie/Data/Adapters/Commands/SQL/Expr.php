@@ -10,6 +10,8 @@ class Expr extends Command
 
     function __construct($expr)
     {
+        parent::__construct();
+
         $this->expr = $expr;
     }
 

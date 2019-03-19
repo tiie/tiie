@@ -6,9 +6,9 @@ use Tiie\Data\Model\Projection;
 
 interface ModelInterface
 {
-    const PROCESS_CREATING = 'creating';
-    const PROCESS_SAVING = 'saving';
-    const PROCESS_REMOVING = 'removing';
+    const COMMAND_SAVE = "save";
+    const COMMAND_CREATE = "create";
+    const COMMAND_REMOVE = "remove";
 
     public function generator(array $params = array()) : iterable;
 
@@ -21,8 +21,7 @@ interface ModelInterface
      * @param int $offset
      * @return array
      */
-    // public function fetch(array $params = array(), int $limit = null, array $sort = array(), int $offset = 0) : array;
-    public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : array;
+    public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : array;
 
     public function projection() : Projection;
     public function counter(array $params = array(), int $size = null, int $page = 0) : array;
@@ -33,7 +32,7 @@ interface ModelInterface
      * @param array $params
      * @return Records
      */
-    public function find(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : Records;
+    public function find(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : Records;
 
     /**
      * Fetch data by id.
@@ -51,7 +50,7 @@ interface ModelInterface
      * @param array $params
      * @return array|NULL
      */
-    public function fetchByIds(array $ids, array $params = array()) : ?array;
+    public function fetchByIds(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : ?array;
 
     /**
      * Run command on given record.
@@ -61,7 +60,7 @@ interface ModelInterface
      * @param array $params
      * @return ModelInterface
      */
-    public function run(RecordInterface $record, string $command, array $params = array()) : ModelInterface;
+    public function run(RecordInterface $record, string $command, array $params = array()) : ?string;
 
     /**
      * Validate given process if can be executed at given record. Method should
@@ -74,7 +73,7 @@ interface ModelInterface
      *
      * @return \Tiie\Data\Model\ModelInterface
      */
-    public function save(RecordInterface $record, array $params = array()) : ModelInterface;
+    public function save(RecordInterface $record, array $params = array()) : ?string;
 
     /**
      * Create record at source. Method shoud return id of new record.
@@ -99,7 +98,7 @@ interface ModelInterface
     /**
      * Return list of records from model.
      */
-    public function records(array $ids = array(), array $params = array()) : Records;
+    public function records(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : Records;
 
     /**
      * Return record with given id.

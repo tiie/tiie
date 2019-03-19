@@ -3,16 +3,14 @@ namespace Tiie\Data\Validators;
 
 use Tiie\Data\Validators\ValidatorInterface;
 use Tiie\Data\Validators\Number;
+use Tiie\Data\Validators\Validator;
 
-class Time implements Number
+class Time extends Validator
 {
-    function __construct()
+    public function validate($value)
     {
-        parent::__construct(1);
-    }
+        trigger_error("Implements Time validator.", E_USER_NOTICE);
 
-    public function description()
-    {
-        return '@(Tiie.Data.Validator.Time.Description)';
+        return null;
     }
 }

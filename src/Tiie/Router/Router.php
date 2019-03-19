@@ -2,6 +2,12 @@
 namespace Tiie\Router;
 
 use Tiie\Http\Request;
+use Tiie\Response\ResponseInterface;
+use Tiie\Router\Group;
+use Tiie\Router\Route;
+use Tiie\Router\Exceptions\RouteNotFound;
+use Tiie\Router\Exceptions\ActionNotFound;
+use Tiie\Router\Exceptions\MethodNotFound;
 
 class Router
 {
@@ -9,14 +15,14 @@ class Router
     const OBJECT_ACTION = 'action';
 
     /**
-     * @var \Tiie\Config Reference to params object.
-     */
-    private $params;
-
-    /**
      * List of all routes.
      */
     private $routes;
+
+    private $route;
+    private $group;
+    private $params;
+    private $request;
 
     function __construct(array $params = array())
     {
@@ -24,64 +30,85 @@ class Router
         if (empty($params['routes'])) {
             $this->routes = array();
         } else {
-            foreach ($params['routes'] as $routeId => $route) {
-                $route['id'] = $routeId;
-
-                if (!empty($route['group'])) {
-                    if (!empty($params['groups'][$route['group']])) {
-                        $route = array_merge($params['groups'][$route['group']], $route);
-                    }
-                }
-
-                if (empty($route['method'])) {
-                    $route['method'] = 'get';
-                } else {
-                    $route['method'] = strtolower($route['method']);
-                }
-
-                if (empty($route['action'])) {
-                    throw new \Exception("Route does not have action defined.");
-                } else {
-                    if (empty($route['action']['class'])) {
-                        throw new \Exception("Route does not have action.class defined.");
-                    }
-
-                    if (empty($route['action']['method'])) {
-                        $route['action']['method'] = $route['method'];
-                    }
-                }
-
-                if (empty($route['urn'])) {
-                    throw new \Exception("Route does not have urn defined.");
-                }
-
-                $this->routes[$routeId] = $route;
-            }
+            $this->routes = $params["routes"];
         }
     }
 
-    public function run(Request $request) : \Tiie\Response\ResponseInterface
+    public function group()
     {
-        $route = $this->match($request);
+        return is_null($this->group) ? null : new Group($this->group);
+    }
 
-        if (is_null($route)) {
-            throw new \Tiie\Router\Exceptions\RouteNotFound("Route not found for {$request->__toString()}");
+    public function route()
+    {
+        return is_null($this->route) ? null : new Route($this->route);
+    }
+
+    public function params()
+    {
+        return $this->params;
+    }
+
+    public function param(string $name)
+    {
+        return array_key_exists($name, $this->params) ? $this->params[$name] : null;
+    }
+
+    /**
+     * The process can be started in two ways. The first is to start the data
+     * transfer, the second is to run the prepre 'before launching.
+     *
+     * @param \Tiie\Http\Request $request
+     * @return null|Tiie\Response\ResponseInterface
+     *
+     * @throws \Tiie\Router\Exceptions\RouteNotFound
+     * @throws \Tiie\Router\Exceptions\ActionNotFound
+     * @throws \Tiie\Router\Exceptions\MethodNotFound
+     */
+    public function run(Request $request = null) : ?ResponseInterface
+    {
+        if (!is_null($request)) {
+            $this->prepare($request);
         }
 
-        if (!class_exists("\\".$route['action']['class'])) {
-            throw new \Tiie\Router\Exceptions\ActionNotFound("Action not found for {$request->__toString()}");
+        if (is_null($this->group) || is_null($this->route)) {
+            throw new RouteNotFound("Route not found for {$this->request->__toString()}");
         }
 
-        if (!in_array($route['action']['method'], get_class_methods($route['action']['class']))) {
-            throw new \Tiie\Router\Exceptions\MethodNotFound("Method not found for {$request->__toString()}");
+        if (empty($this->route["action"]["class"]) && !class_exists("\\{$this->route["action"]["class"]}")) {
+            throw new ActionNotFound("Action not found for {$this->request->__toString()}");
         }
 
-        $class = $route['action']['class'];
-        $method = $route['action']['method'];
+        if (empty($this->route["action"]["method"]) || !in_array($this->route['action']['method'], get_class_methods($this->route['action']['class']))) {
+            throw new MethodNotFound("Method not found for {$this->request->__toString()}");
+        }
 
-        $request->params($route['params']);
+        $class = $this->route['action']['class'];
+        $method = $this->route['action']['method'];
 
-        return (new $class())->$method($request);
+        $this->request->params($this->params);
+
+        return (new $class())->$method($this->request);
+    }
+
+    public function prepare(Request $request) : Router
+    {
+        $this->request = $request;
+
+        $match = $this->match($request);
+
+        $this->group = $match["group"];
+        $this->route = $match["route"];
+
+        if (!is_null($this->group)) {
+            $this->params = $this->group["params"];
+        }
+
+        if (!is_null($this->route)) {
+            $this->params = array_merge($this->group["params"], $this->route["params"]);
+        }
+
+        return $this;
     }
 
     /**
@@ -89,10 +116,57 @@ class Router
      *
      * @return null|Request Null if return when route is not found.
      */
-    public function match(Request $request)
+    public function match(Request $request) : ?array
     {
-        foreach ($this->routes as $routeId => $route) {
-            $params = array();
+        $match = array(
+            "group" => null,
+            "route" => null,
+        );
+
+        foreach ($this->routes as $name => $group) {
+            $group["name"] = $name;
+            $group["params"] = array();
+
+            if (!empty($group["domain"])) {
+                $m = $this->matchString($request->domain(), $group['domain']);
+
+                if (is_null($m)) {
+                    continue;
+                }
+
+                // First I copy params.
+                $group['params'] = $m['params'];
+            }
+
+            // Domain match now I check if prefix match.
+            if (empty($group["prefix"])) {
+                $match["group"] = $group;
+
+                break;
+            } else {
+                $m = $this->matchString($request->urn(), "{$group['prefix']}", array("begin" => 1));
+
+                if (is_null($m)) {
+                    continue;
+                }
+
+                $group['params'] = array_merge($group['params'], $m['params']);
+                $match["group"] = $group;
+
+                break;
+            }
+        }
+
+        if (empty($match["group"])) {
+            return $match;
+        }
+
+        if (empty($match["group"]["map"])) {
+            return $match;
+        }
+
+        foreach ($match["group"]["map"] as $routeId => $route) {
+            $route["id"] = $routeId;
 
             // method
             if (!empty($route['method'])) {
@@ -101,32 +175,26 @@ class Router
                 }
             }
 
-            // domain
-            if (!empty($route['domain'])) {
-                $matched = $this->matchString($request->domain(), $route['domain']);
+            // urn
+            $urn = $route["urn"];
 
-                if (is_null($matched)) {
-                    continue;
-                }
-
-                $params = array_merge($params, $matched['params']);
+            if (!empty($match["group"]["prefix"])) {
+                $urn = "{$match["group"]["prefix"]}{$urn}";
             }
 
-            // urn
-            $matched = $this->matchString($request->urn(), $route['urn']);
+            $m = $this->matchString($request->urn(), $urn);
 
-            if (empty($matched)) {
+            if (empty($m)) {
                 continue;
             }
 
-            $params = array_merge($params, $matched['params']);
+            $route["params"] = $m["params"];
+            $match["route"] = $route;
 
-            $route['params'] = $params;
-
-            return $route;
+            break;
         }
 
-        return null;
+        return $match;
     }
 
     /**
@@ -135,7 +203,7 @@ class Router
      *
      * @return array|null
      */
-    private function matchString(string $string, string $regex) : ?array
+    private function matchString(string $string, string $regex, array $params = array()) : ?array
     {
         $paramsNames = array();
         $paramsvalues = array();
@@ -184,7 +252,12 @@ class Router
 
         $regex = str_replace("/", "\/", $regex);
         $regex = str_replace(".", "\.", $regex);
-        $regex = "/^{$regex}$/m";
+
+        if (!empty($params["begin"])) {
+            $regex = "/^{$regex}/m";
+        } else {
+            $regex = "/^{$regex}$/m";
+        }
 
         // check if regex matched
         preg_match_all($regex, $string, $matches, PREG_SET_ORDER, 0);

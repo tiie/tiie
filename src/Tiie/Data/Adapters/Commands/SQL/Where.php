@@ -15,9 +15,12 @@ class Where extends Command
 {
     private $where = null;
     private $pointer = null;
+    private $common;
 
     function __construct()
     {
+        parent::__construct();
+
         $this->where = new stdClass();
 
         $this->where->type = 'brackets';
@@ -284,10 +287,10 @@ class Where extends Command
                 $this->notIn($fieldValue, $value);
                 break;
             case 'isNull':
-                $this->isNull($fieldValue, $value);
+                $this->isNull($fieldValue);
                 break;
             case 'isNotNull':
-                $this->isNotNull($fieldValue, $value);
+                $this->isNotNull($fieldValue);
                 break;
             case 'startWith':
                 $this->startWith($fieldValue, $value);
@@ -425,9 +428,9 @@ class Where extends Command
                 if (array_key_exists('from', $conditions) && array_key_exists('to', $conditions)) {
                     $this->between($column, $conditions['from'], $conditions['to']);
                 } elseif (array_key_exists('from', $conditions)) {
-                    $this->gte($column, $conditions['from']);
+                    $this->greaterThanEqual($column, $conditions['from']);
                 } elseif (array_key_exists('to', $conditions)) {
-                    $this->lte($column, $conditions['to']);
+                    $this->lowerThanEqual($column, $conditions['to']);
                 }
 
                 return $this;
@@ -517,7 +520,7 @@ class Where extends Command
 
         //     break;
         default:
-            throw new \InvalidArgumentException("Unsupported operator {$param['operator']}.");
+            throw new \InvalidArgumentException("Unsupported operator {$params['operator']}.");
         }
 
         return $this;
@@ -1097,8 +1100,8 @@ class Where extends Command
     {
         $command = "";
         $params = array();
-        $t;
-        $bl;
+        $t = null;
+        $bl = null;
 
         foreach ($brackets->childs as $condition) {
             if ($condition->type == "brackets") {

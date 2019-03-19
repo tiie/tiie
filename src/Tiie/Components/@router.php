@@ -1,5 +1,8 @@
 <?php
 
-return function(\Tiie\Components $components) {
-    return new \Tiie\Router\Router($components->get("@config")->get("router"));
+use Tiie\Components;
+use Tiie\Router\Router;
+
+return function(Components $components) {
+    return new Router($components->get("@config")->get("router"));
 };

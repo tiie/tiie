@@ -5,9 +5,9 @@ class Files
 {
     public function fileExtension($path)
     {
-        $path = explode('.');
+        $exploded = explode('.', $path);
 
-        return $path[count($path)-1];
+        return $exploded[count($exploded)-1];
     }
 }
 

@@ -18,7 +18,6 @@ return array(
         'contentType' => array(
             'negotiation' => 1,
             'default' => 'application/json',
-            // 'priorities' => array('text/html; charset=UTF-8', 'application/json', 'application/xml;q=0.5'),
             'priorities' => array(
                 'application/json',
                 'application/xml',
@@ -35,7 +34,42 @@ return array(
             ),
         ),
     ),
+    "performance" => array(
+        "active" => 1,
+        "timers" => array(
+            "output" => array(
+                "path" => "../files/timetraces",
+            ),
+            "saveLongerThan" => 0.5,
+        ),
+    ),
+    'components' => array(
+        // 'dirs' => array(
+        //     "../src/Components"
+        // )
+    ),
+    'request' => array(
+        'params' => array(
+            "default" => array(
+                'pageSize' => 10,
+                'page' => 0,
+            ),
+        ),
+    ),
+    'lang' => array(
+        'dictionaries' => array(
+            '@lang.dictionaries.tiie',
+        )
+    ),
+    'twig' => array(
+        'loader' => array(
+            '../src/templates',
+        ),
 
+        // 'layouts' => array(
+        //     'main' => 'layouts/main.html'
+        // ),
+    ),
     'tiie' => array(
         'errors' => array(
             'errorReporting' => array(
@@ -57,43 +91,7 @@ return array(
                 E_USER_DEPRECATED,
             ),
 
-            'errorReportingSilently' => true,
-        ),
-        'lang' => array(
-            'dictionaries' => array(
-                '@lang.dictionaries.tiie',
-            )
-        ),
-        'twig' => array(
-            'loader' => array(
-                './src/App/templates',
-            ),
-
-            // 'layouts' => array(
-            //     'main' => 'layouts/main.html'
-            // ),
-        ),
-        'router' => array(
-            'error' => array(
-                'action' => \Tiie\Actions\Error::class
-            )
-        ),
-        'components' => array(
-            // 'dirs' => array(
-            //     "../src/Components"
-            // )
-        ),
-        'actions' => array(
-            // 'default' => array(
-
-            // ),
-            // 'rest' => array(
-            //     'requireParameterDescription' => true,
-            //     'requireFieldsDescription' => true,
-            // ),
-        ),
-        'http' => array(
-
+            // 'errorReportingSilently' => true,
         ),
     )
 );

@@ -5,18 +5,18 @@ use Tiie\Data\Validators\ComplexValidatorInterface;
 use Tiie\Data\Validators\Validator;
 use Tiie\Data\Adapters\MetadataAccessibleInterface;
 
-use Tiie\Validators\NotNull;
-use Tiie\Validators\Integer;
-use Tiie\Validators\Tinyint;
-use Tiie\Validators\Smallint;
-use Tiie\Validators\Mediumint;
-use Tiie\Validators\Bigint;
-use Tiie\Validators\Decimal;
-use Tiie\Validators\Number;
-use Tiie\Validators\Time;
-use Tiie\Validators\Year;
-use Tiie\Validators\StringLength;
-use Tiie\Validators\Enum;
+use Tiie\Data\Validators\NotNull;
+use Tiie\Data\Validators\Integer;
+use Tiie\Data\Validators\Tinyint;
+use Tiie\Data\Validators\Smallint;
+use Tiie\Data\Validators\Mediumint;
+use Tiie\Data\Validators\Bigint;
+use Tiie\Data\Validators\Decimal;
+use Tiie\Data\Validators\Number;
+use Tiie\Data\Validators\Time;
+use Tiie\Data\Validators\Year;
+use Tiie\Data\Validators\StringLength;
+use Tiie\Data\Validators\Enum;
 
 class Schema extends Validator implements ComplexValidatorInterface
 {

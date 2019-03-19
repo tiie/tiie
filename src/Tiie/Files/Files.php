@@ -3,6 +3,7 @@ namespace Tiie\Files;
 
 class Files
 {
+    private $db;
     private $params = array(
         'table' => 'files',
     );

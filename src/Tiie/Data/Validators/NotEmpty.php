@@ -13,7 +13,6 @@ class NotEmpty extends Validator
                 return array(
                     "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
                     "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
-                    // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                 );
             }else{
                 return null;
@@ -22,7 +21,6 @@ class NotEmpty extends Validator
             if ($value == "") {
                 return array(
                     "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                    // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                     "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                 );
             }else{
@@ -33,7 +31,6 @@ class NotEmpty extends Validator
         }elseif(is_null($value)){
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                 "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
             );
         }else{
@@ -41,7 +38,6 @@ class NotEmpty extends Validator
                 if ($value->count() == 0) {
                     return array(
                         "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                        // "error" => $this->messageForCode(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                         "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_IS_EMPTY),
                     );
                 } else {

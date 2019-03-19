@@ -16,8 +16,7 @@ class Users extends Model
         $this->db = $db;
     }
 
-    // public function fetch(array $params = array(), int $limit = null, int $offset = 0) : array
-    public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = 0) : array
+    public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : array
     {
         $select = (new Select($this->db))
             ->from('users')
