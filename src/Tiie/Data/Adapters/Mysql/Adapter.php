@@ -13,6 +13,28 @@ class Adapter implements \Tiie\Data\Adapters\AdapterInterface, \Tiie\Data\Adapte
             throw new \Exception("Extension pdo_mysql is not loaded.");
         }
 
+        // PDO::ATTR_CASE: Force column names to a specific case.
+        //     PDO::CASE_LOWER: Force column names to lower case.
+        //     PDO::CASE_NATURAL: Leave column names as returned by the database driver.
+        //     PDO::CASE_UPPER: Force column names to upper case.
+        //
+        // PDO::ATTR_ERRMODE: Error reporting.
+        //     PDO::ERRMODE_SILENT: Just set error codes.
+        //     PDO::ERRMODE_WARNING: Raise E_WARNING.
+        //     PDO::ERRMODE_EXCEPTION: Throw exceptions.
+        //
+        // PDO::ATTR_ORACLE_NULLS (available with all drivers, not just Oracle): Conversion of NULL and empty strings.
+        //     PDO::NULL_NATURAL: No conversion.
+        //     PDO::NULL_EMPTY_STRING: Empty string is converted to NULL.
+        //     PDO::NULL_TO_STRING: NULL is converted to an empty string.
+        //
+        // PDO::ATTR_STRINGIFY_FETCHES: Convert numeric values to strings when fetching. Requires bool.
+        // PDO::ATTR_STATEMENT_CLASS: Set user-supplied statement class derived from PDOStatement. Cannot be used with persistent PDO instances. Requires array(string classname, array(mixed constructor_args)).
+        // PDO::ATTR_TIMEOUT: Specifies the timeout duration in seconds. Not all drivers support this option, and its meaning may differ from driver to driver. For example, sqlite will wait for up to this time value before giving up on obtaining an writable lock, but other drivers may interpret this as a connect or a read timeout interval. Requires int.
+        // PDO::ATTR_AUTOCOMMIT (available in OCI, Firebird and MySQL): Whether to autocommit every single statement.
+        // PDO::ATTR_EMULATE_PREPARES Enables or disables emulation of prepared statements. Some drivers do not support native prepared statements or have limited support for them. Use this setting to force PDO to either always emulate prepared statements (if TRUE and emulated prepares are supported by the driver), or to try to use native prepared statements (if FALSE). It will always fall back to emulating the prepared statement if the driver cannot successfully prepare the current query. Requires bool.
+        // PDO::MYSQL_ATTR_USE_BUFFERED_QUERY (available in MySQL): Use buffered queries.
+        // PDO::ATTR_DEFAULT_FETCH_MODE: Set default fetch mode. Description of modes is available in PDOStatement::fetch() documentation.
         $this->params = array_merge(array(
             'host' => null,
             'dbname' => null,
@@ -20,7 +42,9 @@ class Adapter implements \Tiie\Data\Adapters\AdapterInterface, \Tiie\Data\Adapte
             'password' => null,
             'charset' => null,
             'options' => array(
-                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+                // \PDO::ATTR_EMULATE_PREPARES => false,
+                \PDO::ATTR_CASE => \PDO::CASE_NATURAL,
             )
         ), $params);
     }

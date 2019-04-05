@@ -11,6 +11,10 @@ use Tiie\Data\Model\Projection;
 use Tiie\Data\Model\Relational\SelectableInterface;
 use Tiie\Data\Model\Pagination;
 
+use Tiie\Commands\CommandInterface;
+use Tiie\Commands\Result\ResultInterface;
+use Tiie\Commands\Exceptions\ValidationFailed;
+
 abstract class Model implements ModelInterface
 {
     protected $id = 'id';
@@ -80,6 +84,27 @@ abstract class Model implements ModelInterface
         }
     }
 
+    public function factory(string $type, array $data = array())
+    {
+        // $this->persidence();
+
+        // $offer->save();
+        // $offer->remove();
+        // $offer->duplicate();
+
+        // $offer->run(COMMAND_SAVE);
+        // $offer->run(COMMAND_SAVE);
+        // $offer->run(COMMAND_SAVE);
+        // $offer->run(COMMAND_SAVE);
+        // $offer->run(COMMAND_SAVE);
+
+        if ($type == ModelInterface::FACTORY_TYPE_RECORD) {
+            return new Record($this, $data, $this->id);
+        } else {
+            return null;
+        }
+    }
+
     public function createRecord(array $data = array()) : RecordInterface
     {
         return new Record($this, $data, $this->id);
@@ -130,23 +155,23 @@ abstract class Model implements ModelInterface
         return $this->fetch($params, $fields, $sort);
     }
 
-    public function run(RecordInterface $record, string $command, array $params = array()) : ?string
+    public function run(CommandInterface $command, array $params = array()) : ?ResultInterface
     {
-        switch ($command) {
-        case self::COMMAND_SAVE:
-            return $this->save($record, $params);
-        case self::COMMAND_REMOVE:
-            return $this->remove($record, $params);
-        case self::COMMAND_CREATE:
-            return $this->create($record, $params);
-        }
+        trigger_error(sprintf("There is no implementation of %s command.", get_class($command)), E_USER_WARNING);
 
-        return $this;
+        return null;
     }
 
-    public function validate(RecordInterface $record, string $process, array $params = array()) : ?array
+    public function validate(CommandInterface $command, array $params = array()) : ?array
     {
         return null;
+    }
+
+    protected function validateThrow(CommandInterface $command, array $params = array())
+    {
+        if (!is_null($errors = $this->validate($command, $params))) {
+            throw new ValidationFailed($errors);
+        }
     }
 
     public function creator() : CreatorInterface

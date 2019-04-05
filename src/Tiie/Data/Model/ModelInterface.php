@@ -3,9 +3,13 @@ namespace Tiie\Data\Model;
 
 use Tiie\Data\Model\CreatorInterface;
 use Tiie\Data\Model\Projection;
+use Tiie\Commands\CommandInterface;
+use Tiie\Commands\Result\ResultInterface;
 
 interface ModelInterface
 {
+    const FACTORY_TYPE_RECORD = "record";
+
     const COMMAND_SAVE = "save";
     const COMMAND_CREATE = "create";
     const COMMAND_REMOVE = "remove";
@@ -60,13 +64,13 @@ interface ModelInterface
      * @param array $params
      * @return ModelInterface
      */
-    public function run(RecordInterface $record, string $command, array $params = array()) : ?string;
+    public function run(CommandInterface $command, array $params = array()) : ?ResultInterface;
 
     /**
      * Validate given process if can be executed at given record. Method should
      * return null or array with errors.
      */
-    public function validate(RecordInterface $record, string $process, array $params = array()) : ?array;
+    public function validate(CommandInterface $command, array $params = array()) : ?array;
 
     /**
      * Save record at source.
@@ -94,6 +98,8 @@ interface ModelInterface
      * Method shoud create new record with given data.
      */
     public function createRecord(array $data = array()) : RecordInterface;
+
+    public function factory(string $type, array $data = array());
 
     /**
      * Return list of records from model.

@@ -84,6 +84,9 @@ class ErrorHandler
             // todo : ValidateException zmianiam na InvalidData
             $this->response->code('400');
             $this->response->data($error->errors());
+        }else if($error instanceof \Tiie\Commands\Exceptions\ValidationFailed){
+            $this->response->code('400');
+            $this->response->data($error->errors());
 
         }else if($error instanceof \Tiie\Exceptions\InvalidData){
             $this->response->code('400');

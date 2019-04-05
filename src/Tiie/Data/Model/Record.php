@@ -1,9 +1,21 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tiie\Data\Model;
 
 use Tiie\Data\Model\ModelInterface;
+use Tiie\Data\Model\RecordInterface;
+use Tiie\Data\Model\CreatorInterface;
 
-class Record implements RecordInterface
+use Tiie\Data\Model\Commands\RemoveRecord as CommandRemoveRecord;
+use Tiie\Data\Model\Commands\SaveRecord as CommandSaveRecord;
+use Tiie\Data\Model\Commands\CreateRecord as CommandCreateRecord;
+
+use Tiie\Commands\Result\ResultInterface;
+use Tiie\Commands\CommandInterface;
+
+use ArrayAccess;
+
+class Record implements RecordInterface, ArrayAccess
 {
     /**
      * Reference to model of record.
@@ -17,7 +29,7 @@ class Record implements RecordInterface
      *
      * @var string
      */
-    private $fieldId;
+    private $keyId;
 
     /**
      * Init data.
@@ -33,11 +45,11 @@ class Record implements RecordInterface
      */
     private $modyfied = array();
 
-    function __construct(ModelInterface $model, array $data = array(), string $fieldId = 'id')
+    function __construct(ModelInterface $model, array $data = array(), string $keyId = "id")
     {
         $this->model = $model;
-        $this->fieldId = $fieldId;
         $this->data = $data;
+        $this->keyId = $keyId;
     }
 
     /**
@@ -46,23 +58,23 @@ class Record implements RecordInterface
      */
     public function id() : ?string
     {
-        return array_key_exists($this->fieldId, $this->data) ? $this->data[$this->fieldId] : null;
+        return array_key_exists($this->keyId, $this->data) ? $this->data[$this->keyId] : null;
     }
 
     /**
      * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::run()
      */
-    public function run(string $command, array $params = array()) : RecordInterface
+    public function run(CommandInterface $command, array $params = array()) : ?ResultInterface
     {
-        $this->model->run($this, $command);
+        trigger_error(sprintf("There is no implementation of %s command.", get_class($command)), E_USER_WARNING);
 
-        return $this;
+        return null;
     }
 
-    public function validate(string $process, array $params = array()) : ?array
+    public function validate(CommandInterface $command, array $params = array()) : ?array
     {
-        return $this->model->validate($this, $process, $params);
+        return $this->model->validate($command, $params);
     }
 
     /**
@@ -70,11 +82,18 @@ class Record implements RecordInterface
      *
      * @see \Tiie\Data\Model\RecordInterface::save()
      */
-    public function save(array $params = array()) : RecordInterface
+    public function save(array $params = array()) : ?ResultInterface
     {
-        $this->model->save($this);
+        return $this->model->run(new CommandSaveRecord($this), $params);
+    }
 
-        return $this;
+    /**
+     * {@inheritDoc}
+     * @see \Tiie\Data\Model\RecordInterface::remove()
+     */
+    public function remove(array $params = array()) : ?ResultInterface
+    {
+        return $this->model->run(new CommandRemoveRecord($this), $params);
     }
 
     public function __debugInfo()
@@ -82,7 +101,7 @@ class Record implements RecordInterface
         return $this->data;
     }
 
-    public function setted(string $name, int $modyfied = 1) : int
+    public function setted(string $name, bool $modyfied = true) : bool
     {
         if ($modyfied) {
             if (array_key_exists($name, $this->modyfied)) {
@@ -93,7 +112,7 @@ class Record implements RecordInterface
         return array_key_exists($name, $this->data);
     }
 
-    public function data(int $modyfied = 1) : array
+    public function data(bool $modyfied = true) : array
     {
         if ($modyfied) {
             return array_merge($this->data, $this->modyfied);
@@ -104,20 +123,9 @@ class Record implements RecordInterface
 
     /**
      * {@inheritDoc}
-     * @see \Tiie\Data\Model\RecordInterface::remove()
-     */
-    public function remove(array $params = array()) : RecordInterface
-    {
-        $this->model->remove($this);
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::toArray()
      */
-    public function toArray(array $params = array()): array
+    public function toArray(array $params = array()) : array
     {
         return $this->export($params);
     }
@@ -138,7 +146,7 @@ class Record implements RecordInterface
      * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::export()
      */
-    public function export(array $params = array()): array
+    public function export(array $params = array()) : array
     {
         $exported = array();
 
@@ -168,7 +176,7 @@ class Record implements RecordInterface
      * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::get()
      */
-    public function get(string $attribute, int $modyfied = 1)
+    public function get(string $attribute, bool $modyfied = true)
     {
         if (array_key_exists($attribute, $this->modyfied) && $modyfied) {
             return $this->modyfied[$attribute];
@@ -194,7 +202,7 @@ class Record implements RecordInterface
      * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::revert()
      */
-    public function revert(): RecordInterface
+    public function revert() : bool
     {
         $this->modyfied = array();
 
@@ -205,13 +213,49 @@ class Record implements RecordInterface
      * {@inheritDoc}
      * @see \Tiie\Data\Model\RecordInterface::is()
      */
-    public function is(string $name): int
+    public function is(string $name) : bool
     {
         switch ($name) {
         case 'new':
             return is_null($this->id());
         default:
-            throw new \Exception("Unsported feature {$name}");
+            trigger_error("Unsported feature {$name}.", E_USER_NOTICE);
+
+            return false;
         }
+    }
+
+    // ArrayAccess
+    public function offsetSet($offset, $value) {
+        $this->set($offset, $value);
+    }
+
+    public function offsetExists($offset) {
+        if (array_key_exists($offset, $this->modyfied)) {
+            return true;
+        }
+
+        if (array_key_exists($offset, $this->data)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function offsetUnset($offset) {
+        unset($this->modyfied[$offset]);
+        unset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset) {
+        if (array_key_exists($offset, $this->modyfied)) {
+            return $this->modyfied[$offset];
+        }
+
+        if (array_key_exists($offset, $this->data)) {
+            return $this->data[$offset];
+        }
+
+        return null;
     }
 }

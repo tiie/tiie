@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tiie\Data\Validators;
 
 use Tiie\Data\Validators\ValidatorInterface;
@@ -9,12 +10,12 @@ class MinNumberOfElements extends Validator
 {
     private $min;
 
-    function __construct(string $min = null)
+    function __construct(int $min = null)
     {
         $this->min = $min;
     }
 
-    public function min(string $min)
+    public function min(int $min)
     {
         $this->min = $min;
 

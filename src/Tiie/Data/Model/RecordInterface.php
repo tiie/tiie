@@ -1,5 +1,9 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tiie\Data\Model;
+
+use Tiie\Commands\CommandInterface;
+use Tiie\Commands\Result\ResultInterface;
 
 interface RecordInterface
 {
@@ -13,11 +17,20 @@ interface RecordInterface
     /**
      * Run specific command on record.
      *
-     * @param string $command
+     * @param Tiie\Commands\CommandInterface $command
      * @param array $param
      * @return RecordInterface
      */
-    public function run(string $command, array $param = array()) : RecordInterface;
+    public function run(CommandInterface $command, array $params = array()) : ?ResultInterface;
+
+    /**
+     * Check if given command can be run.
+     *
+     * @param Tiie\Commands\CommandInterface $command
+     * @param array $param
+     * @param null|array
+     */
+    public function validate(CommandInterface $command, array $params = array()) : ?array;
 
     /**
      * Save record.
@@ -25,7 +38,7 @@ interface RecordInterface
      * @param array $params
      * @return RecordInterface
      */
-    public function save(array $params = array()) : RecordInterface;
+    public function save(array $params = array()) : ?ResultInterface;
 
     /**
      * Remove record.
@@ -33,16 +46,16 @@ interface RecordInterface
      * @param array $params
      * @return RecordInterface
      */
-    public function remove(array $params = array()) : RecordInterface;
+    public function remove(array $params = array()) : ?ResultInterface;
 
     /**
      * Return value of attribute.
      *
      * @param string $attribute
-     * @param int $modyfied
+     * @param bool $modyfied
      * @return string
      */
-    public function get(string $attribute, int $modyfied = 1);
+    public function get(string $attribute, bool $modyfied = true);
 
     /**
      * Set attribute with given value.
@@ -62,9 +75,9 @@ interface RecordInterface
     /**
      * Revert all modyfied attribute.
      *
-     * @return RecordInterface
+     * @return bool
      */
-    public function revert() : RecordInterface;
+    public function revert() : bool;
 
     /**
      * Export record to array. This method is used by other method like
@@ -75,9 +88,9 @@ interface RecordInterface
      */
     public function export(array $params = array()) : array;
 
-    public function data(int $modyfied = 1) : array;
+    public function data(bool $modyfied = true) : array;
 
-    public function setted(string $name, int $modyfied = 1) : int;
+    public function setted(string $name, bool $modyfied = true) : bool;
 
     /**
      * Export record to array.
@@ -91,7 +104,7 @@ interface RecordInterface
      * Methoda should check whether the record meets a certain feature.
      *
      * @param string $name
-     * @return int 0|1
+     * @return bool
      */
-    public function is(string $name) : int;
+    public function is(string $name) : bool;
 }

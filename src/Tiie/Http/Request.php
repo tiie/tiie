@@ -161,6 +161,23 @@ class Request
         }
     }
 
+    public function fields()
+    {
+        $params = $this->params();
+        $fields = array();
+
+        foreach ($params as $key => $value) {
+            if (strpos($key, "field") === 0) {
+                $field = substr($key, 5);
+                $field[0] = strtolower($field[0]).substr($key, 1);
+
+                $fields[] = $field;
+            }
+        }
+
+        return $fields;
+    }
+
     public function param($name, $value = null)
     {
         if (is_null($value)) {

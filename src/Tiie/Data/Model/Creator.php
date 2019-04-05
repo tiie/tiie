@@ -1,8 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tiie\Data\Model;
 
 use Tiie\Data\Model\CreatorInterface;
 use Tiie\Data\Model\ModelInterface;
+
+use Tiie\Data\Model\Commands\CreateRecord as CommandCreateRecord;
+use Tiie\Commands\Result\ResultInterface;
 
 class Creator implements CreatorInterface
 {
@@ -15,13 +19,14 @@ class Creator implements CreatorInterface
         $this->model = $model;
     }
 
-    public function create(array $params = array()) : ?string
+    public function create(array $params = array()) : ?ResultInterface
     {
         if (is_null($this->record)) {
-            $this->record = $this->model->createRecord($this->data);
+            // $this->record = $this->model->createRecord($this->data);
+            $this->record = $this->model->factory(ModelInterface::FACTORY_TYPE_RECORD, $this->data);
         }
 
-        return $this->model->create($this->record, $params);
+        return $this->model->run(new CommandCreateRecord($this->record), $params);
     }
 
     public function data(array $data, int $merge = 1) : CreatorInterface

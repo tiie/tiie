@@ -133,6 +133,11 @@ class File
         return $this->data['name'];
     }
 
+    public function extension()
+    {
+        return $this->data['extension'];
+    }
+
     public function copy(string $to, string $filename = null)
     {
         $tmp = explode('/', $this->data['path']);

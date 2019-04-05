@@ -133,6 +133,11 @@ class Config implements \ArrayAccess
                 $config = $decoded;
                 break;
             case 'yaml':
+                // todo [debug] Debug to delete
+                if(defined('debug')){
+                    // todo [debug] Debug to delete
+                    die(print_r($config, true));
+                }
                 $decoded = Yaml::parseFile($config);
 
                 $config = $decoded;
@@ -164,6 +169,12 @@ class Config implements \ArrayAccess
 
     private function path(string $path)
     {
+        if (is_readable("{$this->directory}/{$path}")) {
+            return "{$this->directory}/{$path}";
+        }
+
+        // Probably the path is given without extension. So I find a file with
+        // different extensions.
         $exploded = explode('.', $path);
 
         if (in_array($exploded[count($exploded)-1], array("php", "json", "yaml"))) {

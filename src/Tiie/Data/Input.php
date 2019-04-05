@@ -5,7 +5,7 @@ use Tiie\Data\Validators\NotEmpty;
 use Tiie\Messages\MessagesInterface;
 use Tiie\Messages\Helper as MessagesHelper;
 use Tiie\Data\Validators\ValidatorInterface;
-use Tiie\Data\Filters\FilterInterface;
+use Tiie\Filters\FilterInterface;
 
 class Input
 {
@@ -13,6 +13,13 @@ class Input
     const INPUT_DATA_TYPE_OBJECT = 'object';
     const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'listOfObjects';
     const INPUT_DATA_TYPE_LIST = 'vector';
+
+    const FILTER_TRIM = "trim";
+    const FILTER_ALPHANUMERIC = "alphanumeric";
+    const FILTER_EMAIL = "email";
+    const FILTER_FLOAT = "float";
+    const FILTER_INT = "int";
+    const FILTER_URL = "url";
 
     private $data = array();
     private $prepared = array();
@@ -67,6 +74,11 @@ class Input
     }
 
     public function exists(string $name)
+    {
+        return array_key_exists($name, $this->prepared) || array_key_exists($name, $this->input);
+    }
+
+    public function isset(string $name)
     {
         return array_key_exists($name, $this->prepared) || array_key_exists($name, $this->input);
     }
@@ -153,7 +165,7 @@ class Input
      * @param string $field
      * @return mixed
      */
-    public function get(string $field)
+    public function get(string $field, $default = null)
     {
         if (array_key_exists($field, $this->prepared)) {
             return $this->prepared[$field];
@@ -163,7 +175,7 @@ class Input
             return $this->input[$field];
         }
 
-        return null;
+        return $default;
     }
 
     public function data(int $prepared = 0)
@@ -256,6 +268,34 @@ class Input
                 $prepared[$field] = $data[$field];
 
                 foreach ($filters as $filter) {
+                    if (is_string($filter)) {
+                        if ($filter == self::FILTER_TRIM) {
+                            $prepared[$field] = trim($prepared[$field]);
+                        } else if ($filter == self::FILTER_ALPHANUMERIC) {
+                            $filter = FILTER_SANITIZE_STRING;
+                        } else if ($filter == self::FILTER_EMAIL) {
+                            $filter = FILTER_SANITIZE_EMAIL;
+                        } else if ($filter == self::FILTER_FLOAT) {
+                            $filter = FILTER_SANITIZE_NUMBER_FLOAT;
+                        } else if ($filter == self::FILTER_INT) {
+                            $filter = FILTER_SANITIZE_NUMBER_INT;
+                        } else if ($filter == self::FILTER_URL) {
+                            $filter = FILTER_SANITIZE_URL;
+                        }
+
+                        // FILTER_SANITIZE_EMAIL	"email"	 	Remove all characters except letters, digits and !#$%&'*+-=?^_`{|}~@.[].
+                        // FILTER_SANITIZE_ENCODED	"encoded"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH	URL-encode string, optionally strip or encode special characters.
+                        // FILTER_SANITIZE_MAGIC_QUOTES	"magic_quotes"	 	Apply addslashes().
+                        // FILTER_SANITIZE_NUMBER_FLOAT	"number_float"	FILTER_FLAG_ALLOW_FRACTION, FILTER_FLAG_ALLOW_THOUSAND, FILTER_FLAG_ALLOW_SCIENTIFIC	Remove all characters except digits, +- and optionally .,eE.
+                        // FILTER_SANITIZE_NUMBER_INT	"number_int"	 	Remove all characters except digits, plus and minus sign.
+                        // FILTER_SANITIZE_SPECIAL_CHARS	"special_chars"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_HIGH	HTML-escape '"<>& and characters with ASCII value less than 32, optionally strip or encode other special characters.
+                        // FILTER_SANITIZE_FULL_SPECIAL_CHARS	"full_special_chars"	FILTER_FLAG_NO_ENCODE_QUOTES,	Equivalent to calling htmlspecialchars() with ENT_QUOTES set. Encoding quotes can be disabled by setting FILTER_FLAG_NO_ENCODE_QUOTES. Like htmlspecialchars(), this filter is aware of the default_charset and if a sequence of bytes is detected that makes up an invalid character in the current character set then the entire string is rejected resulting in a 0-length string. When using this filter as a default filter, see the warning below about setting the default flags to 0.
+                        // FILTER_SANITIZE_STRING	"string"	FILTER_FLAG_NO_ENCODE_QUOTES, FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH, FILTER_FLAG_ENCODE_AMP	Strip tags, optionally strip or encode special characters.
+                        // FILTER_SANITIZE_STRIPPED	"stripped"	 	Alias of "string" filter.
+                        // FILTER_SANITIZE_URL	"url"	 	Remove all characters except letters, digits and $-_.+!*'(),{}|\\^~[]`<>#%";/?:@&=.
+                        // FILTER_UNSAFE_RAW	"unsafe_raw"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH, FILTER_FLAG_ENCODE_AMP
+                    }
+
                     if (is_array($filter)) {
                         if (isset($filter[1])) {
                             $prepared[$field] = filter_var($prepared[$field], $filter[0], $filter[1]);

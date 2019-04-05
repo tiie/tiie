@@ -12,6 +12,8 @@ class Records implements \Countable, Iterator
     private $fieldId;
     private $records = array();
 
+    private $index = array();
+
     private $pointer = 0;
     private $array = array(
         "firstelement",
@@ -112,6 +114,71 @@ class Records implements \Countable, Iterator
         }
 
         return $this->records[0];
+    }
+
+    public function findByKey(array $key, array $values) : Records
+    {
+        $indexKey = implode("-", $key);
+        $valuesKey = implode("-", $values);
+
+        // $indexKeyOne = count($key) == 1 ? true : false;
+        $records = array();
+
+        // userId
+        // userId-typeId
+        // $this->findByKey(array("userId", "typeId"), array(10, 20));
+        // $this->findByKey(array("id"), array(10));
+        if (!array_key_exists($indexKey, $this->index)) {
+            $index = array();
+
+            foreach ($this->records as $record) {
+                if ($indexKeyOne && false) {
+                    die('todo');
+                    // $keyValue = $record->get($key);
+
+                    // if (is_null($keyValue)) {
+                    //     $this->index["nulls"][$key][] = $record;
+                    // } else {
+                    //     $this->index["nulls"][$key][] = $record;
+                    // }
+                } else {
+                    $keyValue = "";
+
+                    foreach ($key as $field) {
+                        $fieldValue = $record->get($field);
+
+                        if (is_null($fieldValue)) {
+                            continue 2;
+                        } else {
+                            $keyValue .= $fieldValue;
+                        }
+                    }
+
+                    if (!array_key_exists($keyValue, $index)) {
+                        $index[$fieldValue] = array($record);
+                    } else {
+                        $index[$fieldValue][] = $record;
+                    }
+                }
+            }
+
+            $this->index[$indexKey] = $index;
+        }
+
+        $records = array();
+
+        if (array_key_exists($valuesKey, $this->index[$indexKey])) {
+            $records = $this->index[$indexKey][$valuesKey];
+        }
+
+        return new Records($this->model, $records, $this->fieldId);
+    }
+
+    public function findRecordByKey(array $key, array $values) : Records
+    {
+        $records = $this->findByKey($key, $values);
+
+        return $records->empty() ? null : $records->first();
     }
 
     public function last() : RecordInterface

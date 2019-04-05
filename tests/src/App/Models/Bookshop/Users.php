@@ -7,6 +7,15 @@ use Tiie\Data\Adapters\Commands\SQL\Update;
 use Tiie\Data\Model\RecordInterface;
 use Tiie\Data\Model\ModelInterface;
 
+use Tiie\Commands\CommandInterface;
+use Tiie\Commands\Result\ResultInterface;
+use Tiie\Commands\Result\Result;
+
+use Tiie\Data\Model\Commands\SaveRecord as CommandSaveRecord;
+use Tiie\Data\Model\Commands\RemoveRecord as CommandRemoveRecord;
+use Tiie\Data\Model\Commands\CreateRecord as CommandCreateRecord;
+use Tiie\Commands\Exceptions\ValidationFailed;
+
 class Users extends Model
 {
     private $db;
@@ -29,10 +38,6 @@ class Users extends Model
             ->page($page, $size)
         ;
 
-        // if (!is_null($limit)) {
-        //     $select->limit($limit, $offset);
-        // }
-
         $select->params($params, array(
             'id'
         ));
@@ -40,30 +45,69 @@ class Users extends Model
         return $select->fetch()->data();
     }
 
-    public function save(RecordInterface $record, array $params = array()) : ModelInterface
+    public function run(CommandInterface $command, array $params = array()) : ?ResultInterface
     {
-        if (!is_null($errors = $this->validate($record, ModelInterface::PROCESS_SAVING))) {
-            throw new \Tiie\Exceptions\ValidateException($errors);
+        if ($command instanceof CommandSaveRecord) {
+            return $this->runSaveRecord($command, $params);
+        } else if ($command instanceof CommandCreateRecord) {
+            return $this->runCreateRecord($command, $params);
+        } else if ($command instanceof CommandRemoveRecord) {
+            return $this->runRemoveRecord($command, $params);
+        } else {
+            return parent::run($command);
         }
+    }
 
-        $update = (new Update($this->db))
+    private function runSaveRecord(CommandSaveRecord $command, array $params = array()) : ?ResultInterface
+    {
+        $this->validateThrow($command, $params);
+
+        $record = $command->record();
+
+        (new Update($this->db))
             ->set('firstName', $record->get('firstName'))
             ->equal('id', $record->id())
             ->execute()
         ;
 
-        return $this;
+        return new Result(true);
+
     }
 
-    public function validate(RecordInterface $record, string $process, array $params = array()) : ?array
+    private function runRemoveRecord(CommandRemoveRecord $command, array $params = array()) : ?ResultInterface
     {
-        switch ($process) {
-        case ModelInterface::PROCESS_CREATING:
-            return null;
-        case ModelInterface::PROCESS_SAVING:
-            return null;
-        default:
-            return parent::validate($record, $process, $params);
+        return null;
+    }
+
+    private function runCreateRecord(CommandCreateRecord $command, array $params = array()) : ?ResultInterface
+    {
+    }
+
+    public function validate(CommandInterface $command, array $params = array()) : ?array
+    {
+        if ($command instanceof CommandSaveRecord) {
+            return $this->validateSaveRecord($command, $params);
+        } else if ($command instanceof CommandCreateRecord) {
+            return $this->validateCreateRecord($command, $params);
+        } else if ($command instanceof CommandRemoveRecord) {
+            return $this->validateRemoveRecord($command, $params);
+        } else {
+            return parent::validate($command, $params);
         }
+    }
+
+    private function validateSaveRecord(CommandSaveRecord $command, array $params = array()) : ?array
+    {
+        return null;
+    }
+
+    private function validateCreateRecord(CommandCreateRecord $command, array $params = array()) : ?array
+    {
+        return null;
+    }
+
+    private function validateRemoveRecord(CommandRemoveRecord $command, array $params = array()) : ?array
+    {
+        return null;
     }
 }

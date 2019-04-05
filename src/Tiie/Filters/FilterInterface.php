@@ -3,6 +3,6 @@ namespace Tiie\Filters;
 
 interface FilterInterface
 {
-    public static function description();
-    public static function filter($value);
+    public function description() : ?string;
+    public function filter(string $value) : ?string;
 }

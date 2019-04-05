@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tiie\Data\Validators;
 
 use Tiie\Data\Validators\ValidatorInterface;
@@ -9,12 +10,12 @@ class MaxNumberOfElements extends Validator
 {
     private $max;
 
-    function __construct(string $max = null)
+    function __construct(int $max = null)
     {
         $this->max = $max;
     }
 
-    public function max(string $max)
+    public function max(int $max)
     {
         $this->max = $max;
 

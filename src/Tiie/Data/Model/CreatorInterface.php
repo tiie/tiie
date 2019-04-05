@@ -1,6 +1,8 @@
 <?php
 namespace Tiie\Data\Model;
 
+use Tiie\Commands\Result\ResultInterface;
+
 interface CreatorInterface
 {
     /**
@@ -9,7 +11,7 @@ interface CreatorInterface
      * @param array $params
      * @return string
      */
-    public function create(array $params = array()) : ?string;
+    public function create(array $params = array()) : ?ResultInterface;
 
     /**
      * Set value of attribute.

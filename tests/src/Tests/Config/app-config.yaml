@@ -7,7 +7,7 @@ response:
         negotiation: 1
     lang:
         negotiation: 1
-elusim:
+tiie:
     errors:
         errorReporting:
             - E_ERROR,
@@ -15,7 +15,7 @@ elusim:
             - E_PARSE,
     lang:
         dictionaries:
-            - '@lang.dictionaries.elusim'
+            - '@lang.dictionaries.tiie'
     router:
         error:
-            action: '\Elusim\Actions\Error'
+            action: '\Tiie\Actions\Error'
