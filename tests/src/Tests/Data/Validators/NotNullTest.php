@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\NotNull;
+use Tiie\Validators\NotNull;
 
 class NotNullTest extends \Tests\TestCase
 {

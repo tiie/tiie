@@ -27,7 +27,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function adapter(string $name) {
         if (!array_key_exists($name, $this->adapters)) {
             if ($name == 'bookshop') {
-                $this->adapters[$name] = new \Tiie\Data\Adapters\Mysql\Adapter(array(
+                $this->adapters[$name] = new \Tiie\Data\Adapters\MySQL\Adapter(array(
                     'host' => 'localhost',
                     'dbname' => 'bookshop',
                     'username' => 'root',

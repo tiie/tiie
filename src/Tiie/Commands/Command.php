@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Tiie\Commands;
 
-use Tiie\Commands\CommandInterface;
-
-class Command implements CommandInterface
-{
-
-}
+/**
+ * The basic implementation of the command.
+ *
+ * @package Tiie\Commands
+ */
+class Command implements CommandInterface {}

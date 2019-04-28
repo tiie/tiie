@@ -4,8 +4,9 @@ namespace Tiie;
 define("FLAT_TRUE", "1");
 define("FLAT_FALSE", "0");
 
+error_reporting(E_ALL);
 use Exception;
-use Tiie\Components;
+use Tiie\Components\Supervisor as Components;
 use Tiie\Config;
 use Tiie\Config\Finder as ConfigFinder;
 use Tiie\Env;

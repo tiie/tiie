@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\StringLength;
+use Tiie\Validators\StringLength;
 
 class StringLengthTest extends \Tests\TestCase
 {

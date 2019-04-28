@@ -1,20 +1,12 @@
 <?php return array (
   '@object' => 
   array (
-    'value' => 
-    array (
-      0 => 
-      array (
-        'code' => 'isEmpty',
-        'error' => '@(Tiie.Data.Validator.NotEmpty.IsEmpty)',
-      ),
-    ),
     'list' => 
     array (
       0 => 
       array (
-        'code' => 'notExists',
-        'error' => '@(Tiie.Data.Input.NotExists)',
+        'code' => 'NotExists',
+        'error' => 'Brak informacji',
       ),
     ),
   ),
@@ -22,16 +14,16 @@
   array (
     0 => 
     array (
-      'code' => 'notExists',
-      'error' => '@(Tiie.Data.Input.NotExists)',
+      'code' => 'NotExists',
+      'error' => 'Brak informacji',
     ),
   ),
   'list' => 
   array (
     0 => 
     array (
-      'code' => 'notExists',
-      'error' => '@(Tiie.Data.Input.NotExists)',
+      'code' => 'NotExists',
+      'error' => 'Brak informacji',
     ),
   ),
 );

@@ -9,8 +9,8 @@ return array (
       array (
         0 =>
         array (
-          'code' => 'invalid',
-          'error' => '@(Tiie.Data.Validators.Email.Invalid)',
+          'code' => 'Invalid',
+          'error' => 'Invalid data',
         ),
       ),
     ),

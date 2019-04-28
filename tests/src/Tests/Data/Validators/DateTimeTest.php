@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\DateTime;
+use Tiie\Validators\DateTime;
 
 class DateTimeTest extends \Tests\TestCase
 {

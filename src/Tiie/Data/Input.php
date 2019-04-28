@@ -1,18 +1,20 @@
 <?php
 namespace Tiie\Data;
 
-use Tiie\Data\Validators\NotEmpty;
+use Exception;
+use Tiie\Validators\ComplexValidatorInterface;
+use Tiie\Validators\NotEmpty;
 use Tiie\Messages\MessagesInterface;
 use Tiie\Messages\Helper as MessagesHelper;
-use Tiie\Data\Validators\ValidatorInterface;
+use Tiie\Validators\ValidatorInterface;
 use Tiie\Filters\FilterInterface;
 
 class Input
 {
-    const INPUT_DATA_TYPE_VALUE = 'value';
-    const INPUT_DATA_TYPE_OBJECT = 'object';
-    const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'listOfObjects';
-    const INPUT_DATA_TYPE_LIST = 'vector';
+    const INPUT_DATA_TYPE_VALUE = "value";
+    const INPUT_DATA_TYPE_OBJECT = "object";
+    const INPUT_DATA_TYPE_LIST_OF_OBJECTS = "listOfObjects";
+    const INPUT_DATA_TYPE_LIST = "vector";
 
     const FILTER_TRIM = "trim";
     const FILTER_ALPHANUMERIC = "alphanumeric";
@@ -21,16 +23,45 @@ class Input
     const FILTER_INT = "int";
     const FILTER_URL = "url";
 
-    private $data = array();
+    /**
+     * Prepared data.
+     *
+     * @var array
+     */
     private $prepared = array();
+
+    /**
+     * Error after preparation.
+     *
+     * @var array
+     */
     private $errors = array();
+
+    /**
+     * List of rules.
+     *
+     * @var array
+     */
     private $rules = array();
-    private $notEmpty = null;
+
+    /**
+     * Not empt validator.
+     *
+     * @var NotEmpty
+     */
+    private $notEmpty;
+
+    /**
+     * Input data to prepare.
+     *
+     * @var array
+     */
     private $input;
 
+    /**
+     * @var MessagesHelper
+     */
     private $messages;
-
-    private $processed = 0;
 
     function __construct(array $input = array(), array $rules = array())
     {
@@ -40,27 +71,32 @@ class Input
     }
 
     /**
-     * Return or set input to prepare.
+     * Set data to prepare.
      *
      * @param array $input
-     * @return $this|array
+     * @param bool $merge If merge with existing data.
+     *
+     * @return Input
      */
-    public function input(array $input = null, int $merge = 1)
+    public function input(array $input, bool $merge = true) : Input
     {
-        if (is_null($input)) {
-            return $this->input;
-        }else{
-            if ($merge) {
-                $this->input = array_merge($input);
-            } else {
-                $this->input = $input;
-            }
-
-            return $this;
+        if ($merge) {
+            $this->input = array_merge($this->input, $input);
+        } else {
+            $this->input = $input;
         }
+
+        return $this;
     }
 
-    public function messages(MessagesInterface $messages = null) : Input
+    /**
+     * Set or return messages object for input.
+     *
+     * @param MessagesInterface|null $messages
+     *
+     * @return Input|MessagesHelper
+     */
+    public function messages(MessagesInterface $messages = null)
     {
         if (is_null($messages)) {
             return $this->messages;
@@ -209,10 +245,17 @@ class Input
     {
         $result = $this->processRules($this->rules, $this->input);
 
-        $this->errors = $result['errors'];
-        $this->prepared = $result['prepared'];
+        $this->errors = $result["errors"];
+        $this->prepared = $result["prepared"];
     }
 
+    /**
+     * @param $rules
+     * @param $data
+     * @return array
+     *
+     * @throws Exception
+     */
     private function processRules($rules, $data)
     {
         // dataKeys
@@ -223,52 +266,47 @@ class Input
 
         foreach ($rules as $field => $rule) {
             $rulesKeys = array_keys($rule);
-            $type = in_array('@type', $rulesKeys) ? $rule['@type'] : 'value';
-            $filters = in_array('@filters', $rulesKeys) ? $rule['@filters'] : array();
-            $validators = in_array('@validators', $rulesKeys) ? $rule['@validators'] : array();
+            $type = in_array("@type", $rulesKeys) ? $rule["@type"] : "value";
+            $filters = in_array("@filters", $rulesKeys) ? $rule["@filters"] : array();
+            $validators = in_array("@validators", $rulesKeys) ? $rule["@validators"] : array();
 
             switch ($type) {
             case self::INPUT_DATA_TYPE_VALUE:
                 if (!in_array($field, $dataKeys)) {
-                    // Pole nie zostało podane, sprawdzam czy jest walidator
-                    // exists.
-                    if (in_array('exists', $validators)) {
+                    // Field was not given, but is required
+                    if (in_array("exists", $validators)) {
                         $errors[$field][] = array(
-                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
-                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
+                            "code" => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
-                    continue;
+                    continue 2;
                 }
 
                 if (!is_string($data[$field]) && !is_numeric($data[$field]) && !is_null($data[$field])) {
-                    // W tym miejscu powiniśmy mieć wartość, a mamy cos innego,
-                    // więc nie mogę zastosować walidatorów dla wartości.
+                    // Field is not simple value.
                     $errors[$field][] = array(
-                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                        'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
+                        "code" => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
                     );
 
-                    continue;
+                    continue 2;
                 }
 
-                // if (in_array('notEmpty', $validators)) {
-                //     // Mamy wartość, ale też mamy walidator nie pusty.
-                //     $error = $this->notEmpty->validate($data[$field]);
-
-                //     if (!is_null($error)) {
-                //         $errors[$field][] = $error;
-
-                //         continue;
-                //     }
-                // }
-
-                // Podstawowe walidatory zostały sprawdzone, filtruje wartość.
+                // Use filters.
                 $prepared[$field] = $data[$field];
 
                 foreach ($filters as $filter) {
                     if (is_string($filter)) {
+                        // FILTER_SANITIZE_ENCODED	"encoded"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH	URL-encode string, optionally strip or encode special characters.
+                        // FILTER_SANITIZE_MAGIC_QUOTES	"magic_quotes"	 	Apply addslashes().
+                        // FILTER_SANITIZE_SPECIAL_CHARS	"special_chars"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_HIGH	HTML-escape '"<>& and characters with ASCII value less than 32, optionally strip or encode other special characters.
+                        // FILTER_SANITIZE_FULL_SPECIAL_CHARS	"full_special_chars"	FILTER_FLAG_NO_ENCODE_QUOTES,	Equivalent to calling htmlspecialchars() with ENT_QUOTES set. Encoding quotes can be disabled by setting FILTER_FLAG_NO_ENCODE_QUOTES. Like htmlspecialchars(), this filter is aware of the default_charset and if a sequence of bytes is detected that makes up an invalid character in the current character set then the entire string is rejected resulting in a 0-length string. When using this filter as a default filter, see the warning below about setting the default flags to 0.
+                        // FILTER_SANITIZE_STRIPPED	"stripped"	 	Alias of "string" filter.
+                        // FILTER_SANITIZE_URL	"url"	 	Remove all characters except letters, digits and $-_.+!*'(),{}|\\^~[]`<>#%";/?:@&=.
+                        // FILTER_UNSAFE_RAW	"unsafe_raw"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH, FILTER_FLAG_ENCODE_AMP
+
                         if ($filter == self::FILTER_TRIM) {
                             $prepared[$field] = trim($prepared[$field]);
                         } else if ($filter == self::FILTER_ALPHANUMERIC) {
@@ -282,18 +320,6 @@ class Input
                         } else if ($filter == self::FILTER_URL) {
                             $filter = FILTER_SANITIZE_URL;
                         }
-
-                        // FILTER_SANITIZE_EMAIL	"email"	 	Remove all characters except letters, digits and !#$%&'*+-=?^_`{|}~@.[].
-                        // FILTER_SANITIZE_ENCODED	"encoded"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH	URL-encode string, optionally strip or encode special characters.
-                        // FILTER_SANITIZE_MAGIC_QUOTES	"magic_quotes"	 	Apply addslashes().
-                        // FILTER_SANITIZE_NUMBER_FLOAT	"number_float"	FILTER_FLAG_ALLOW_FRACTION, FILTER_FLAG_ALLOW_THOUSAND, FILTER_FLAG_ALLOW_SCIENTIFIC	Remove all characters except digits, +- and optionally .,eE.
-                        // FILTER_SANITIZE_NUMBER_INT	"number_int"	 	Remove all characters except digits, plus and minus sign.
-                        // FILTER_SANITIZE_SPECIAL_CHARS	"special_chars"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_HIGH	HTML-escape '"<>& and characters with ASCII value less than 32, optionally strip or encode other special characters.
-                        // FILTER_SANITIZE_FULL_SPECIAL_CHARS	"full_special_chars"	FILTER_FLAG_NO_ENCODE_QUOTES,	Equivalent to calling htmlspecialchars() with ENT_QUOTES set. Encoding quotes can be disabled by setting FILTER_FLAG_NO_ENCODE_QUOTES. Like htmlspecialchars(), this filter is aware of the default_charset and if a sequence of bytes is detected that makes up an invalid character in the current character set then the entire string is rejected resulting in a 0-length string. When using this filter as a default filter, see the warning below about setting the default flags to 0.
-                        // FILTER_SANITIZE_STRING	"string"	FILTER_FLAG_NO_ENCODE_QUOTES, FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH, FILTER_FLAG_ENCODE_AMP	Strip tags, optionally strip or encode special characters.
-                        // FILTER_SANITIZE_STRIPPED	"stripped"	 	Alias of "string" filter.
-                        // FILTER_SANITIZE_URL	"url"	 	Remove all characters except letters, digits and $-_.+!*'(),{}|\\^~[]`<>#%";/?:@&=.
-                        // FILTER_UNSAFE_RAW	"unsafe_raw"	FILTER_FLAG_STRIP_LOW, FILTER_FLAG_STRIP_HIGH, FILTER_FLAG_STRIP_BACKTICK, FILTER_FLAG_ENCODE_LOW, FILTER_FLAG_ENCODE_HIGH, FILTER_FLAG_ENCODE_AMP
                     }
 
                     if (is_array($filter)) {
@@ -304,18 +330,16 @@ class Input
                         }
                     }elseif(is_numeric($filter)){
                         $prepared[$field] = filter_var($prepared[$field], $filter);
-                    }elseif(is_string($filter)){
-
                     }elseif($filter instanceof FilterInterface){
                         $prepared[$field] = $filter->filter($prepared[$field]);
                     }else{
-                        throw new \Exception("Unsported type of filter.");
+                        throw new Exception("Unsported type of filter.");
                     }
                 }
 
-                // Walidatory
+                // Validators
                 foreach ($validators as $validator) {
-                    if ($validator instanceof \Tiie\Data\Validators\ComplexValidatorInterface) {
+                    if ($validator instanceof ComplexValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             foreach ($error as $code => $error) {
                                 $errors[$field][] = $error;
@@ -323,7 +347,7 @@ class Input
 
                             break;
                         }
-                    }elseif($validator instanceof \Tiie\Data\Validators\ValidatorInterface) {
+                    }elseif($validator instanceof ValidatorInterface) {
                         if(!is_null($error = $validator->validate($prepared[$field]))){
                             $errors[$field][] = $error;
 
@@ -341,50 +365,38 @@ class Input
                 break;
             case self::INPUT_DATA_TYPE_OBJECT:
                 if (!in_array($field, $dataKeys)) {
-                    // Brak pola w obiekcie, sprawdzam czy klucz musi istniec.
-                    if (in_array('exists', $validators)) {
+                    if (in_array("exists", $validators)) {
                         $errors[$field][] = array(
-                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
-                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
+                            "code" => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
-                    continue;
+                    continue 2;
                 }
 
-                // if (in_array('notEmpty', $validators)) {
-                //     $error = $this->notEmpty->validate($data[$field]);
-
-                //     if (!is_null($error)) {
-                //         $errors[$field][] = $error;
-
-                //         continue;
-                //     }
-                // }
-
                 if (!is_array($data[$field])) {
-                    // $errors[$field][ValidatorInterface::ERROR_CODE_WRONG_TYPE] = $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS);
                     $errors[$field] = array(
                         "code" => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
                         "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                     );
 
-                    continue;
+                    continue 2;
                 }
 
                 // unset fields
-                unset($rule['@type']);
-                unset($rule['@validators']);
-                unset($rule['@filters']);
+                unset($rule["@type"]);
+                unset($rule["@validators"]);
+                unset($rule["@filters"]);
 
                 $result = $this->processRules($rule, $data[$field], false);
 
-                if (!empty($result['errors'])) {
-                    $errors['@'.$field] = $result['errors'];
+                if (!empty($result["errors"])) {
+                    $errors["@".$field] = $result["errors"];
                 }
 
-                if (!empty($result['prepared'])) {
-                    $prepared[$field] = $result['prepared'];
+                if (!empty($result["prepared"])) {
+                    $prepared[$field] = $result["prepared"];
                 }
 
                 break;
@@ -392,35 +404,25 @@ class Input
                 if (!in_array($field, $dataKeys)) {
                     if (in_array("exists", $validators)) {
                         $errors[$field][] = array(
-                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
-                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
+                            "code" => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
-                    continue;
+                    continue 2;
                 }
 
                 if (!is_array($data[$field])) {
                     $errors[$field][] = array(
-                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                        'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
+                        "code" => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
                     );
 
-                    continue;
-                }
-
-                if (in_array('notEmpty', $validators)) {
-                    $error = $this->notEmpty->validate($data[$field]);
-
-                    if (!is_null($error)) {
-                        $errors[$field][] = $error;
-
-                        continue;
-                    }
+                    continue 2;
                 }
 
                 foreach ($validators as $validator) {
-                    if ($validator instanceof \Tiie\Data\Validators\ComplexValidatorInterface) {
+                    if ($validator instanceof ComplexValidatorInterface) {
                         if(!is_null($error = $validator->validate($data[$field]))){
                             foreach ($error as $code => $error) {
                                 $errors[$field][] = $error;
@@ -428,7 +430,7 @@ class Input
 
                             break;
                         }
-                    }elseif($validator instanceof \Tiie\Data\Validators\ValidatorInterface) {
+                    }elseif($validator instanceof ValidatorInterface) {
                         if(!is_null($error = $validator->validate($data[$field]))){
                             $errors[$field][] = $error;
 
@@ -443,62 +445,51 @@ class Input
                     }
                 }
 
-                // unset fields
-                unset($rule['@type']);
-                unset($rule['@validators']);
-                unset($rule['@filters']);
+                // Unset fields
+                unset($rule["@type"]);
+                unset($rule["@validators"]);
+                unset($rule["@filters"]);
 
                 $prepared[$field] = array();
 
                 foreach ($data[$field] as $key => $row) {
                     $result = $this->processRules($rule, $row, false);
 
-                    if (!empty($result['errors'])) {
-                        // $errors['@@'.$field][$key][] = $result['errors'];
-                        $errors['@@'.$field][$key] = $result['errors'];
+                    if (!empty($result["errors"])) {
+                        $errors["@@".$field][$key] = $result["errors"];
                     }
 
-                    if (!empty($result['prepared'])) {
-                        $prepared[$field][$key] = $result['prepared'];
+                    if (!empty($result["prepared"])) {
+                        $prepared[$field][$key] = $result["prepared"];
                     }
                 }
 
                 break;
             case self::INPUT_DATA_TYPE_LIST:
                 if (!in_array($field, $dataKeys)) {
-                    if (in_array('exists', $validators)) {
+                    if (in_array("exists", $validators)) {
                         $errors[$field][] = array(
-                            'code' => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
-                            'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
+                            "code" => ValidatorInterface::ERROR_CODE_NOT_EXISTS,
+                            "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_NOT_EXISTS),
                         );
                     }
 
-                    continue;
+                    continue 2;
                 }
 
                 if (!is_array($data[$field])) {
                     $errors[$field][] = array(
-                        'code' => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
-                        'error' => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
+                        "code" => ValidatorInterface::ERROR_CODE_WRONG_TYPE,
+                        "error" => $this->messages->get(ValidatorInterface::ERROR_CODE_WRONG_TYPE),
                     );
 
-                    continue;
-                }
-
-                if (in_array('notEmpty', $validators)) {
-                    $error = $this->notEmpty->validate($data[$field]);
-
-                    if (!is_null($error)) {
-                        $errors[$field][] = $error;
-
-                        continue;
-                    }
+                    continue 2;
                 }
 
                 // unset fields
-                unset($rule['@type']);
-                unset($rule['@validators']);
-                unset($rule['@filters']);
+                unset($rule["@type"]);
+                unset($rule["@validators"]);
+                unset($rule["@filters"]);
 
                 // filter
                 $prepared[$field] = $data[$field];
@@ -518,19 +509,19 @@ class Input
                         }elseif($filter instanceof FilterInterface){
                             $prepared[$field][$key] = $filter->filter($prepared[$field]);
                         }else{
-                            throw new \Exception("Unsported type of filter.");
+                            throw new Exception("Unsported type of filter.");
                         }
                     }
 
-                    // validators
+                    // Validators
                     foreach ($validators as $validator) {
-                        if ($validator instanceof \Tiie\Data\Validators\ComplexValidatorInterface) {
+                        if ($validator instanceof ComplexValidatorInterface) {
                             if(!is_null($error = $validator->validate($prepared[$field][$key]))){
                                 foreach ($error as $code => $error) {
                                     $errors[$field][$key][] = $error;
                                 }
                             }
-                        }elseif($validator instanceof \Tiie\Data\Validators\ValidatorInterface) {
+                        }elseif($validator instanceof ValidatorInterface) {
                             if(!is_null($error = $validator->validate($prepared[$field][$key]))){
                                 $errors[$field][$key][] = $error;
                             }
@@ -544,13 +535,13 @@ class Input
 
                 break;
             default:
-                throw new \Exception("Wrong type of field {$type}");
+                throw new Exception("Wrong type of field {$type}");
             }
         }
 
         return array(
-            'errors' => $errors,
-            'prepared' => $prepared,
+            "errors" => $errors,
+            "prepared" => $prepared,
         );
     }
 

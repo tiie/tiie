@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Exists;
+use Tiie\Validators\Exists;
 
 class ExistsTest extends \Tests\TestCase
 {

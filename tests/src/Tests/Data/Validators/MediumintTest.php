@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Mediumint;
+use Tiie\Validators\Mediumint;
 
 class MediumintTest extends \Tests\TestCase
 {

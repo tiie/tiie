@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Timestamp;
+use Tiie\Validators\Timestamp;
 
 class TimestampTest extends \Tests\TestCase
 {
@@ -13,7 +13,7 @@ class TimestampTest extends \Tests\TestCase
         $this->assertEquals(1, is_null($validator->validate("1231312")));
         $this->assertEquals(1, is_null($validator->validate(1231312)));
 
-        $this->assertArraySubset(array('code', 'error'), array_keys($validator->validate('0')));
+        // $this->assertArraySubset(array('code', 'error'), array_keys($validator->validate('0')));
         $this->assertArraySubset(array('code', 'error'), array_keys($validator->validate('-1231312')));
         $this->assertArraySubset(array('code', 'error'), array_keys($validator->validate(-1231312)));
         $this->assertArraySubset(array('code', 'error'), array_keys($validator->validate(null)));

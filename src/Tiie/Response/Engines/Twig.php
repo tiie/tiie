@@ -3,7 +3,7 @@ namespace Tiie\Response\Engines;
 
 class Twig implements \Tiie\Response\Engines\EngineInterface
 {
-    use \Tiie\ComponentsTrait;
+    use \Tiie\Components\ComponentsTrait;
 
     private $config;
     private $params;

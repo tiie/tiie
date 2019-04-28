@@ -3,18 +3,25 @@ namespace Tiie\Data\Adapters\Commands\SQL;
 
 use Tiie\Data\Adapters\Commands\Command;
 use Tiie\Data\Adapters\Commands\Built;
-
-use Tiie\Data\Adapters\Commands\SQL\Select;
-use Tiie\Data\Adapters\Commands\SQL\Expr;
-use Tiie\Data\Adapters\Commands\SQL\Common;
 use Tiie\Utils\Functions;
 
 use stdClass;
 
 class Where extends Command
 {
-    private $where = null;
-    private $pointer = null;
+    /**
+     * @var stdClass
+     */
+    private $where;
+
+    /**
+     * @var stdClass
+     */
+    private $pointer;
+
+    /**
+     * @var Common
+     */
     private $common;
 
     function __construct()

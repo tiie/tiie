@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\Clients;
 
-class Activation extends \Tiie\Actions\RPC
+class Activation
 {
     public function run($id, array $params = array(), array $input = array())
     {

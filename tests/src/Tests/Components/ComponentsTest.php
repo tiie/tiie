@@ -2,8 +2,8 @@
 namespace Tests;
 
 use Tests\TestCase;
-use Tiie\Components;
 use Tests\Components\Client;
+use Tiie\Components\Supervisor as Components;
 
 class ComponentsTest extends TestCase
 {

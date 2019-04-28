@@ -1,7 +1,10 @@
 <?php
 
+
+use Tiie\Components\Supervisor as Components;
+
 return array(
-    'init' => function(\Tiie\Components $components, array $params = array()) {
+    'init' => function(Components $components, array $params = array()) {
         return new \Tests\Components\UsersCategories();
     },
     'after' => function($component, \Tiie\Components\Scope $components, array $params = array()) {

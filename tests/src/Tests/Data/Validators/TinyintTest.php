@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Tinyint;
+use Tiie\Validators\Tinyint;
 
 class TinyintTest extends \Tests\TestCase
 {

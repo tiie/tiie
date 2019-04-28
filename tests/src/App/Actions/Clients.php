@@ -1,9 +1,7 @@
 <?php
 namespace App\Actions;
 
-use Tiie\Actions\ActionInterface;
-
-class Clients implements ActionInterface
+class Clients
 {
     public function get(\Tiie\Http\Request $request)
     {

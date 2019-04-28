@@ -1,8 +1,8 @@
 <?php
 namespace Tiie\Response;
 
-use Tiie\Data\Model\RecordInterface;
-use Tiie\Data\Model\Records;
+use Tiie\Model\RecordInterface;
+use Tiie\Model\Records;
 use Tiie\Http\Request;
 
 /**
@@ -10,7 +10,7 @@ use Tiie\Http\Request;
  */
 class Response implements ResponseInterface
 {
-    use \Tiie\ComponentsTrait;
+    use \Tiie\Components\ComponentsTrait;
 
     /**
      * Code of response. At HTTP protocol is status.
@@ -193,11 +193,6 @@ class Response implements ResponseInterface
         }
     }
 
-    /**
-     * Ustawia lub zwraca akcję powiązaną z odpowiedzią.
-     *
-     * @return \Tiie\Actions\Action|$this
-     */
     public function template($template = null)
     {
         if (is_null($template)) {
@@ -225,11 +220,6 @@ class Response implements ResponseInterface
         }
     }
 
-    /**
-     * Ustawia lub zwraca akcję powiązaną z odpowiedzią.
-     *
-     * @return \Tiie\Actions\Action|$this
-     */
     public function layout($layout = null)
     {
         if (is_null($layout)) {
@@ -241,12 +231,6 @@ class Response implements ResponseInterface
         }
     }
 
-    /**
-     * Set action associated with response. It is usefull for some response
-     * engines.
-     *
-     * @return \Tiie\Actions\Action|$this
-     */
     public function action($action = null)
     {
         if (is_null($action)) {
@@ -258,13 +242,6 @@ class Response implements ResponseInterface
         }
     }
 
-    /**
-     * Ustawia lub zwraca silnik, który ma być wykorzystany przy tworzeniu
-     * odpowiedzi. Jeśli wartość jest nie określona, to silnik zostanie wybrany
-     * w trybie negocjacji lub pobrany z konfiguracji.
-     *
-     * @return \Tiie\Actions\Action|$this
-     */
     public function engine($engine = null)
     {
         if (is_null($engine)) {

@@ -5,7 +5,7 @@ use Tiie\Lang\LangInterface;
 
 class Lang implements LangInterface
 {
-    use \Tiie\ComponentsTrait;
+    use \Tiie\Components\ComponentsTrait;
 
     private $params;
     private $cache = array();

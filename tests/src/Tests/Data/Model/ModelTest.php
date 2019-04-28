@@ -3,7 +3,7 @@ namespace Tests\Data\Model;
 
 use Tests\TestCase;
 use App\Models\Bookshop\Users;
-use Tiie\Data\Model\Records;
+use Tiie\Model\Records;
 
 class ModelTest extends TestCase
 {
@@ -70,7 +70,7 @@ class ModelTest extends TestCase
         // get records
         $rows = $users->fetch(array(
             'order' => 'id asc'
-        ), 5);
+        ), array(), array(), 5);
 
         $this->assertEquals(true, is_array($rows));
 

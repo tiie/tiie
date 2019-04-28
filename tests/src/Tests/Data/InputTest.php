@@ -2,25 +2,47 @@
 namespace Tests\Data;
 
 use Tiie\Data\Input;
+use Tests\TestCase;
+use Tiie\Validators\ValidatorInterface;
+use Tiie\Messages\MessagesInterface;
 
-class InputTest extends \Tests\TestCase
+class InputTest extends TestCase
 {
+    public function testInput()
+    {
+        $input = new Input;
+
+        $input->input(array(
+            "id" => 10,
+            "name" => "Paweł"
+        ));
+
+
+        // $this->createVariable('variable-130', $input->data());
+        $this->assertEquals($this->variable('variable-130'), $input->data());
+
+        $input->input(array(
+            "age" => 10,
+        ));
+
+        // $this->createVariable('variable-131', $input->data());
+        $this->assertEquals($this->variable('variable-131'), $input->data());
+
+        $input->input(array(
+            "id" => 12,
+            "name" => "Paweł"
+        ), false);
+
+        // $this->createVariable('variable-132', $input->data());
+        $this->assertEquals($this->variable('variable-132'), $input->data());
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function testAllTypes()
     {
-        // const INPUT_DATA_TYPE_VALUE = 'value';
-        // const INPUT_DATA_TYPE_OBJECT = 'object';
-        // const INPUT_DATA_TYPE_LIST_OF_OBJECTS = 'list-of-objects';
-        // const INPUT_DATA_TYPE_LIST = 'vector';
-
         $data = array();
-
-        // $errors = array(
-        //     '@object' => array(
-        //         'name' => array(),
-        //         'name' => array(),
-        //         'name' => array(),
-        //     )
-        // );
 
         $input = new Input($data, array(
             'value' => array(
@@ -113,6 +135,19 @@ class InputTest extends \Tests\TestCase
             ),
         ));
 
+        $input->messages(
+            new class() implements MessagesInterface {
+                public function get(string $code, array $params = array()): ?string
+                {
+                    return $code;
+                }
+            }
+        );
+
+        $input->messages()
+            ->set(ValidatorInterface::ERROR_CODE_NOT_EXISTS, "Brak informacji")
+        ;
+
         $input->prepare();
 
         // $this->createVariable('variable-110', $input->errors());
@@ -155,62 +190,6 @@ class InputTest extends \Tests\TestCase
         $this->assertEquals($this->variable('variable-114'), $input->errors());
     }
 
-    public function testSimpleValidate()
-    {
-        // case
-        $input = new Input(array(
-            'name' => 'Paweł',
-            'age' => 12,
-        ));
-
-        $input->rules(array(
-            'name' => array(
-                '@validators' => array(
-                    'notEmpty'
-                )
-            )
-        ));
-
-        $this->assertEquals(null, $input->validate());
-        $this->assertEquals(null, $input->get('age'));
-
-        // case
-        $input = new Input(array(
-            'name' => 'Paweł',
-            'age' => 12,
-        ));
-
-        $input->rules(array(
-            'name' => array(
-                '@validators' => array(
-                    'notEmpty'
-                )
-            ),
-            'age' => array()
-        ));
-
-        $this->assertEquals(null, $input->validate());
-        $this->assertEquals(12, $input->get('age'));
-
-        // case
-        $input = new Input(array(
-            'name' => '',
-            'age' => 12,
-        ));
-
-        $input->rules(array(
-            'name' => array(
-                '@validators' => array(
-                    'notEmpty'
-                )
-            )
-        ));
-
-        $errors = $input->validate();
-
-        $this->assertEquals('isEmpty', $errors['name'][0]['code']);
-    }
-
     public function testSimpleObject()
     {
         $input = new Input(array(
@@ -225,13 +204,15 @@ class InputTest extends \Tests\TestCase
 
         $input->rule("name", array());
         $input->rule("client", array(
-            "@type" => "object",
+            "@type" => Input::INPUT_DATA_TYPE_OBJECT,
             "id" => array(),
             "name" => array(),
             "age" => array(),
         ));
 
-        $this->assertEquals($this->variable("variable-8"), $input->prepare());
+        $input->prepare();
+
+        $this->assertEquals($this->variable("variable-8"), $input->data());
     }
 
     public function testSimpleList()
@@ -259,12 +240,14 @@ class InputTest extends \Tests\TestCase
 
         $input->rule("name", array());
         $input->rule("emails", array(
-            "@type" => "list",
+            "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
             "id" => array(),
             "email" => array(),
         ));
 
-        $this->assertEquals($this->variable("variable-9"), $input->prepare());
+        $input->prepare();
+
+        $this->assertEquals($this->variable("variable-9"), $input->data());
 
         // case
         $input = new Input(array(
@@ -290,13 +273,15 @@ class InputTest extends \Tests\TestCase
 
         $input->rule("name", array());
         $input->rule("emails", array(
-            "@type" => "list",
+            "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
             "id" => array(),
             "email" => array(),
             "private" => array()
         ));
 
-        $this->assertEquals($this->variable("variable-10"), $input->prepare());
+        $input->prepare();
+
+        $this->assertEquals($this->variable("variable-10"), $input->data());
 
         // case
         $input = new Input(array(
@@ -320,18 +305,32 @@ class InputTest extends \Tests\TestCase
             ),
         ));
 
+        $validatorEmail = new \Tiie\Validators\Email;
+        $validatorEmail->messages(
+            new class() implements MessagesInterface {
+                public function get(string $code, array $params = array()): ?string
+                {
+                    return $code;
+                }
+            }
+        );
+
+        $validatorEmail->message(ValidatorInterface::ERROR_CODE_INVALID, "Invalid data");
+
         $input->rule("name", array());
         $input->rule("emails", array(
-            "@type" => "list",
+            "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
             "id" => array(),
             "email" => array(
                 '@validators' => array(
-                    new \Tiie\Data\Validators\Email()
+                    $validatorEmail,
                 )
             ),
             "private" => array()
         ));
 
-        $this->assertEquals($this->variable("variable-11"), $input->validate());
+        $input->prepare();
+
+        $this->assertEquals($this->variable("variable-11"), $input->errors());
     }
 }

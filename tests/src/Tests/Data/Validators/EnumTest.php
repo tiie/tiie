@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Enum;
+use Tiie\Validators\Enum;
 
 class EnumTest extends \Tests\TestCase
 {

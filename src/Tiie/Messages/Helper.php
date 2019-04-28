@@ -1,12 +1,23 @@
 <?php
 namespace Tiie\Messages;
 
-use Tiie\Messages\MessagesInterface;
-
 class Helper
 {
+    /**
+     * @var MessagesInterface
+     */
     private $messages;
-    private $local;
+
+    /**
+     * Local storage.
+     *
+     * @var array
+     */
+    private $local = array();
+
+    /**
+     * @var array
+     */
     private $params;
 
     function __construct(MessagesInterface $messages, array $params = array())

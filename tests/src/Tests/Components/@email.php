@@ -1,5 +1,7 @@
 <?php
 
-return function(\Tiie\Components $components) {
+use Tiie\Components\Supervisor as Components;
+
+return function(Components $components) {
     return new \Tests\Components\Email();
 };

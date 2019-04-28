@@ -4,9 +4,6 @@ namespace Tiie\Data\Adapters\Commands\SQL;
 use Tiie\Data\Adapters\AdapterInterface;
 use Tiie\Data\Adapters\Commands\Built;
 use Tiie\Data\Adapters\Commands\Command;
-use Tiie\Data\Adapters\Commands\SQL\Common;
-use Tiie\Data\Adapters\Commands\SQL\Where;
-use Tiie\Data\Adapters\Commands\SQL\Expr;
 use Tiie\Utils\Functions;
 
 class Select extends Command
@@ -16,20 +13,58 @@ class Select extends Command
     const JOIN_INNER = 3;
     const JOIN_OUTER = 4;
 
+    /**
+     * @var null
+     */
     protected $from = null;
+
+    /**
+     * @var array
+     */
     protected $columns = array();
+
+    /**
+     * @var array
+     */
     protected $joins = array();
+
+    /**
+     * @var array
+     */
     protected $order = array();
+
+    /**
+     * @var array
+     */
     protected $group = array();
+
+    /**
+     * @var null
+     */
     protected $limit = null;
+
+    /**
+     * @var null
+     */
     protected $having = null;
+
+    /**
+     * @var Where
+     */
     protected $where = null;
+
+    /**
+     * @var Common
+     */
     protected $common = null;
 
+    /**
+     * @var array
+     */
     private $rules = array();
 
     /**
-     * Podastawowa regula.
+     * @var \Closure
      */
     private $defaultRuleFun;
 
@@ -55,7 +90,7 @@ class Select extends Command
      * @param callable
      * @return $this
      */
-    public function defaultRule($defaultRule)
+    public function defaultRule(callable $defaultRule)
     {
         $this->defaultRuleFun = $defaultRule;
 
@@ -455,9 +490,8 @@ class Select extends Command
             }else{
                 throw new \InvalidArgumentException("Page should be 0 or larger and pageSize should be large then 0.");
             }
-        }else{
-            return $this;
-            // throw new \InvalidArgumentException("Page and pageSize shuld be number.");
+        } else if (is_numeric($pageSize)) {
+            $this->limit($pageSize);
         }
 
         return $this;

@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\RowExists;
+use Tiie\Validators\RowExists;
 
 class RowExistsTest extends \Tests\TestCase
 {

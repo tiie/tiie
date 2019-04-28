@@ -8,6 +8,7 @@ use Psr\Log\LoggerInterface;
 use Tiie\Errors\ErrorHandlerInterface;
 use Tiie\Http\Request;
 use Tiie\Response\ResponseInterface;
+use Tiie\Errors\NiceTrace;
 
 class ErrorHandler
 {
@@ -104,7 +105,7 @@ class ErrorHandler
         }else if($error instanceof \Tiie\Exceptions\PHPErrorException){
             $this->response->code(500);
 
-            $niceTrace = new \Tiie\NiceTrace($error->getTrace());
+            $niceTrace = new NiceTrace($error->getTrace());
 
             $this->response->data(array(
                 'message' => $error->getMessage(),
@@ -117,7 +118,7 @@ class ErrorHandler
         }else if($error instanceof \Exception){
             $this->response->code(500);
 
-            $niceTrace = new \Tiie\NiceTrace($error->getTrace());
+            $niceTrace = new NiceTrace($error->getTrace());
 
             $this->response->data(array(
                 'message' => $error->getMessage(),
@@ -129,7 +130,7 @@ class ErrorHandler
         }else if($error instanceof \Error){
             $this->response->code(500);
 
-            $niceTrace = new \Tiie\NiceTrace($error->getTrace());
+            $niceTrace = new NiceTrace($error->getTrace());
 
             $this->response->data(array(
                 'message' => $error->getMessage(),

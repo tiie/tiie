@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Number;
+use Tiie\Validators\Number;
 
 class NumberTest extends \Tests\TestCase
 {

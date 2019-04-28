@@ -211,9 +211,17 @@ class Router
         // find places holders
         preg_match_all('/({(.+?)})/m', $regex, $matches, PREG_SET_ORDER, 0);
 
+        $regex = str_replace("/", "\/", $regex);
+        $regex = str_replace(".", "\.", $regex);
+
         foreach ($matches as $match) {
             $name = $match[2];
-            $paramregex = "([^/]+?)";
+
+            if ($name == "*") {
+                $paramregex = ".*";
+            } else {
+                $paramregex = "([^\/]+?)";
+            }
 
             if (strpos($name, ":") != false) {
                 $exploded = explode(":", $name);
@@ -244,14 +252,12 @@ class Router
                 }
             }
 
-            // append paramsNames name
-            $paramsNames[] = $name;
+            if ($name != "*") {
+                $paramsNames[] = $name;
+            }
 
             $regex = str_replace($match[0], $paramregex, $regex);
         }
-
-        $regex = str_replace("/", "\/", $regex);
-        $regex = str_replace(".", "\.", $regex);
 
         if (!empty($params["begin"])) {
             $regex = "/^{$regex}/m";

@@ -1,19 +1,19 @@
 <?php
 namespace App\Models\Bookshop;
 
-use Tiie\Data\Model\Model;
+use Tiie\Model\Model;
 use Tiie\Data\Adapters\Commands\SQL\Select;
 use Tiie\Data\Adapters\Commands\SQL\Update;
-use Tiie\Data\Model\RecordInterface;
-use Tiie\Data\Model\ModelInterface;
+use Tiie\Model\RecordInterface;
+use Tiie\Model\ModelInterface;
 
 use Tiie\Commands\CommandInterface;
 use Tiie\Commands\Result\ResultInterface;
 use Tiie\Commands\Result\Result;
 
-use Tiie\Data\Model\Commands\SaveRecord as CommandSaveRecord;
-use Tiie\Data\Model\Commands\RemoveRecord as CommandRemoveRecord;
-use Tiie\Data\Model\Commands\CreateRecord as CommandCreateRecord;
+use Tiie\Model\Commands\SaveRecord as CommandSaveRecord;
+use Tiie\Model\Commands\RemoveRecord as CommandRemoveRecord;
+use Tiie\Model\Commands\CreateRecord as CommandCreateRecord;
 use Tiie\Commands\Exceptions\ValidationFailed;
 
 class Users extends Model

@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\IsIP;
+use Tiie\Validators\IsIP;
 
 class IsIPTest extends \Tests\TestCase
 {

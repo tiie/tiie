@@ -1,7 +1,7 @@
 <?php
 namespace App\Actions\Clients;
 
-class CreateClient extends \Tiie\Actions\RPC
+class CreateClient
 {
     public static function metadata()
     {

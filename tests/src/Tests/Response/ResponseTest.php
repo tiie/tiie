@@ -23,9 +23,9 @@ class ResponseTest extends \Tests\TestCase
 
         $response = new \Tiie\Response\Response();
 
-        $response->var("name", "Paweł");
-        $response->var("age", 12);
-        $response->var("contacts", array(
+        $response->variable("name", "Paweł");
+        $response->variable("age", 12);
+        $response->variable("contacts", array(
             array(
                 'id' => 1,
                 'phone' => '722397244'
@@ -40,7 +40,7 @@ class ResponseTest extends \Tests\TestCase
             ),
         ));
 
-        $response->var("email", array(
+        $response->variable("email", array(
             'id' => 89,
             'email' => 'bobryk.pawel@gmail.com'
         ));

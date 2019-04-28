@@ -2,10 +2,16 @@
 
 namespace Tiie\Commands\Result;
 
-use Tiie\Commands\Result\ResultInterface;
-
+/**
+ * Standard implementation of result for command.
+ *
+ * @package Tiie\Commands\Result
+ */
 class Result implements ResultInterface
 {
+    /**
+     * @var null
+     */
     private $value;
 
     function __construct($value = null)
@@ -13,13 +19,19 @@ class Result implements ResultInterface
         $this->value = $value;
     }
 
+    /**
+     * @return null
+     */
     public function value()
     {
         return $this->value;
     }
 
-    public function __toString()
+    /**
+     * @return string
+     */
+    public function __toString() : string
     {
-        return $this->value;
+        return (string) $this->value;
     }
 }

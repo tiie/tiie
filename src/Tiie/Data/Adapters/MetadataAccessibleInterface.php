@@ -3,5 +3,5 @@ namespace Tiie\Data\Adapters;
 
 interface MetadataAccessibleInterface
 {
-    public function metadata($type, $id = null);
+    public function metadata(string $type, string $id = null);
 }

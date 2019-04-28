@@ -3,7 +3,7 @@ namespace Tiie\Response\Engines;
 
 class Json implements \Tiie\Response\Engines\EngineInterface
 {
-    use \Tiie\ComponentsTrait;
+    use \Tiie\Components\ComponentsTrait;
 
     public function prepare(\Tiie\Response\ResponseInterface $response, \Tiie\Http\Request $request, array $accept)
     {

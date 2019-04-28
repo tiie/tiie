@@ -1,7 +1,7 @@
 <?php
 namespace Tests\Data;
 
-use Tiie\Data\Validators\Smallint;
+use Tiie\Validators\Smallint;
 
 class SmallintTest extends \Tests\TestCase
 {

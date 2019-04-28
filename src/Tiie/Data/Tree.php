@@ -13,6 +13,7 @@ class Tree
         $this->params = array(
             'keyId' => empty($params['keyId']) ? 'id' : $params['keyId'],
             'keyParentId' => empty($params['keyParentId']) ? 'parentId' : $params['keyParentId'],
+            'rootId' => array_key_exists("rootId", $params) ? $params["rootId"] : null,
         );
     }
 
@@ -61,7 +62,11 @@ class Tree
         while(!is_null($pointer)) {
             $path[] = $pointer;
 
-            if (is_null($pointer[$keyParentId])) {
+            // if (is_null($pointer[$keyParentId])) {
+            //     break;
+            // }
+
+            if ($pointer[$keyParentId] == $this->params["rootId"]) {
                 break;
             }
 
