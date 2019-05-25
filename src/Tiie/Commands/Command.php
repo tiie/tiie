@@ -7,4 +7,29 @@ namespace Tiie\Commands;
  *
  * @package Tiie\Commands
  */
-class Command implements CommandInterface {}
+class Command implements CommandInterface {
+
+    private $name;
+    private $params;
+
+    function __construct(string $name = null, array $params = array())
+    {
+        $this->name = $name;
+        $this->params = $params;
+    }
+
+    public function name() : string
+    {
+        return $this->name;
+    }
+
+    public function params() : array
+    {
+        return $this->params;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+}

@@ -9,9 +9,6 @@ use Tiie\Messages\Helper as MessagesHelper;
 use Tiie\Validators\ValidatorInterface;
 use Tiie\Filters\FilterInterface;
 
-/**
- * @package Tiie\Data
- */
 class Input
 {
     const INPUT_DATA_TYPE_VALUE = "value";
@@ -335,6 +332,7 @@ class Input
                         $prepared[$field] = $filter->filter($prepared[$field]);
                     }elseif($filter == self::FILTER_TRIM){
                         $prepared[$field] = trim($prepared[$field]);
+                        // $prepared[$field] = $filter->filter($prepared[$field]);
                     }else{
                         throw new Exception("Unsported type of filter.");
                     }

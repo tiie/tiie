@@ -5,27 +5,60 @@ define("FLAT_TRUE", "1");
 define("FLAT_FALSE", "0");
 
 error_reporting(E_ALL);
+
 use Exception;
+use Psr\Log\LoggerInterface;
 use Tiie\Components\Supervisor as Components;
-use Tiie\Config;
 use Tiie\Config\Finder as ConfigFinder;
-use Tiie\Env;
 use Tiie\Errors\Error;
 use Tiie\Errors\ErrorHandlerInterface;
 use Tiie\Http\Request;
 use Tiie\Http\RequestCreator;
+use Tiie\Performance\Performance;
+use Tiie\Performance\TimerTrait;
 use Tiie\Response\ResponseInterface;
+use Tiie\Router\Router;
 
+/**
+ * @package Tiie
+ */
 class App
 {
-    use \Tiie\Performance\TimerTrait;
+    use TimerTrait;
 
+    /**
+     * @var Config
+     */
     private $config;
+
+    /**
+     * @var Env
+     */
     private $env;
+
+    /**
+     * @var Router
+     */
     private $router;
+
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
+
+    /**
+     * @var Performance
+     */
     private $performance;
+
+    /**
+     * @var Components
+     */
     private $components;
+
+    /**
+     * @var array
+     */
     private $params = array(
         // output
         'output' => 'buffer',
@@ -36,12 +69,16 @@ class App
     );
 
     /**
-     * Base request.
+     * @var Request
      */
     private $request;
 
     /**
-     * Init Application
+     * Init application.
+     *
+     * @param array $params
+     *
+     * @throws Exception
      */
     function __construct(array $params = array())
     {
@@ -74,11 +111,17 @@ class App
         $this->performance = $this->components->get("@performance");
     }
 
-    public function run(array $params = array(), $request = null)
+    /**
+     * Run application.
+     *
+     * @param array $params
+     * @param Request|null $request
+     *
+     * @return mixed|void
+     */
+    public function run(array $params = array(), Request $request = null)
     {
-        $this->timer()->start(__METHOD__, array(
-            "REQUEST_URI" => $_SERVER["REQUEST_URI"],
-        ));
+        $this->components->get("@performance.timer")->start(__METHOD__);
 
         $this->loadParams($params);
 
@@ -103,7 +146,6 @@ class App
 
             $response = $this->response($this->router->run(), $this->request);
 
-            $this->timer()->stop();
             $this->components->get("@performance")->save();
 
             return $response;
@@ -149,11 +191,24 @@ class App
         }
     }
 
+    /**
+     * Main exception handler.
+     *
+     * @param mixed $error
+     */
     public function _exceptionHandler($error)
     {
         $this->_error($error);
     }
 
+    /**
+     * Main error handler.
+     *
+     * @param $severity
+     * @param $message
+     * @param $file
+     * @param $line
+     */
     public function _errorHandler($severity, $message, $file, $line)
     {
         $this->_error(new Error($message, 0, $severity, $file, $line));
@@ -203,8 +258,6 @@ class App
      */
     private function response(ResponseInterface $response, Request $request)
     {
-        $this->timer()->start(__METHOD__);
-
         $config = $this->components->get('@config');
 
         $result = $response->response($request);
@@ -225,8 +278,6 @@ class App
                 }
             }
 
-            $this->timer()->stop();
-
             echo $result['body'];
 
             return null;
@@ -236,8 +287,6 @@ class App
                     $result['headers'][$header] = $value;
                 }
             }
-
-            $this->timer()->stop();
 
             return $result;
         } elseif ($this->params['output'] == 'std') {
@@ -250,8 +299,6 @@ class App
                 }
             }
 
-            $this->timer()->stop();
-
             return $result;
         } else {
             $this->components->get("@performance")->save();
@@ -260,71 +307,7 @@ class App
         }
     }
 
-    /**
-     * Count and return information about accept content type, langue, charset
-     * etc.
-     */
-    private function accept($request)
-    {
-        $accept = array(
-            'lang' => null,
-            'contentType' => null,
-        );
-
-        // lang
-        if ($this->config->is('response.lang.negotiation')) {
-            $lang = $request->header('Accept-Language');
-            $priorities = $this->config->get('response.lang.priorities');
-
-            if (is_null($lang)) {
-                $lang = $this->config->get('response.lang.default');
-            }
-
-            $negotiator = new \Negotiation\LanguageNegotiator();
-            $accept['lang'] = $negotiator
-                ->getBest($lang, $priorities)
-                ->getValue()
-            ;
-
-        }else{
-            $accept['lang'] = $this->config->get('response.lang.default');
-        }
-
-        if (is_null($accept['lang'])) {
-            throw new Exception("Can not determine Accept-Language. Please define response.lang.default at config.");
-        }
-
-        // content type
-        $contentType = null;
-        if ($this->config->is('response.contentType.negotiation')) {
-            // jest wlaczony mechanizm negocjacji
-            // pobieram naglowek Accept z zadania
-            $contentType = $request->header('Accept');
-            $priorities = $this->config->get('response.contentType.priorities');
-
-            if (is_null($contentType)) {
-                $contentType = $this->config->get('response.contentType.default');
-            }
-
-            // wykorzystuje zewnetrzna biblioteke do negocjacji
-            $negotiator = new \Negotiation\Negotiator();
-            $accept['contentType'] = $negotiator
-                ->getBest($contentType, $priorities)
-                ->getValue()
-            ;
-
-        }else{
-            $accept['contentType'] = $this->config->get('response.contentType.default');
-        }
-
-        if (is_null($accept['contentType'])) {
-            throw new Exception("Can not determine Accept. Please define response.contentType.default at config.");
-        }
-
-        return $accept;
-    }
-
-    public function component($name)
+    public function component(string $name)
     {
         return $this->components->get($name);
     }

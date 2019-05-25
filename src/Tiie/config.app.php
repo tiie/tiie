@@ -14,14 +14,17 @@ return array(
             'application/json' => 'json',
             'application/xml' => 'xml',
             'text/html' => 'twig',
+            '*/*' => 'twig',
         ),
         'contentType' => array(
             'negotiation' => 1,
-            'default' => 'application/json',
+            // 'default' => 'application/json',
+            'default' => '*/*',
             'priorities' => array(
+                '*/*',
+                'text/html',
                 'application/json',
                 'application/xml',
-                'text/html',
             ),
         ),
         'lang' => array(
@@ -40,7 +43,7 @@ return array(
             "output" => array(
                 "path" => "../files/timetraces",
             ),
-            "saveLongerThan" => 0.5,
+            "saveLongerThan" => 0.01,
         ),
     ),
     'components' => array(

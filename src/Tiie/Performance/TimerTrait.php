@@ -1,8 +1,14 @@
 <?php
 namespace Tiie\Performance;
 
+use Tiie\Performance\Timer\Timer;
+
 trait TimerTrait {
-    protected function timer()
+
+    /**
+     * @return Timer
+     */
+    protected function timer() : Timer
     {
         global $components;
 

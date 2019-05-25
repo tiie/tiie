@@ -153,6 +153,8 @@ class Record implements RecordInterface, ArrayAccess
         foreach ($this->data as $key => $value) {
             if ($value instanceof RecordInterface) {
                 $exported[$key] = $value->export();
+            } else if ($value instanceof Records) {
+                $exported[$key] = $value->toArray();
             } else {
                 $exported[$key] = $value;
             }
@@ -165,9 +167,13 @@ class Record implements RecordInterface, ArrayAccess
      * {@inheritDoc}
      * @see \Tiie\Model\RecordInterface::set()
      */
-    public function set(string $attribute, $value) : RecordInterface
+    public function set(string $attribute, $value, bool $modyfied = true) : RecordInterface
     {
-        $this->modyfied[$attribute] = $value;
+        if ($modyfied) {
+            $this->modyfied[$attribute] = $value;
+        } else {
+            $this->data[$attribute] = $value;
+        }
 
         return $this;
     }

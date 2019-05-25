@@ -4,6 +4,7 @@ namespace Tiie\Response;
 use Tiie\Model\RecordInterface;
 use Tiie\Model\Records;
 use Tiie\Http\Request;
+use Tiie\OpenGraph\Preparator as OpenGraphPreparator;
 
 /**
  * Mechanizm do obsługi odpowiedzi.
@@ -12,13 +13,21 @@ class Response implements ResponseInterface
 {
     use \Tiie\Components\ComponentsTrait;
 
+    const VALUE_SCOPE_CONTENT = "content";
+    const VALUE_SCOPE_LAYOUT = "layout";
+
     /**
      * Code of response. At HTTP protocol is status.
      */
     private $code = 200;
 
     private $headers = array();
-    private $data = array();
+
+    private $data = array(
+        self::VALUE_SCOPE_CONTENT => array(),
+        self::VALUE_SCOPE_LAYOUT => array(),
+    );
+
     private $params = array();
     private $engine;
     private $action;
@@ -30,12 +39,16 @@ class Response implements ResponseInterface
     private $variables = array();
     private $includes = array();
     private $appends = array();
+    private $openGraph;
+    private $openGraphInlude = false;
 
     private $engines;
 
     function __construct(array $params = array())
     {
         $this->params = $params;
+
+        $this->openGraph = new OpenGraphPreparator();
 
         if (!empty($this->params["headers"])) {
             $this->headers($this->params["headers"]);
@@ -55,13 +68,32 @@ class Response implements ResponseInterface
 
     public function title(string $title) : Response
     {
+        $this->openGraph->title($title);
+
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function openGraph() : OpenGraphPreparator
+    {
+        return $this->openGraph;
+    }
+
+    public function includeOpenGraph()
+    {
+        if (!empty($this->title)) $this->openGraph->title($this->title);
+        if (!empty($this->description)) $this->openGraph->description($this->description);
+
+        $this->openGraphInlude = true;
 
         return $this;
     }
 
     public function description(string $description) : Response
     {
+        $this->openGraph->description($description);
+
         $this->description = $description;
 
         return $this;
@@ -168,6 +200,10 @@ class Response implements ResponseInterface
 
             if (!empty($element)) {
                 $html .= "\n{$element}";
+            }
+
+            if ($this->openGraphInlude) {
+                $html .= $this->openGraph->prepare("html");
             }
 
             return $html;
@@ -283,8 +319,6 @@ class Response implements ResponseInterface
      */
     public function response(Request $request)
     {
-        $this->component("@performance.timer")->start(__METHOD__);
-
         $engines = $this->params["engines"];
 
         // get first engine
@@ -304,13 +338,12 @@ class Response implements ResponseInterface
 
         $result = $this->engines->get($engine)->prepare($this, $request, $accept);
 
-        $this->component("@performance.timer")->stop();
-
         return $result;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @see \Tiie\Response\ResponseInterface::header()
      */
     public function header(string $name, $value = null)
@@ -330,6 +363,7 @@ class Response implements ResponseInterface
 
     /**
      * {@inheritDoc}
+     *
      * @see \Tiie\Response\ResponseInterface::headers()
      */
     public function headers(array $headers = null)
@@ -345,6 +379,7 @@ class Response implements ResponseInterface
 
     /**
      * {@inheritDoc}
+     *
      * @see \Tiie\Response\ResponseInterface::code()
      */
     public function code(string $code = null)
@@ -360,38 +395,40 @@ class Response implements ResponseInterface
 
     /**
      * {@inheritDoc}
+     *
      * @see \Tiie\Response\ResponseInterface::set()
      */
-    public function set(string $name, $value) : ResponseInterface
+    public function set(string $name, $value, string $scope = self::VALUE_SCOPE_CONTENT) : ResponseInterface
     {
-        $this->data[$name] = $value;
+        $this->data[$scope][$name] = $value;
 
         return $this;
     }
 
     /**
      * {@inheritDoc}
+     *
      * @see \Tiie\Response\ResponseInterface::get()
      */
-    public function get(string $name)
+    public function get(string $name, string $scope = self::VALUE_SCOPE_CONTENT)
     {
-        return array_key_exists($name, $this->data) ? $this->data[$name] : null;
+        return array_key_exists($name, $this->data[$scope]) ? $this->data[$scope][$name] : null;
     }
 
-    public function record(RecordInterface $record = null)
+    public function record(RecordInterface $record = null, string $scope = self::VALUE_SCOPE_CONTENT)
     {
         if (is_null($record)) {
-            $this->data(null);
+            $this->data(null, 0, $scope);
         } else {
-            $this->data($record->toArray());
+            $this->data($record->toArray(), 0, $scope);
         }
 
         return $this;
     }
 
-    public function records(Records $records)
+    public function records(Records $records, string $scope = self::VALUE_SCOPE_CONTENT)
     {
-        $this->data($records->toArray());
+        $this->data($records->toArray(), 0, $scope);
 
         return $this;
     }
@@ -402,28 +439,45 @@ class Response implements ResponseInterface
      * @param null|array $data
      * @return null|array|$this
      */
-    public function data(array $data = null, int $merge = 1)
+    public function data(array $data = null, int $merge = 1, string $scope = self::VALUE_SCOPE_CONTENT)
     {
         if (func_num_args() == 0) {
-            return $this->data;
+            return $this->data[$scope];
         } else {
             if ($merge) {
                 if (is_null($data)) {
-                    $this->data = $data;
+                    $this->data[$scope] = $data;
                 } else {
-                    if (is_null($this->data)) {
-                        $this->data = $data;
+                    if (is_null($this->data[$scope])) {
+                        $this->data[$scope] = $data;
                     } else {
-                        $this->data = array_merge($this->data, $data);
+                        $this->data[$scope] = array_merge($this->data[$scope], $data);
                     }
                 }
             } else {
-                $this->data = $data;
+                $this->data[$scope] = $data;
             }
 
             return $this;
         }
     }
+
+    /**
+     * @return array
+     */
+    public function getData(string $scope = self::VALUE_SCOPE_CONTENT): array
+    {
+        return $this->data[$scope];
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data, string $scope = self::VALUE_SCOPE_CONTENT): void
+    {
+        $this->data[$scope] = $data;
+    }
+
 
     /**
      * Count and return information about accept content type, langue, charset

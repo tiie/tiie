@@ -82,7 +82,7 @@ class File
             ->equal('id', $this->data['id'])
         ;
 
-        $this->db->update($update);
+        $this->db->execute($update);
 
         // then move file
         if(rename($this->data['path'], $path) === false){

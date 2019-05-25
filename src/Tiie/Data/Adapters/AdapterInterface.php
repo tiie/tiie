@@ -3,9 +3,28 @@ namespace Tiie\Data\Adapters;
 
 interface AdapterInterface
 {
+    /**
+     * @param $command
+     * @param array $params
+     *
+     * @return mixed
+     */
     public function execute($command, $params = array());
 
-    public function fetch($command, array $params = array()) : \Tiie\Data\Adapters\Result;
+    /**
+     * Run given command and returns result.
+     *
+     * @param $command
+     * @param array $params
+     *
+     * @return Result
+     */
+    public function fetch($command, array $params = array()) : Result;
 
-    public function lastId();
+    /**
+     * Return last generated ID.
+     *
+     * @return string
+     */
+    public function lastId() : string;
 }

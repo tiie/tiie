@@ -1,27 +1,11 @@
 <?php
 namespace Tiie\Data;
 
-/**
- * @package Tiie\Data
- */
 class Tree
 {
-    /**
-     * @var array
-     */
     private $nodes;
-
-    /**
-     * @var array
-     */
     private $params;
 
-    /**
-     * Tree constructor.
-     * j
-     * @param array $nodes
-     * @param array $params
-     */
     function __construct(array $nodes = array(), array $params = array())
     {
         $this->nodes = $nodes;
@@ -33,14 +17,7 @@ class Tree
         );
     }
 
-    /**
-     * Returns leafs at tree.
-     *
-     * @param array $params
-     *
-     * @return array
-     */
-    public function leafs() : array
+    public function leafs(array $params = array()) : array
     {
         $leafs = array();
         $keyId = $this->params['keyId'];
@@ -68,15 +45,7 @@ class Tree
         return $leafs;
     }
 
-    /**
-     * Returns path to given node.
-     *
-     * @param string $to
-     * @param array $params
-     *
-     * @return array|null
-     */
-    public function path(string $to) : ?array
+    public function path(string $to, array $params = array()) : ?array
     {
         $toNode = $this->findById($to);
 
@@ -93,6 +62,10 @@ class Tree
         while(!is_null($pointer)) {
             $path[] = $pointer;
 
+            // if (is_null($pointer[$keyParentId])) {
+            //     break;
+            // }
+
             if ($pointer[$keyParentId] == $this->params["rootId"]) {
                 break;
             }
@@ -100,6 +73,9 @@ class Tree
             if (isset($index[$pointer[$keyParentId]])) {
                 $pointer = $index[$pointer[$keyParentId]];
             } else {
+                // $id = $pointer[$keyId];
+                // $parentId = $pointer[$keyParentId];
+                // $pointer = null;
                 $found = null;
 
                 foreach ($this->nodes as $node) {
@@ -127,13 +103,6 @@ class Tree
         return array_reverse($path);
     }
 
-    /**
-     * Find node by id.
-     *
-     * @param string $id
-     *
-     * @return array|null
-     */
     public function findById(string $id) : ?array
     {
         $found = null;

@@ -6,12 +6,34 @@ use stdClass;
 
 class Timer
 {
+    /**
+     * @var Performance
+     */
     private $performance;
 
+    /**
+     * @var string
+     */
     private $id;
+
+    /**
+     * @var array
+     */
     private $stack = array();
+
+    /**
+     * @var array
+     */
     private $units = array();
+
+    /**
+     * @var
+     */
     private $pointer;
+
+    /**
+     * @var stdClass|null
+     */
     private $root;
 
     function __construct(Performance $performance)
@@ -20,12 +42,23 @@ class Timer
         $this->performance = $performance;
     }
 
+    /**
+     * Return ID of timer. Each timmer has uniqe id.
+     *
+     * @return string
+     */
     public function id() : string
     {
         return $this->id;
     }
 
-    public function start(string $name, array $context = array()) : int
+    /**
+     * Start timmer.
+     *
+     * @param string $name
+     * @param array $context
+     */
+    public function start(string $name, array $context = array()) : void
     {
         // Get file and line.
         $backtrace = debug_backtrace();
@@ -55,22 +88,19 @@ class Timer
             // Set new pointer.
             $this->pointer = $unit;
         }
-
-        return 1;
     }
 
-    public function stop() : int
+    /**
+     * Stop timmer.
+     */
+    public function stop() : void
     {
         $this->pointer->stop = $this->microtime();
         $this->pointer->time = ($this->pointer->stop - $this->pointer->start);
 
-        if (empty($this->stack)) {
-            return 1;
-        } else {
+        if (!empty($this->stack)) {
             $this->pointer = array_pop($this->stack);
         }
-
-        return 1;
     }
 
     private function microtime()
@@ -100,6 +130,11 @@ class Timer
         }
     }
 
+    /**
+     * Returns timers stack.
+     *
+     * @return stdClass|null
+     */
     public function timetrace()
     {
         return $this->root;

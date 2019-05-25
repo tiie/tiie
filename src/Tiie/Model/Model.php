@@ -118,10 +118,12 @@ abstract class Model implements ModelInterface
         $items = array();
 
         foreach ($this->fetchByIds($ids, $params, $fields) as $row) {
-            $items[] = array(
-                'id' => $row[$this->id],
-                'record' => $this->createRecord($row),
-            );
+            // $items[] = array(
+            //     'id' => $row[$this->id],
+            //     'record' => $this->createRecord($row),
+            // );
+
+            $items[] = $this->createRecord($row);
         }
 
         return new Records($this, $items, $this->id);

@@ -1,26 +1,11 @@
 <?php
 namespace Tiie\Data;
 
-/**
- * @package Tiie\Data
- */
 class Index
 {
-    /**
-     * @var array
-     */
     private $index = array();
 
-    /**
-     * Index constructor.
-     *
-     * @param array $data
-     * @param array $keys
-     * @param bool $subArray
-     *
-     * @throws \Exception
-     */
-    function __construct(array $data = array(), array $keys = array(), bool $subArray = true)
+    function __construct($data = array(), $keys = array(), $subArray = true)
     {
         if (!is_array($keys)) {
             $keys = array($keys);
@@ -62,10 +47,6 @@ class Index
         }
     }
 
-    /**
-     * @param $key
-     * @return mixed|null
-     */
     public function get($key)
     {
         if (is_array($key)) {

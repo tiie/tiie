@@ -1,6 +1,8 @@
 <?php
 namespace Tiie\Response\Engines;
 
+use Tiie\Response\Response;
+
 class Twig implements \Tiie\Response\Engines\EngineInterface
 {
     use \Tiie\Components\ComponentsTrait;
@@ -76,11 +78,22 @@ class Twig implements \Tiie\Response\Engines\EngineInterface
         }
 
         if (!is_null($response->template())) {
-            $rendered = $twig->render($response->template(), $response->data());
-            $body = $twig->render($layout, array(
-                'head' => $response->prepare("html.head"),
-                'content' => $rendered,
-            ));
+            $rendered = $twig->render($response->template(), $response->getData(Response::VALUE_SCOPE_CONTENT));
+
+            $dataLayout = $response->getData(Response::VALUE_SCOPE_LAYOUT);
+
+            if (!array_key_exists("head", $dataLayout)) {
+                $dataLayout["head"] = $response->prepare("html.head");
+            }
+
+            $dataLayout["content"] = $rendered;
+
+            // $body = $twig->render($layout, array(
+            //     'head' => $response->prepare("html.head"),
+            //     'content' => $rendered,
+            // ));
+
+            $body = $twig->render($layout, $dataLayout);
 
             return array(
                 'code' => $response->code(),
