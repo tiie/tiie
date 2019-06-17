@@ -70,7 +70,7 @@ class Files
             }
         }
 
-        return $select->fetch()->data();
+        return $select->fetch()->getData();
     }
 
     public function findById($id)

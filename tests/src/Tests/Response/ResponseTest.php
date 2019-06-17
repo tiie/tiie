@@ -5,27 +5,27 @@ class ResponseTest extends \Tests\TestCase
 {
     // public function testTwig()
     // {
-    //     $this->app();
+    //     $this->getApp();
 
     //     $request = new \Tiie\Http\Request("get", "/api/clients/2");
 
-    //     $response = $app->component("@router")->run($request);
+    //     $response = $app->getComponent("@router")->run($request);
 
     //     // Ustawiam silnik odpowiedzi
-    //     $response->engine("@response.engines.twig");
+    //     $response->setEngine("@response.engines.twig");
 
     //     // die(print_r($response->response($request), 1));
     // }
 
     public function testPrepare()
     {
-        // $this->app();
+        // $this->getApp();
 
         $response = new \Tiie\Response\Response();
 
-        $response->variable("name", "Paweł");
-        $response->variable("age", 12);
-        $response->variable("contacts", array(
+        $response->setVariable("name", "Paweł");
+        $response->setVariable("age", 12);
+        $response->setVariable("contacts", array(
             array(
                 'id' => 1,
                 'phone' => '722397244'
@@ -40,12 +40,12 @@ class ResponseTest extends \Tests\TestCase
             ),
         ));
 
-        $response->variable("email", array(
+        $response->setVariable("email", array(
             'id' => 89,
             'email' => 'bobryk.pawel@gmail.com'
         ));
 
-        $variable = $this->variable('variable-7');
+        $variable = $this->getVariable('variable-7');
         $prepared = $response->prepare("html.javascript.variables");
         $this->md5($variable['prepared']);
 

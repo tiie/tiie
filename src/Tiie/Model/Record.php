@@ -56,7 +56,7 @@ class Record implements RecordInterface, ArrayAccess
      * {@inheritDoc}
      * @see \Tiie\Model\RecordInterface::id()
      */
-    public function id() : ?string
+    public function getId() : ?string
     {
         return array_key_exists($this->keyId, $this->data) ? $this->data[$this->keyId] : null;
     }
@@ -112,7 +112,7 @@ class Record implements RecordInterface, ArrayAccess
         return array_key_exists($name, $this->data);
     }
 
-    public function data(bool $modyfied = true) : array
+    public function getData(bool $modyfied = true) : array
     {
         if ($modyfied) {
             return array_merge($this->data, $this->modyfied);
@@ -223,7 +223,7 @@ class Record implements RecordInterface, ArrayAccess
     {
         switch ($name) {
         case 'new':
-            return is_null($this->id());
+            return is_null($this->getId());
         default:
             trigger_error("Unsported feature {$name}.", E_USER_NOTICE);
 

@@ -90,11 +90,9 @@ class Select extends Command
      * @param callable
      * @return $this
      */
-    public function defaultRule(callable $defaultRule)
+    public function setDefaultRule(callable $defaultRule) : void
     {
         $this->defaultRuleFun = $defaultRule;
-
-        return $this;
     }
 
     /**
@@ -104,7 +102,7 @@ class Select extends Command
      * @param callable $rule
      * @return $this
      */
-    public function rule(array $params, callable $rule)
+    public function addRule(array $params, callable $rule) : void
     {
         if (!is_array($params)) {
             $params = array($params);
@@ -114,8 +112,6 @@ class Select extends Command
             'params' => $params,
             'rule' => $rule
         );
-
-        return $this;
     }
 
     /**
@@ -409,14 +405,12 @@ class Select extends Command
      * @throws \InvalidArgumentException
      * @return $this
      */
-    public function limit(int $limit, int $offset = 0)
+    public function setLimit(int $limit, int $offset = 0) : void
     {
         $this->limit = array(
             'limit' => $limit,
             'offset' => $offset,
         );
-
-        return $this;
     }
 
     /**
@@ -425,11 +419,11 @@ class Select extends Command
      * ```php
      *
      * // We can user array as param.
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('id')
      *     ->order('id asc')
-     *     ->page(array(
+     *     ->setPage(array(
      *         'page' => 0,
      *         'pageSize' => 2,
      *     ))
@@ -438,20 +432,20 @@ class Select extends Command
      *
      * // Or use params
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('id')
      *     ->order('id asc')
-     *     ->page(1, 2)
+     *     ->setPage(1, 2)
      *     ->fetch()
      * ;
      *
      * // Or use string
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('id')
      *     ->order('id asc')
-     *     ->page('1,2')
+     *     ->setPage('1,2')
      *     ->fetch()
      * ;
      *
@@ -462,19 +456,23 @@ class Select extends Command
      *
      * @return $this
      */
-    public function page($page, $pageSize = null)
+    public function setPage($page, $pageSize = null) : void
     {
         if (is_array($page)) {
             if (array_key_exists('page', $page) && array_key_exists('pageSize', $page)) {
-                return $this->page($page['page'], $page['pageSize']);
+                $this->setPage($page['page'], $page['pageSize']);
+
+                return;
             } else {
-                return $this;
+                return;
             }
         } elseif (is_string($page) && is_null($pageSize)) {
             $exploded = explode(',', $page);
 
             if (count($exploded) == 2) {
-                return $this->page($exploded[0], $exploded[1]);
+                $this->setPage($exploded[0], $exploded[1]);
+
+                return;
             } else {
                 throw new \InvalidArgumentException("Page as string should be write as page,size");
             }
@@ -483,18 +481,16 @@ class Select extends Command
         if (is_numeric($page) && is_numeric($pageSize)) {
             if ($pageSize > 0 && $page >= 0) {
                 if ($page == 0) {
-                    $this->limit($pageSize);
+                    $this->setLimit($pageSize);
                 }else{
-                    $this->limit($pageSize, $page * $pageSize);
+                    $this->setLimit($pageSize, $page * $pageSize);
                 }
             }else{
                 throw new \InvalidArgumentException("Page should be 0 or larger and pageSize should be large then 0.");
             }
         } else if (is_numeric($pageSize)) {
-            $this->limit($pageSize);
+            $this->setLimit($pageSize);
         }
-
-        return $this;
     }
 
     /**
@@ -529,19 +525,19 @@ class Select extends Command
      * Add order statement to select.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('id')
-     *     ->limit(10)
+     *     ->setLimit(10)
      *     ->order(array("id asc", "name desc"))
      *     ->fetch()
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('id')
      *     ->order('id desc')
-     *     ->limit(10)
+     *     ->setLimit(10)
      *     ->fetch()
      * ;
      *
@@ -723,14 +719,14 @@ class Select extends Command
      * Return or set columns for select.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->columns(array(
      *         'id',
      *         'firstName',
      *         'fullName' => new Expr("concat(id, '-', firstName, '-', lastName)")
      *     ))
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->order('id asc')
      *     ->fetch()
      * ;
@@ -762,20 +758,20 @@ class Select extends Command
      *
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('firstName')
      *     ->column('lastName')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->order('id asc')
      *     ->fetch()
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users')
      *     ->column('id', 'userId')
      *     ->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->order('id asc')
      *     ->fetch()
      * ;
@@ -799,12 +795,12 @@ class Select extends Command
      * Set from for Select statement. From can be table name or other sub select.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->column('u.lastName')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->order('id asc')
      *     ->fetch()
      * ;
@@ -814,10 +810,10 @@ class Select extends Command
      *     ->from('users', 'sub')
      *     ->column('id')
      *     ->column('email')
-     *     ->limit(10)
+     *     ->setLimit(10)
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from($sub, 'base')
      *     ->order('base.id asc')
      *     ->fetch()
@@ -867,11 +863,9 @@ class Select extends Command
         return $this;
     }
 
-    public function params(array $values = array(), array $fields = array())
+    public function setParams(array $values, array $fields = array()) : void
     {
-        $this->where->params($values, $fields);
-
-        return $this;
+        $this->where->setParams($values, $fields);
     }
 
     public function build(array $params = array()) : Built
@@ -879,7 +873,7 @@ class Select extends Command
         $command = "SELECT";
         $string = "";
         $bl = "";
-        $vars = $this->binds();
+        $vars = $this->getBinds();
 
         if (!empty($this->columns)) {
             foreach($this->columns as $column) {
@@ -920,9 +914,9 @@ class Select extends Command
                     }
 
                     $bl = $column["column"]->build();
-                    $vars = array_merge($vars, $bl->params());
+                    $vars = array_merge($vars, $bl->getParams());
 
-                    $command .= sprintf("\n    (%s) as `%s`,", $bl->command(), $column["alias"]);
+                    $command .= sprintf("\n    (%s) as `%s`,", $bl->getCommand(), $column["alias"]);
                 } else {
                     trigger_error(sprintf("Inproper column '%s'", Functions::inline($column["column"])), E_USER_WARNING);
                 }
@@ -956,12 +950,12 @@ class Select extends Command
                 ) {
                     $bl = $from["table"]->build();
 
-                    $vars = array_merge($vars, $bl->params());
+                    $vars = array_merge($vars, $bl->getParams());
 
                     if (!empty($from["alias"])) {
-                        $command .= sprintf("\nFROM (\n%s\n) as `%s`", $bl->command(), $from["alias"]);
+                        $command .= sprintf("\nFROM (\n%s\n) as `%s`", $bl->getCommand(), $from["alias"]);
                     } else {
-                        $command .= sprintf("\nFROM (\n%s\n)", $bl->command());
+                        $command .= sprintf("\nFROM (\n%s\n)", $bl->getCommand());
                     }
                 } else {
                     trigger_error(sprintf("Inproper FROM for SELECT '%s'", Functions::inline($from)), E_USER_WARNING);
@@ -1008,12 +1002,12 @@ class Select extends Command
                 }
 
                 $bl = $resolved["table"]->build();
-                $vars = array_merge($vars, $bl->params());
+                $vars = array_merge($vars, $bl->getParams());
 
                 if (!empty($join["alias"])) {
-                    $table .= sprintf("(%s) as `%s`", $bl->command(), $join["alias"]);
+                    $table .= sprintf("(%s) as `%s`", $bl->getCommand(), $join["alias"]);
                 } else {
-                    $table .= sprintf("(%s)", $bl->command());
+                    $table .= sprintf("(%s)", $bl->getCommand());
                 }
             } else {
                 trigger_error("Unssuported type of table for table.", E_USER_WARNING);
@@ -1029,9 +1023,9 @@ class Select extends Command
                     $condition instanceof Expr
                 ) {
                     $bl = $condition->build();
-                    $vars = array_merge($vars, $bl->params());
+                    $vars = array_merge($vars, $bl->getParams());
 
-                    $on .= sprintf("(%s) AND ", $bl->command());
+                    $on .= sprintf("(%s) AND ", $bl->getCommand());
                 } else {
                     trigger_error(sprintf("Unsupported type of ON for JOIN '%s'", Functions::inline($condition)), E_USER_WARNING);
                     continue;
@@ -1048,10 +1042,10 @@ class Select extends Command
         }
 
         $bl = $this->where->build();
-        if (!empty($bl->command())) {
-            $vars = array_merge($vars, $bl->params());
+        if (!empty($bl->getCommand())) {
+            $vars = array_merge($vars, $bl->getParams());
 
-            $command .= "\nWHERE {$bl->command()}";
+            $command .= "\nWHERE {$bl->getCommand()}";
         }
 
         // Order
@@ -1178,9 +1172,9 @@ class Select extends Command
                 }
 
                 // merge params
-                $buildCommand->params($tablecommand->params());
+                $buildCommand->setParams($tablecommand->getParams());
 
-                $sfrom .= "({$tablecommand->command()}) as {$params['quote']}{$this->from['alias']}{$params['quote']}";
+                $sfrom .= "({$tablecommand->getCommand()}) as {$params['quote']}{$this->from['alias']}{$params['quote']}";
             } else {
                 if ($this->from['table'] != $this->from['alias']) {
                     $sfrom .= "{$params['quote']}{$this->from['table']}{$params['quote']} as {$params['quote']}{$this->from['alias']}{$params['quote']}";
@@ -1216,9 +1210,9 @@ class Select extends Command
                     $joincommand = $join['table']->build();
 
                     // merge params
-                    $buildCommand->params($joincommand->params());
+                    $buildCommand->setParams($joincommand->getParams());
 
-                    $join['table'] = sprintf("(%s)", $joincommand->command());
+                    $join['table'] = sprintf("(%s)", $joincommand->getCommand());
 
                     if (empty($join['alias'])) {
                         throw new \Exception("Join with other select, needs to defined alias.");
@@ -1235,9 +1229,9 @@ class Select extends Command
 
         // where
         $where = $this->where->build($params);
-        if (!is_null($where->command())) {
-            $buildCommand->params($where->params());
-            $swhere = $where->command();
+        if (!is_null($where->getCommand())) {
+            $buildCommand->setParams($where->getParams());
+            $swhere = $where->getCommand();
         }
 
         if (!empty($this->order)) {
@@ -1312,15 +1306,15 @@ class Select extends Command
             $sql = "{$sql}\nlimit $slimit";
         }
 
-        $buildCommand->params($this->binds());
-        $buildCommand->command($sql);
+        $buildCommand->setParams($this->getBinds());
+        $buildCommand->setCommand($sql);
 
         return $buildCommand;
     }
 
     public function count(array $params = array())
     {
-        $adapter = $this->adapter();
+        $adapter = $this->getAdapter();
 
         if (is_null($adapter)) {
             throw new \Exception("Adapter is not inject.");
@@ -1338,7 +1332,7 @@ class Select extends Command
 
     public function fetch(array $params = array())
     {
-        $adapter = $this->adapter();
+        $adapter = $this->getAdapter();
 
         if (is_null($adapter)) {
             throw new \Exception("Adapter is not inject.");

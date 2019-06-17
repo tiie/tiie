@@ -6,18 +6,18 @@ class Clients
     public function get(\Tiie\Http\Request $request)
     {
         $response = new \Tiie\Response\Response();
-        $response->data(null);
+        $response->setData(null);
 
-        foreach ($this->collection() as $client) {
-            if ($client['id'] == $request->param("id")) {
-                $response->data($client);
+        foreach ($this->getCollection() as $client) {
+            if ($client['id'] == $request->getParam("id")) {
+                $response->setData($client);
             }
         }
 
         return $response;
     }
 
-    public function collection($params = array())
+    public function getCollection($params = array())
     {
         return array(
             array(

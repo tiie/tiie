@@ -13,46 +13,34 @@ class ContentType extends Header
         parent::__construct('Content-Type', $value);
     }
 
-    /**
-     * Setting the 'mediaType' value or reading it.
-     *
-     * @param string $mediaType
-     * @return $this|string
-     */
-    public function mediaType(string $mediaType = null)
+    public function setMediaType(string $mediaType) : void
     {
-        $decoded = $this->decode($this->value());
+        $decoded = $this->decode($this->getValue());
+        $decoded = array_merge($decoded, array('mediaType' => $mediaType));
 
-        if (func_num_args() == 0) {
-            return empty($decoded['mediaType']) ? null : $decoded['mediaType'];
-        } else {
-            $decoded = array_merge($decoded, array('mediaType' => $mediaType));
-
-            $this->value($this->encode($decoded));
-
-            return $this;
-        }
+        $this->setValue($this->encode($decoded));
     }
 
-    /**
-     * Setting the 'charset' value or reading it.
-     *
-     * @param string $charset
-     * @return $this|string
-     */
-    public function charset(string $charset = null)
+    public function getMediaType() : ?string
     {
-        $decoded = $this->decode($this->value());
+        $decoded = $this->decode($this->getValue());
 
-        if (func_num_args() == 0) {
-            return empty($decoded['charset']) ? null : $decoded['charset'];
-        } else {
-            $decoded = array_merge($decoded, array('charset' => $charset));
+        return empty($decoded['mediaType']) ? null : $decoded['mediaType'];
+    }
 
-            $this->value($this->encode($decoded));
+    public function setCharset(string $charset) : void
+    {
+        $decoded = $this->decode($this->getValue());
+        $decoded = array_merge($decoded, array('charset' => $charset));
 
-            return $this;
-        }
+        $this->setValue($this->encode($decoded));
+    }
+
+    public function getCharset()
+    {
+        $decoded = $this->decode($this->getValue());
+
+        return empty($decoded['charset']) ? null : $decoded['charset'];
     }
 
     /**
@@ -63,14 +51,14 @@ class ContentType extends Header
      */
     public function boundary(string $boundary = null)
     {
-        $decoded = $this->decode($this->value());
+        $decoded = $this->decode($this->getValue());
 
         if (func_num_args() == 0) {
             return empty($decoded['boundary']) ? null : $decoded['boundary'];
         } else {
             $decoded = array_merge($decoded, array('boundary' => $boundary));
 
-            $this->value($this->encode($decoded));
+            $this->setValue($this->encode($decoded));
 
             return $this;
         }
@@ -80,7 +68,7 @@ class ContentType extends Header
     {
         $decoded = array();
 
-        foreach (explode(';', $this->value()) as $key => $value) {
+        foreach (explode(';', $this->getValue()) as $key => $value) {
             $value = trim($value);
 
             if ($key == 0) {

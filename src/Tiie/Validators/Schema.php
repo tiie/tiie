@@ -29,7 +29,7 @@ class Schema extends Validator implements ComplexValidatorInterface
         $this->column = $column;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.Schema.Description)';
     }
@@ -42,7 +42,7 @@ class Schema extends Validator implements ComplexValidatorInterface
             return null;
         }
 
-        $column = $this->adapter->metadata('column', $this->column);
+        $column = $this->adapter->getMetadata('column', $this->column);
 
         if (is_null($column)) {
             trigger_error("There was an attempt to validate after the unstable schema for the column {$this->column}.");

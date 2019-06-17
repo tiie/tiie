@@ -89,24 +89,24 @@ class Config implements \ArrayAccess
         if ($config instanceof Config) {
             $config = $config->toArray();
         } else if($config instanceof Finder) {
-            $find = $this->path($config->path());
+            $find = $this->getPath($config->getPath());
 
             if (is_null($find)) {
                 $config = array();
             } else {
-                $config = $config->path();
+                $config = $config->getPath();
             }
         }
 
         if (is_string($config)) {
-            $config = $this->path($config);
+            $config = $this->getPath($config);
 
             // Path is given.
             if (is_null($config)) {
                 throw new ExceptionFileUnreadable(sprintf("Config '%s' is unreadable.", $config));
             }
 
-            switch ($this->fileExtension($config)) {
+            switch ($this->getFileExtension($config)) {
             case 'php':
                 $decoded = include($config);
 
@@ -167,7 +167,7 @@ class Config implements \ArrayAccess
         return $config;
     }
 
-    private function path(string $path)
+    private function getPath(string $path)
     {
         if (is_readable("{$this->directory}/{$path}")) {
             return "{$this->directory}/{$path}";
@@ -342,7 +342,7 @@ class Config implements \ArrayAccess
      *
      * @return array
      */
-    public function keys($name)
+    public function getKeys($name) : array
     {
         $value = $this->get($name);
 
@@ -450,7 +450,7 @@ class Config implements \ArrayAccess
         return $this;
     }
 
-    private function fileExtension($path){
+    private function getFileExtension($path){
         $texploded = explode('.', $path);
 
         return $texploded[count($texploded)-1];
@@ -462,7 +462,7 @@ class Config implements \ArrayAccess
      * @param string $key
      * @return \Tiie\Config
      */
-    public function config($key)
+    public function getConfig($key)
     {
         $config = $this->get($key);
 

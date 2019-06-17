@@ -13,7 +13,7 @@ class Performance
         $this->params = $params;
     }
 
-    public function timer()
+    public function getTimer() : Timer
     {
         $timer = new Timer($this);
 
@@ -22,16 +22,14 @@ class Performance
         return $timer;
     }
 
-    public function save() : int
+    public function save() : void
     {
         foreach ($this->timers as $timer) {
-            if ($timer->time() >= $this->params["timers"]["saveLongerThan"]) {
-                if(file_put_contents(sprintf("%s/%s.%s.json", $this->params["timers"]["output"]["path"], $timer->time(), $timer->id()), json_encode($timer->timetrace())) === false) {
+            if ($timer->getTime() >= $this->params["timers"]["saveLongerThan"]) {
+                if(file_put_contents(sprintf("%s/%s.%s.json", $this->params["timers"]["output"]["path"], $timer->getTime(), $timer->getId()), json_encode($timer->getTimetrace())) === false) {
                     trigger_error("Time trace could not be saved.", E_USER_WARNING);
                 }
             }
         }
-
-        return 1;
     }
 }

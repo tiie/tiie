@@ -73,14 +73,12 @@ class File
 
         // first update database
         $update = new \Tiie\Data\Adapters\Commands\SQL\Update();
-        $update
-            ->table($this->params['table'])
-            ->values(array(
-                'path' => $path
-            ))
+        $update->setTable($this->params['table']);
+        $update->setValues(array(
+            'path' => $path
+        ));
 
-            ->equal('id', $this->data['id'])
-        ;
+        $update->equal('id', $this->data['id']);
 
         $this->db->execute($update);
 
@@ -94,27 +92,27 @@ class File
         return $this;
     }
 
-    public function data()
+    public function getData()
     {
         return $this->data;
     }
 
-    public function fid()
+    public function getFid()
     {
         return $this->data['fid'];
     }
 
-    public function id()
+    public function getId()
     {
         return $this->data['id'];
     }
 
-    public function path()
+    public function getPath()
     {
         return $this->data['path'];
     }
 
-    public function filename()
+    public function getFilename()
     {
         return array_pop(explode('/', $this->data['path']));
     }
@@ -128,12 +126,12 @@ class File
         return implode('/', $tmp);
     }
 
-    public function name()
+    public function getName() : string
     {
         return $this->data['name'];
     }
 
-    public function extension()
+    public function getExtension()
     {
         return $this->data['extension'];
     }
@@ -167,14 +165,12 @@ class File
 
         // first update database
         $update = new \Tiie\Data\Adapters\Commands\SQL\Update();
-        $update
-            ->table($this->params['table'])
-            ->values(array(
-                'path' => $path
-            ))
+        $update->setTable($this->params['table']);
+        $update->setValues(array(
+            'path' => $path
+        ));
 
-            ->equal('id', $this->data['id'])
-        ;
+        $update->equal('id', $this->data['id']);
 
         $this->db->update($update);
 
@@ -194,7 +190,7 @@ class File
 
     }
 
-    public function content()
+    public function getContent()
     {
 
     }

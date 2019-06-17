@@ -7,13 +7,13 @@ class Json implements \Tiie\Response\Engines\EngineInterface
 
     public function prepare(\Tiie\Response\ResponseInterface $response, \Tiie\Http\Request $request, array $accept)
     {
-        $headers = $response->headers();
+        $headers = $response->getHeaders();
         $headers['Content-Type'] = 'application/json';
 
         $body = "";
 
-        if (!is_null($response->data())) {
-            $body = json_encode($response->data());
+        if (!is_null($response->getData())) {
+            $body = json_encode($response->getData());
         }
 
         if ($body === false) {
@@ -22,12 +22,12 @@ class Json implements \Tiie\Response\Engines\EngineInterface
             $body = "";
         }
 
-        if ($this->components()->defined('@lang')) {
-            $body = $this->component("@lang")->translateText('pl', $body);
+        if ($this->getComponents()->defined('@lang')) {
+            $body = $this->getComponent("@lang")->translateText('pl', $body);
         }
 
         return array(
-            'code' => $response->code(),
+            'code' => $response->getCode(),
             'body' => $body,
             'headers' => $headers,
         );

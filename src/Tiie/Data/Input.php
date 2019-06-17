@@ -81,35 +81,25 @@ class Input
      *
      * @return Input
      */
-    public function input(array $input, bool $merge = true) : Input
+    public function setInput(array $input, bool $merge = true) : void
     {
         if ($merge) {
             $this->input = array_merge($this->input, $input);
         } else {
             $this->input = $input;
         }
-
-        return $this;
     }
 
-    /**
-     * Set or return messages object for input.
-     *
-     * @param MessagesInterface|null $messages
-     *
-     * @return Input|MessagesHelper
-     */
-    public function messages(MessagesInterface $messages = null)
+    public function setMessages(MessagesInterface $messages) : void
     {
-        if (is_null($messages)) {
-            return $this->messages;
-        } else {
-            $this->messages = new MessagesHelper($messages, array(
-                "prefix" => "@Input"
-            ));
+        $this->messages = new MessagesHelper($messages, array(
+            "prefix" => "@Input"
+        ));
+    }
 
-            return $this;
-        }
+    public function getMessages() : ?MessagesInterface
+    {
+        return $this->messages;
     }
 
     public function exists(string $name)
@@ -155,19 +145,18 @@ class Input
      * @param array $rules
      * @return $this|array
      */
-    public function rules(array $rules = null, int $merge = 1)
+    public function setRules(array $rules = null, int $merge = 1) : void
     {
-        if (is_null($rules)) {
-            return $this->rules;
-        }else{
-            if ($merge) {
-                $this->rules = array_merge($this->rules, $rules);
-            } else {
-                $this->rules = $rules;
-            }
-
-            return $this;
+        if ($merge) {
+            $this->rules = array_merge($this->rules, $rules);
+        } else {
+            $this->rules = $rules;
         }
+    }
+
+    public function getRules()
+    {
+        return $this->rules;
     }
 
     /**
@@ -175,27 +164,14 @@ class Input
      *
      * @return string|null
      */
-    public function errors() : ?array
+    public function getErrors() : ?array
     {
         return empty($this->errors) ? null : $this->errors;
     }
 
-    /**
-     * Set rule for one field. Or return rule for field.
-     *
-     * @param string $field
-     * @param array $rule
-     * @return array|null|\Tiie\Data\Input
-     */
-    public function rule(string $field, array $rule = null)
+    public function setRule(string $field, array $rule = null) : void
     {
-        if (is_null($rule)) {
-            return isset($this->rules[$field]) ? $this->rules[$field] : null;
-        }else{
-            $this->rules[$field] = $rule;
-
-            return $this;
-        }
+        $this->rules[$field] = $rule;
     }
 
     /**
@@ -217,7 +193,7 @@ class Input
         return $default;
     }
 
-    public function data(int $prepared = 0)
+    public function getData(int $prepared = 0)
     {
         if ($prepared) {
             return $this->prepared;
@@ -357,7 +333,7 @@ class Input
                             break;
                         }
                     }elseif(is_string($validator)){
-                        if(!is_null($error = $this->keyValidate($validator, $prepared[$field]))){
+                        if(!is_null($error = $this->validateKey($validator, $prepared[$field]))){
                             $errors[$field][] = $error;
 
                             break;
@@ -440,7 +416,7 @@ class Input
                             break;
                         }
                     }elseif(is_string($validator)){
-                        if(!is_null($error = $this->keyValidate($validator, $data[$field]))){
+                        if(!is_null($error = $this->validateKey($validator, $data[$field]))){
                             $errors[$field][] = $error;
 
                             break;
@@ -529,7 +505,7 @@ class Input
                                 $errors[$field][$key][] = $error;
                             }
                         }elseif(is_string($validator)){
-                            if(!is_null($error = $this->keyValidate($validator, $prepared[$field][$key]))){
+                            if(!is_null($error = $this->validateKey($validator, $prepared[$field][$key]))){
                                 $errors[$field][$key][] = $error;
                             }
                         }
@@ -548,7 +524,7 @@ class Input
         );
     }
 
-    private function keyValidate($key, $validaten)
+    private function validateKey($key, $validaten)
     {
         return null;
     }

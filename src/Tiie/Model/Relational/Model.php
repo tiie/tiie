@@ -43,7 +43,7 @@ abstract class Model extends DataModel implements SelectableInterface
 
     public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : array
     {
-        return $this->select($params, $fields, $sort, $size, $page)->fetch()->data();
+        return $this->select($params, $fields, $sort, $size, $page)->fetch()->getData();
     }
 
     public function select(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : Select
@@ -52,7 +52,7 @@ abstract class Model extends DataModel implements SelectableInterface
             ->from($this->table, "base")
             ->columns($this->fields)
             ->sort($sort)
-            ->page($page, $size)
+            ->setPage($page, $size)
         ;
 
         return $select;
@@ -77,10 +77,10 @@ abstract class Model extends DataModel implements SelectableInterface
     {
         $this->validateThrow($command, $params);
 
-        $record = $command->record();
+        $record = $command->getRecord();
 
         // (new Update($this->db))
-        //     ->table("offers")
+        //     ->setTable("offers")
         //     ->set("title", $record->get("title"))
         //     ->set("description", $record->get("description"))
         //     ->set("reserved", empty($record->get("reserved")) ? 0 : 1)
@@ -92,7 +92,7 @@ abstract class Model extends DataModel implements SelectableInterface
         //     ->set("activeToDate", $record->get("activeToDate"))
 
         //     ->set("modifiedOn", date("Y-m-d H:i:s"))
-        //     ->equal("id", $record->id())
+        //     ->equal("id", $record->getId())
         //     ->execute()
         // ;
 
@@ -103,7 +103,7 @@ abstract class Model extends DataModel implements SelectableInterface
     {
         $this->validateThrow($command, $params);
 
-        $record = $command->record();
+        $record = $command->getRecord();
 
         $delete = (new Delete($this->db))
             ->from($this->table)
@@ -122,7 +122,7 @@ abstract class Model extends DataModel implements SelectableInterface
     {
         $this->validateThrow($command, $params);
 
-        $record = $command->record();
+        $record = $command->getRecord();
 
         $insert = (new Insert($this->db));
 
@@ -186,18 +186,18 @@ abstract class Model extends DataModel implements SelectableInterface
                 // Przenosze pliki do katalogu z oferta
                 $file = new File($photo["id"], $this->db);
 
-                $file->move("{$dir}/{$offerId}", "{$offer["nice"]}-{$i}.{$file->extension()}");
+                $file->move("{$dir}/{$offerId}", "{$offer["nice"]}-{$i}.{$file->getExtension()}");
 
                 // Łącze pliki z ofertą
                 $insert = new Insert($this->db);
-                $insert
-                    ->table("offersFiles")
-                    ->add(array(
-                        "offerId" => $offerId,
-                        "fileId" => $photo["id"],
-                    ))
-                    ->execute()
-                ;
+
+                $insert->setTable("offersFiles");
+                $insert->add(array(
+                    "offerId" => $offerId,
+                    "fileId" => $photo["id"],
+                ));
+
+                $insert->execute();
             }
         }
 
@@ -224,8 +224,15 @@ abstract class Model extends DataModel implements SelectableInterface
 
     private function validateCreateRecord(CommandCreateRecord $command, array $params = array()) : ?array
     {
+        $validatorNotEmpty = $this->validators->get("NotEmpty");
+        $validatorNotEmpty->setMessage("isEmpty", "Prosimy wypełnić okreś przez który ogłoszenie będzie widoczne.");
+
+        $validatorMaxNumberOfElements = $this->validators->get("MaxNumberOfElements");
+        $validatorMaxNumberOfElements->max(10);
+        $validatorMaxNumberOfElements->setMessage(ValidatorInterface::ERROR_CODE_EXCEEDS_MAXIMUM_NUMBER_OF_ELEMENTS, "Maksymalna dopuszczalna ilość zdjęć to 10.");
+
         // First step of validation.
-        $input = $this->inputs->create($command->record()->data(), array(
+        $input = $this->inputs->create($command->getRecord()->getData(), array(
             "categoryId" => array(
                 '@filters' => array(
                     "int",
@@ -238,16 +245,13 @@ abstract class Model extends DataModel implements SelectableInterface
             "activeByPeriod" => array(
                 '@validators' => array(
                     "exists",
-                    $this->validators->get("NotEmpty")
-                        ->message("isEmpty", "Prosimy wypełnić okreś przez który ogłoszenie będzie widoczne."),
+                    $validatorNotEmpty,
                 ),
             ),
             "photos" => array(
                 "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
                 "@validators" => array(
-                    $this->validators->get("MaxNumberOfElements")
-                        ->max(10)
-                        ->message(ValidatorInterface::ERROR_CODE_EXCEEDS_MAXIMUM_NUMBER_OF_ELEMENTS, "Maksymalna dopuszczalna ilość zdjęć to 10."),
+                    $validatorMaxNumberOfElements
                 ),
                 "id" => array(),
             ),
@@ -262,14 +266,14 @@ abstract class Model extends DataModel implements SelectableInterface
         ));
 
         if (!$input->prepare()) {
-            return $input->errors();
+            return $input->getErrors();
         }
 
         // Rest of data.
-        $input->rules($this->form->rules($input->get("categoryId")));
+        $input->setRules($this->form->getRules($input->get("categoryId")));
 
         if (!$input->prepare()) {
-            return $input->errors();
+            return $input->getErrors();
         }
 
         $this->input["create"] = $input;

@@ -67,18 +67,18 @@ class ConfigTest extends TestCase
     {
         $config = new Config(__DIR__);
 
-        $this->assertEquals($this->variable('variable-115'), $config->toArray());
+        $this->assertEquals($this->getVariable('variable-115'), $config->toArray());
 
         $config->merge("app-config.yaml");
 
-        $this->assertEquals($this->variable('variable-116'), $config->toArray());
+        $this->assertEquals($this->getVariable('variable-116'), $config->toArray());
 
         $config->merge("app-config.json");
 
-        $this->assertEquals($this->variable('variable-117'), $config->toArray());
+        $this->assertEquals($this->getVariable('variable-117'), $config->toArray());
 
         $config->merge("app-config.php");
 
-        $this->assertEquals($this->variable('variable-118'), $config->toArray());
+        $this->assertEquals($this->getVariable('variable-118'), $config->toArray());
     }
 }

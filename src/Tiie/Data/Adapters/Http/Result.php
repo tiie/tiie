@@ -1,6 +1,9 @@
 <?php
 namespace Tiie\Data\Adapters\Http;
 
+use Tiie\Http\Headers\Headers;
+use Tiie\Http\Headers\Header;
+
 class Result extends \Tiie\Data\Adapters\Result
 {
     /**
@@ -8,16 +11,16 @@ class Result extends \Tiie\Data\Adapters\Result
      *
      * @return string|null
      */
-    public function code() : ?string
+    public function getCode() : ?string
     {
-        $variables = $this->variables();
+        $variables = $this->getVariables();
 
         return $variables['code'] ?: null;
     }
 
-    public function header(string $name) : ?\Tiie\Http\Headers\Header
+    public function getHeader(string $name) : ?Header
     {
-        $variables = $this->variables();
+        $variables = $this->getVariables();
 
         if (array_key_exists('headers', $variables)) {
             return null;
@@ -26,9 +29,9 @@ class Result extends \Tiie\Data\Adapters\Result
         return $variables['headers']->get($name);
     }
 
-    public function headers() : ?\Tiie\Http\Headers\Headers
+    public function getHeaders() : ?Headers
     {
-        $variables = $this->variables();
+        $variables = $this->getVariables();
 
         if (array_key_exists('headers', $variables)) {
             return $variables['headers'];

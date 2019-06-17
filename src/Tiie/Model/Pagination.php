@@ -25,41 +25,31 @@ class Pagination
         }
     }
 
-    public function link(string $link) : Pagination
+    public function setLink(string $link) : void
     {
         $this->link = $link;
-
-        return $this;
     }
 
-    public function page(string $page) : Pagination
+    public function setPage(string $page) : void
     {
         $this->page = $page;
-
-        return $this;
     }
 
-    public function size(string $size) : Pagination
+    public function setSize(string $size) : void
     {
         $this->size = $size;
-
-        return $this;
     }
 
-    public function params(array $params = array(), int $merge = 1) : Pagination
+    public function setParams(array $params, int $merge = 1) : void
     {
-        $this->params = $params;
-
         if ($merge) {
             $this->params = array_merge($this->params, $params);
         } else {
             $this->params = $params;
         }
-
-        return $this;
     }
 
-    public function search(array $search = array(), int $merge = 1) : Pagination
+    public function setSearch(array $search = array(), int $merge = 1) : void
     {
         $this->search = $search;
 
@@ -68,8 +58,6 @@ class Pagination
         } else {
             $this->search = $search;
         }
-
-        return $this;
     }
 
     public function generate()

@@ -8,6 +8,6 @@ return array(
         return new \Tests\Components\Users($components->get('@email'));
     },
     'after' => function($component, \Tiie\Components\Scope $components, array $params = array()) {
-        $component->categories($components->get('model.users.categories'));
+        $component->setCategories($components->get('model.users.categories'));
     },
 );

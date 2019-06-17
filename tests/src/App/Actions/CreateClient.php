@@ -3,7 +3,7 @@ namespace App\Actions\Clients;
 
 class CreateClient
 {
-    public static function metadata()
+    public static function getMetadata()
     {
         return array(
             'pipe' => array(

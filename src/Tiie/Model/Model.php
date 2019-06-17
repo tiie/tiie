@@ -36,12 +36,12 @@ abstract class Model implements ModelInterface
         return new Records($this, $records, $this->id);
     }
 
-    public function pagination(array $params = array()) : Pagination
+    public function getPagination(array $params = array()) : Pagination
     {
         return new Pagination($this, $params);
     }
 
-    public function counter(array $params = array(), int $size = null, int $page = 0) : array
+    public function getCounter(array $params = array(), int $size = null, int $page = 0) : array
     {
         $counter = array();
 
@@ -58,12 +58,12 @@ abstract class Model implements ModelInterface
         return $counter;
     }
 
-    public function projection() : Projection
+    public function getProjection() : Projection
     {
         return new Projection($this);
     }
 
-    public function generator(array $params = array()) : iterable
+    public function getGenerator(array $params = array()) : iterable
     {
         $count = $this->count($params);
         $limit = 5;
@@ -113,7 +113,7 @@ abstract class Model implements ModelInterface
     /**
      * Return list of records from model.
      */
-    public function records(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : Records
+    public function getRecords(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : Records
     {
         $items = array();
 
@@ -132,7 +132,7 @@ abstract class Model implements ModelInterface
     /**
      * Return record with given id.
      */
-    public function record(string $id, array $params = array(), array $fields = array()) : ?RecordInterface
+    public function getRecord(string $id, array $params = array(), array $fields = array()) : ?RecordInterface
     {
         $row = $this->fetchById($id, $params, $fields);
 
@@ -176,7 +176,7 @@ abstract class Model implements ModelInterface
         }
     }
 
-    public function creator() : CreatorInterface
+    public function getCreator() : CreatorInterface
     {
         return new Creator($this);
     }

@@ -1,7 +1,7 @@
 <?php
 namespace Tiie\Messages;
 
-class Helper
+class Helper implements MessagesInterface
 {
     /**
      * @var MessagesInterface
@@ -36,25 +36,21 @@ class Helper
         return $this;
     }
 
-    public function params(string $code, array $params = array())
+    public function setParams(string $code, array $params = array()) : void
     {
         $this->local[$code] = array(
             "params" => $params,
         );
-
-        return $this;
     }
 
-    public function message(string $code, string $message)
+    public function setMessage(string $code, string $message) : void
     {
         $this->local[$code] = array(
             "message" => $message,
         );
-
-        return $this;
     }
 
-    public function get(string $code, array $params = array())
+    public function get(string $code, array $params = array()) : ?string
     {
         if (!empty($this->local[$code]['params'])) {
             $params = array_merge($this->local[$code]['params'], $params);

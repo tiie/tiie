@@ -39,17 +39,17 @@ class Router
         return is_null($this->group) ? null : new Group($this->group);
     }
 
-    public function route()
+    public function getRoute() : ?Route
     {
         return is_null($this->route) ? null : new Route($this->route);
     }
 
-    public function params()
+    public function getParams()
     {
         return $this->params;
     }
 
-    public function param(string $name)
+    public function getParam(string $name)
     {
         return array_key_exists($name, $this->params) ? $this->params[$name] : null;
     }
@@ -79,6 +79,10 @@ class Router
             throw new ActionNotFound("Action not found for {$this->request->__toString()}");
         }
 
+        if (!class_exists("\\{$this->route["action"]["class"]}")) {
+            throw new ActionNotFound("Action not found for {$this->request->__toString()}");
+        }
+
         if (empty($this->route["action"]["method"]) || !in_array($this->route['action']['method'], get_class_methods($this->route['action']['class']))) {
             throw new MethodNotFound("Method not found for {$this->request->__toString()}");
         }
@@ -86,7 +90,7 @@ class Router
         $class = $this->route['action']['class'];
         $method = $this->route['action']['method'];
 
-        $this->request->params($this->params);
+        $this->request->setParams($this->params);
 
         return (new $class())->$method($this->request);
     }
@@ -128,7 +132,7 @@ class Router
             $group["params"] = array();
 
             if (!empty($group["domain"])) {
-                $m = $this->matchString($request->domain(), $group['domain']);
+                $m = $this->matchString($request->getDomain(), $group['domain']);
 
                 if (is_null($m)) {
                     continue;
@@ -144,7 +148,7 @@ class Router
 
                 break;
             } else {
-                $m = $this->matchString($request->urn(), "{$group['prefix']}", array("begin" => 1));
+                $m = $this->matchString($request->getUrn(), "{$group['prefix']}", array("begin" => 1));
 
                 if (is_null($m)) {
                     continue;
@@ -170,7 +174,7 @@ class Router
 
             // method
             if (!empty($route['method'])) {
-                if ($route['method'] != strtolower($request->method())) {
+                if ($route['method'] != strtolower($request->getMethod())) {
                     continue;
                 }
             }
@@ -182,7 +186,7 @@ class Router
                 $urn = "{$match["group"]["prefix"]}{$urn}";
             }
 
-            $m = $this->matchString($request->urn(), $urn);
+            $m = $this->matchString($request->getUrn(), $urn);
 
             if (empty($m)) {
                 continue;

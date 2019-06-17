@@ -15,7 +15,7 @@ class Tinyint extends Number
         $this->unsigned = $unsigned;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validators.Tinyint.Description)';
     }

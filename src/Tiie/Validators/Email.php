@@ -14,7 +14,7 @@ class Email extends Validator
         }else{
             return array(
                 'code' => ValidatorInterface::ERROR_CODE_INVALID,
-                'error' => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                'error' => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
     }

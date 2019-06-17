@@ -71,14 +71,14 @@ class Twig implements \Tiie\Response\Engines\EngineInterface
             // optimizations integer
         ));
 
-        $layout = $response->layout();
+        $layout = $response->getLayout();
 
         if (is_null($layout)) {
             $layout = $this->params['layout'];
         }
 
-        if (!is_null($response->template())) {
-            $rendered = $twig->render($response->template(), $response->getData(Response::VALUE_SCOPE_CONTENT));
+        if (!is_null($response->getTemplate())) {
+            $rendered = $twig->render($response->getTemplate(), $response->getData(Response::VALUE_SCOPE_CONTENT));
 
             $dataLayout = $response->getData(Response::VALUE_SCOPE_LAYOUT);
 
@@ -96,15 +96,15 @@ class Twig implements \Tiie\Response\Engines\EngineInterface
             $body = $twig->render($layout, $dataLayout);
 
             return array(
-                'code' => $response->code(),
+                'code' => $response->getCode(),
                 'body' => $body,
-                'headers' => $response->headers(),
+                'headers' => $response->getHeaders(),
             );
         }else{
             return array(
-                'code' => $response->code(),
+                'code' => $response->getCode(),
                 'body' => "",
-                'headers' => $response->headers(),
+                'headers' => $response->getHeaders(),
             );
         }
     }

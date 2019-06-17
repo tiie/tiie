@@ -14,7 +14,7 @@ interface ModelInterface
     const COMMAND_CREATE = "create";
     const COMMAND_REMOVE = "remove";
 
-    public function generator(array $params = array()) : iterable;
+    public function getGenerator(array $params = array()) : iterable;
 
     /**
      * Fetch data from source.
@@ -27,8 +27,8 @@ interface ModelInterface
      */
     public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : array;
 
-    public function projection() : Projection;
-    public function counter(array $params = array(), int $size = null, int $page = 0) : array;
+    public function getProjection() : Projection;
+    public function getCounter(array $params = array(), int $size = null, int $page = 0) : array;
 
     /**
      * Find and return records.
@@ -87,7 +87,7 @@ interface ModelInterface
      */
     public function create(RecordInterface $record, array $params = array()) : ?string;
 
-    public function creator() : CreatorInterface;
+    public function getCreator() : CreatorInterface;
 
     /**
      * Remove record from source.
@@ -104,10 +104,10 @@ interface ModelInterface
     /**
      * Return list of records from model.
      */
-    public function records(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : Records;
+    public function getRecords(array $ids, array $params = array(), array $fields = array(), array $sort = array()) : Records;
 
     /**
      * Return record with given id.
      */
-    public function record(string $id, array $params = array(), array $fields = array()) : ?RecordInterface;
+    public function getRecord(string $id, array $params = array(), array $fields = array()) : ?RecordInterface;
 }

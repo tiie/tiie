@@ -6,7 +6,7 @@ use Tiie\Validators\Validator;
 
 class NotNull extends Validator
 {
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.NotNull.Description)';
     }

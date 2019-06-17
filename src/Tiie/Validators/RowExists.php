@@ -19,7 +19,7 @@ class RowExists extends Validator
         $this->fieldId = $fieldId;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.RowExists.Description)';
     }

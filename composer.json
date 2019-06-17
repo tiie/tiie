@@ -23,5 +23,8 @@
         "tedivm/stash": "dev-master", "symfony/console": "^4.1@dev",
         "twig/twig": "^2.0",
         "symfony/yaml": "^4.3@dev"
+    },
+    "suggest": {
+        "thadafinser/user-agent-parser": "Used to parse UserAgent header."
     }
 }

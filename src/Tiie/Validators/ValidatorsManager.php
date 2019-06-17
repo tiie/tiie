@@ -41,7 +41,7 @@ class ValidatorsManager
         $validator = new $found();
 
         if (!is_null($this->messages)) {
-            $validator->messages($this->messages);
+            $validator->setMessages($this->messages);
         }
 
         return $validator;

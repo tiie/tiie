@@ -27,7 +27,7 @@ class MinNumberOfElements extends Validator
         if (!is_array($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
@@ -36,14 +36,14 @@ class MinNumberOfElements extends Validator
 
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
         if ($value <  $this->min) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_NUMBER_OF_ELEMENTS,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_NUMBER_OF_ELEMENTS, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_NUMBER_OF_ELEMENTS, array("value" => (string) $value)),
             );
         }
 

@@ -12,51 +12,46 @@ class SelectTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $row = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->column('firstName')
-            ->column('lastName')
-            ->column('email')
-            ->column('genderId')
-            ->column('birthDate')
-            ->column('ip')
-            ->column('countryId')
-            ->column('cityId')
-            ->column('phone')
-            ->equal('id', 1)
-            ->fetch()
-            ->format('row')
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
 
-        $this->assertEquals($this->variable('variable-16'), $row);
+        $select->from('users');
+        $select->column('id');
+        $select->column('firstName');
+        $select->column('lastName');
+        $select->column('email');
+        $select->column('genderId');
+        $select->column('birthDate');
+        $select->column('ip');
+        $select->column('countryId');
+        $select->column('cityId');
+        $select->column('phone');
+
+        $select->equal('id', 1);
+
+        $row = $select->fetch()->format('row');
+
+        $this->assertEquals($this->getVariable('variable-16'), $row);
     }
 
     public function testSort()
     {
         $this->initDatabase('bookshop');
 
-        $select = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->columns(array(
-                'id',
-                'firstName',
-                'lastName',
-            ))
-        ;
-
-        // Check result
-        $select->limit(10);
-
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->setLimit(10);
         $select->sort("firstName asc");
+        $select->columns(array(
+            'id',
+            'firstName',
+            'lastName',
+        ));
 
-        // $this->createVariable('variable-128', $select->fetch()->data());
-        $this->assertEquals($this->variable('variable-128'), $select->fetch()->data());
+        $this->assertEquals($this->getVariable('variable-128'), $select->fetch()->getData());
 
         $select->sort("firstName desc");
 
-        // $this->createVariable('variable-129', $select->fetch()->data());
-        $this->assertEquals($this->variable('variable-129'), $select->fetch()->data());
+        $this->assertEquals($this->getVariable('variable-129'), $select->fetch()->getData());
     }
 
     // public function test__clone()
@@ -389,237 +384,251 @@ class SelectTest extends TestCase
                 continue;
             }
 
-            // simple filter
-            $base = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->$method($filterColumn, $filter)
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            // Simple filter
+            $select = new Select($this->getAdapter('bookshop'));
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumnDashed}-{$value['dashed']}" => $filter,
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+            $select->setLimit(5);
+            $select->$method($filterColumn, $filter);
+
+            $base = $select->fetch()->getData();
+
+            // Rows
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->setParams(array(
+                "{$filterColumnDashed}-{$value['dashed']}" => $filter,
+            ));
+
+            $select->order('id asc');
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
 
             $this->assertEquals($base, $rows);
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumn}{$value['camel']}" => $filter,
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+            $select->setParams(array(
+                "{$filterColumn}{$value['camel']}" => $filter,
+            ));
+
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
 
             $this->assertEquals($base, $rows);
 
             // with defined fields
-            $base = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->$method($filterColumn, $filter)
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            // -----------------------------------
+            $select = new Select($this->getAdapter('bookshop'));
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumnDashed}-{$value['dashed']}" => $filter,
-                    "id-equal" => 20,
-                ), array(
-                    $filterColumn,
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
 
-            $this->assertEquals($base, $rows);
+            $select->order('id asc');
+            $select->$method($filterColumn, $filter);
+            $select->setLimit(5);
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumn}{$value['camel']}" => $filter,
-                    "idEqual" => 20,
-                ), array(
-                    $filterColumn,
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $base = $select->fetch()->getData();
+
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+
+            $select->setParams(array(
+                "{$filterColumnDashed}-{$value['dashed']}" => $filter,
+                "id-equal" => 20,
+            ), array(
+                $filterColumn,
+            ));
+
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
 
             $this->assertEquals($base, $rows);
 
-            // with defined operations
-            $base = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->$method($filterColumn, $filter)
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumnDashed}-{$value['dashed']}" => $filter,
-                    "{$filterColumnDashed}-{$value['dashedNegated']}" => $filter,
-                    "id-equal" => 20,
-                ), array(
-                    $filterColumn => array(
-                        'operations' => array($value['operation']),
-                    )
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select->order('id asc');
+            $select->setParams(array(
+                "{$filterColumn}{$value['camel']}" => $filter,
+                "idEqual" => 20,
+            ), array(
+                $filterColumn,
+            ));
 
-            $this->assertEquals($base, $rows);
+            $select->setLimit(5);
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumn}{$value['camel']}" => $filter,
-                    "{$filterColumn}{$value['camelNegated']}" => $filter,
-                    "idEqual" => 20,
-                ), array(
-                    $filterColumn => array(
-                        'operations' => array($value['operation']),
-                    )
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select->fetch()->getData();
 
             $this->assertEquals($base, $rows);
 
             // with defined operations
-            $base = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->$methodNegated($filterColumn, $filter)
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            // -----------------------------------
+            $select = new Select($this->getAdapter('bookshop'));
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumnDashed}-{$value['dashed']}" => $filter,
-                    "{$filterColumnDashed}-{$value['dashedNegated']}" => $filter,
-                    "id-equal" => 20,
-                ), array(
-                    $filterColumn => array(
-                        'excluded' => array($value['operation']),
-                    )
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+            $select->order('id asc');
+            $select->$method($filterColumn, $filter);
+            $select->setLimit(5);
+
+            $base = $select->fetch()->getData();
+
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+            $select->setParams(array(
+                "{$filterColumnDashed}-{$value['dashed']}" => $filter,
+                "{$filterColumnDashed}-{$value['dashedNegated']}" => $filter,
+                "id-equal" => 20,
+            ), array(
+                $filterColumn => array(
+                    'operations' => array($value['operation']),
+                )
+            ));
+
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
 
             $this->assertEquals($base, $rows);
 
-            $rows = (new Select($this->adapter('bookshop')))
-                ->from('users')
-                ->columns(array(
-                    'id',
-                    'countryId',
-                    'firstName',
-                ))
-                ->order('id asc')
-                ->params(array(
-                    "{$filterColumn}{$value['camel']}" => $filter,
-                    "{$filterColumn}{$value['camelNegated']}" => $filter,
-                    "idEqual" => 20,
-                ), array(
-                    $filterColumn => array(
-                        'excluded' => array($value['operation']),
-                    )
-                ))
-                ->limit(5)
-                ->fetch()
-                ->data()
-            ;
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+            $select->setParams(array(
+                "{$filterColumn}{$value['camel']}" => $filter,
+                "{$filterColumn}{$value['camelNegated']}" => $filter,
+                "idEqual" => 20,
+            ), array(
+                $filterColumn => array(
+                    'operations' => array($value['operation']),
+                )
+            ));
+
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
+
+            $this->assertEquals($base, $rows);
+
+            // with defined operations
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+            $select->order('id asc');
+            $select->$methodNegated($filterColumn, $filter);
+            $select->setLimit(5);
+
+            $base = $select->fetch()->getData();
+
+            $select = new Select($this->getAdapter('bookshop'));
+
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+            $select->setParams(array(
+                "{$filterColumnDashed}-{$value['dashed']}" => $filter,
+                "{$filterColumnDashed}-{$value['dashedNegated']}" => $filter,
+                "id-equal" => 20,
+            ), array(
+                $filterColumn => array(
+                    'excluded' => array($value['operation']),
+                )
+            ));
+
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
+
+            $this->assertEquals($base, $rows);
+
+            $select = new Select($this->getAdapter('bookshop'));
+            $select->from('users');
+            $select->columns(array(
+                'id',
+                'countryId',
+                'firstName',
+            ));
+
+            $select->order('id asc');
+            $select->setParams(array(
+                "{$filterColumn}{$value['camel']}" => $filter,
+                "{$filterColumn}{$value['camelNegated']}" => $filter,
+                "idEqual" => 20,
+            ), array(
+                $filterColumn => array(
+                    'excluded' => array($value['operation']),
+                )
+            ));
+
+            $select->setLimit(5);
+
+            $rows = $select->fetch()->getData();
 
             $this->assertEquals($base, $rows);
         }
@@ -630,28 +639,26 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-17'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-17'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->limit(5, 5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setLimit(5, 5);
 
-        $this->assertEquals($this->variable('variable-18'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-18'), $rows);
     }
 
     public function testPage()
@@ -659,94 +666,87 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page(0, 2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage(0, 2);
 
-        $this->assertEquals($this->variable('variable-19'), $rows);
+        $rows = $select->fetch()->getData();
 
-        // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page(1, 2)
-            ->fetch()
-            ->data()
-        ;
-
-        $this->assertEquals($this->variable('variable-20'), $rows);
+        $this->assertEquals($this->getVariable('variable-19'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page(array(
-                'page' => 0,
-                'pageSize' => 2,
-            ))
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage(1, 2);
 
-        $this->assertEquals($this->variable('variable-19'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-20'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page(array(
-                'page' => 1,
-                'pageSize' => 2,
-            ))
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage(array(
+            'page' => 0,
+            'pageSize' => 2,
+        ));
 
-        $this->assertEquals($this->variable('variable-20'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-19'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page('1,2')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage(array(
+            'page' => 1,
+            'pageSize' => 2,
+        ));
 
-        $this->assertEquals($this->variable('variable-20'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-20'), $rows);
+
+        // ---------------
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage('1,2');
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-20'), $rows);
 
         // ---------------
         $this->expectException(\InvalidArgumentException::class);
 
-        (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page('1,2,3')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage('1,2,3');
+
+        $select->fetch()->getData();
 
         // ---------------
         $this->expectException(\InvalidArgumentException::class);
 
-        (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->page(-1, 0)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setPage(-1, 0);
+
+        $select->fetch()->getData();
     }
 
     // public function testGroup($column)
@@ -764,64 +764,59 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setLimit(10);
 
-        $this->assertEquals($this->variable('variable-21'), $rows);
+        $rows = $select->fetch()->getData();
 
-        // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id desc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
-
-        $this->assertEquals($this->variable('variable-22'), $rows);
+        $this->assertEquals($this->getVariable('variable-21'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id asc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id desc');
+        $select->setLimit(10);
 
-        $this->assertEquals($this->variable('variable-21'), $rows);
+        $rows = $select->fetch()->getData();
 
-        // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id desc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
-
-        $this->assertEquals($this->variable('variable-22'), $rows);
+        $this->assertEquals($this->getVariable('variable-22'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order('id desc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id asc');
+        $select->setLimit(10);
 
-        $this->assertEquals($this->variable('variable-22'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-21'), $rows);
+
+        // ---------------
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id desc');
+        $select->setLimit(10);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-22'), $rows);
+
+        // ---------------
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order('id desc');
+        $select->setLimit(10);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-22'), $rows);
 
     }
 
@@ -829,14 +824,13 @@ class SelectTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->order(new Expr("RAND()"))
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->order(new Expr("RAND()"));
+        $select->setLimit(2);
+
+        $rows = $select->fetch()->getData();
 
         $this->assertEquals(2, count($rows));
     }
@@ -845,56 +839,52 @@ class SelectTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('firstName')
-            ->column('lastName')
-            ->limit(2)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('firstName');
+        $select->column('lastName');
+        $select->setLimit(2);
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-23'), $rows);
+        $rows = $select->fetch()->getData();
 
-        // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->limit(2)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
-
-        $this->assertEquals($this->variable('variable-24'), $rows);
+        $this->assertEquals($this->getVariable('variable-23'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName')
-            ->limit(2)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->setLimit(2);
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-25'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-24'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('firstName', 'first')
-            ->column('lastName', 'last')
-            ->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName')
-            ->limit(2)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName');
+        $select->setLimit(2);
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-26'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-25'), $rows);
+
+        // ---------------
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('firstName', 'first');
+        $select->column('lastName', 'last');
+        $select->column(new Expr("concat(id, '-', firstName, '-', lastName)"), 'fullName');
+        $select->setLimit(2);
+        $select->order('id asc');
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-26'), $rows);
     }
 
     public function testColumns()
@@ -902,31 +892,31 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->columns(array(
-                'id',
-                'firstName',
-                'fullName' => new Expr("concat(id, '-', firstName, '-', lastName)")
-            ))
-            ->limit(2)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->columns(array(
+            'id',
+            'firstName',
+            'fullName' => new Expr("concat(id, '-', firstName, '-', lastName)")
+        ));
 
-        $this->assertEquals($this->variable('variable-27'), $rows);
+        $select->setLimit(2);
+        $select->order('id asc');
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-27'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->columns(array(
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->columns(array(
                 'id',
                 'firstName',
-            ))
+            ));
         ;
 
-        $this->assertEquals($this->variable('variable-28'), $rows->columns());
+        $this->assertEquals($this->getVariable('variable-28'), $select->columns());
     }
 
     public function testFrom()
@@ -934,49 +924,45 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->limit(2)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->setLimit(2);
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-29'), $rows);
+        $rows = $select->fetch()->getData();
 
-        // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users')
-            ->column('id')
-            ->column('firstName')
-            ->column('lastName')
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
-
-        $this->assertEquals($this->variable('variable-31'), $rows);
+        $this->assertEquals($this->getVariable('variable-29'), $rows);
 
         // ---------------
-        $sub = (new Select())
-            ->from('users', 'sub')
-            ->column('id')
-            ->column('email')
-            ->limit(10)
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users');
+        $select->column('id');
+        $select->column('firstName');
+        $select->column('lastName');
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from($sub, 'base')
-            ->order('base.id asc')
-            ->fetch()
-            ->data()
-        ;
+        $rows = $select->fetch()->getData();
 
-        $this->assertEquals($this->variable('variable-30'), $rows);
+        $this->assertEquals($this->getVariable('variable-31'), $rows);
+
+        // ---------------
+        $sub = new Select();
+        $sub->from('users', 'sub');
+        $sub->column('id');
+        $sub->column('email');
+        $sub->setLimit(10);
+
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from($sub, 'base');
+        $select->order('base.id asc');
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-30'), $rows);
     }
 
     public function testIn()
@@ -984,32 +970,30 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->in('u.id', array(11, 12, 13, 14, 15))
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->in('u.id', array(11, 12, 13, 14, 15));
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-32'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-32'), $rows);
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->in('u.id', array())
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->in('u.id', array());
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-33'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-33'), $rows);
     }
 
     public function testInSubSelect()
@@ -1017,25 +1001,22 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $sub = (new Select())
-            ->from('users')
-            ->column('id')
-            ->in('u.id', array(11, 12, 13, 14, 15, 'test'))
-        ;
+        $sub = new Select();
+        $sub->from('users');
+        $sub->column('id');
+        $sub->in('u.id', array(11, 12, 13, 14, 15, 'test'));
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->in('u.id', $sub)
-            ->order('id asc')
-            // ->build()
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->in('u.id', $sub);
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-34'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-34'), $rows);
     }
 
     public function testNotIn()
@@ -1043,19 +1024,18 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->notIn('u.id', array(1, 2, 3, 4, 5))
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->notIn('u.id', array(1, 2, 3, 4, 5));
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-35'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-35'), $rows);
     }
 
     public function testNotInSubSelect()
@@ -1063,25 +1043,23 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $sub = (new Select())
-            ->from('users')
-            ->column('id')
-            ->in('u.id', array(1, 2, 3, 4, 5, 'test'))
-        ;
+        $sub = new Select();
+        $sub->from('users');
+        $sub->column('id');
+        $sub->in('u.id', array(1, 2, 3, 4, 5, 'test'));
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->notIn('u.id', $sub)
-            ->limit(5)
-            ->order('id asc')
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->notIn('u.id', $sub);
+        $select->setLimit(5);
+        $select->order('id asc');
 
-        $this->assertEquals($this->variable('variable-36'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-36'), $rows);
     }
 
     public function testIsNull()
@@ -1089,20 +1067,19 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->column('u.countryId')
-            ->isNull('u.countryId')
-            ->order('id asc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->column('u.countryId');
+        $select->isNull('u.countryId');
+        $select->order('id asc');
+        $select->setLimit(10);
 
-        $this->assertEquals($this->variable('variable-37'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-37'), $rows);
     }
 
     public function testIsNotNull()
@@ -1110,18 +1087,17 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.countryId')
-            ->isNotNull('u.countryId')
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.countryId');
+        $select->isNotNull('u.countryId');
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-38'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-38'), $rows);
     }
 
     public function testStartWith()
@@ -1129,7 +1105,7 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        // $rows = (new Select($this->adapter('bookshop')))
+        // $rows = new Select($this->getAdapter('bookshop'));
         //     ->from('users', 'u')
         //     ->column('u.id')
         //     ->column('u.countryId')
@@ -1138,29 +1114,27 @@ class SelectTest extends TestCase
         //     ->isNotNull('u.countryId')
         //     ->startWith('u.firstName', 'Ali')
         //     ->order('id asc')
-        //     ->limit(2)
+        //     ->setLimit(2)
         //     ->fetch()
-        //     ->data()
+        //     ->getData()
         // ;
 
-        // $this->assertEquals($this->variable('variable-39'), $rows);
+        // $this->assertEquals($this->getVariable('variable-39'), $rows);
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.countryId')
-            ->column('u.firstName')
-            ->column('u.lastName')
-            ->isNotNull('u.countryId')
-            ->startWith('u.firstName', "Aliz")
-            ->order('id asc')
-            ->limit(2)
-            // ->build()
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.countryId');
+        $select->column('u.firstName');
+        $select->column('u.lastName');
+        $select->isNotNull('u.countryId');
+        $select->startWith('u.firstName', "Aliz");
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $this->assertEquals($this->variable('variable-40'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-40'), $rows);
     }
 
     public function testEndWith()
@@ -1168,31 +1142,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->endWith('u.firstName', 'trée')
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->endWith('u.firstName', 'trée');
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $this->assertEquals($this->variable('variable-41'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->endWith('u.firstName', "trée")
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-41'), $rows);
 
-        $this->assertEquals($this->variable('variable-42'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->endWith('u.firstName', "trée");
+        $select->order('id asc');
+        $select->setLimit(2);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-42'), $rows);
 
     }
 
@@ -1201,31 +1173,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->contains('u.firstName', 'ébec')
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->contains('u.firstName', 'ébec');
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $this->assertEquals($this->variable('variable-43'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->contains('u.firstName', "ébec")
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-43'), $rows);
 
-        $this->assertEquals($this->variable('variable-44'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->contains('u.firstName', "ébec");
+        $select->order('id asc');
+        $select->setLimit(2);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-44'), $rows);
     }
 
     public function testLike()
@@ -1233,31 +1203,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->contains('u.firstName', 'No%l%a')
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->contains('u.firstName', 'No%l%a');
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $this->assertEquals($this->variable('variable-45'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->contains('u.firstName', new Expr('"No%l%a"'))
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-45'), $rows);
 
-        $this->assertEquals($this->variable('variable-46'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->contains('u.firstName', new Expr('"No%l%a"'));
+        $select->order('id asc');
+        $select->setLimit(2);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-46'), $rows);
     }
 
     public function testConditions()
@@ -1265,66 +1233,63 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->conditions('u.id', 1)
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->conditions('u.id', 1);
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $this->assertEquals($this->variable('variable-47'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->conditions('u.id', array(1, 2, 3, 4))
-            ->order('id asc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-47'), $rows);
 
-        $this->assertEquals($this->variable('variable-48'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->conditions('u.id', array(1, 2, 3, 4));
+        $select->order('id asc');
+        $select->setLimit(10);
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->conditions('u.id', array(
-                'from' => 1,
-                'to' => 4
-            ))
-            ->order('id asc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+        $rows = $select->fetch()->getData();
 
-        $this->assertEquals($this->variable('variable-49'), $rows);
+        $this->assertEquals($this->getVariable('variable-48'), $rows);
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->conditions('u.firstName', array(
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->conditions('u.id', array(
+            'from' => 1,
+            'to' => 4
+        ));
+
+        $select->order('id asc');
+        $select->setLimit(10);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-49'), $rows);
+
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->conditions('u.firstName', array(
                 'réé',
                 'áo',
                 'éli',
             ), array(
                 'operator' => 'contains'
-            ))
-            ->order('id asc')
-            ->limit(10)
-            ->fetch()
-            ->data()
-        ;
+            ));
+        $select->order('id asc');
+        $select->setLimit(10);
 
-        $this->assertEquals($this->variable('variable-50'), $rows);
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-50'), $rows);
     }
 
     public function testNotEqual()
@@ -1332,31 +1297,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->notEqual('u.id', 1)
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->notEqual('u.id', 1);
+        $select->order('id asc');
+        $select->setLimit(2);
 
-        $this->assertEquals($this->variable('variable-51'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->notEqual('u.id', new Expr('1'))
-            ->order('id asc')
-            ->limit(2)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-51'), $rows);
 
-        $this->assertEquals($this->variable('variable-52'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->notEqual('u.id', new Expr('1'));
+        $select->order('id asc');
+        $select->setLimit(2);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-52'), $rows);
     }
 
     public function testLowerThan()
@@ -1364,31 +1327,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->lowerThan('u.id', 5)
-            ->order('id asc')
-            ->limit(4)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->lowerThan('u.id', 5);
+        $select->order('id asc');
+        $select->setLimit(4);
 
-        $this->assertEquals($this->variable('variable-53'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->lowerThan('u.id', new Expr('5'))
-            ->order('id asc')
-            ->limit(4)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-53'), $rows);
 
-        $this->assertEquals($this->variable('variable-54'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->lowerThan('u.id', new Expr('5'));
+        $select->order('id asc');
+        $select->setLimit(4);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-54'), $rows);
     }
 
     public function testLowerThanEqual()
@@ -1396,31 +1357,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->lowerThanEqual('u.id', 5)
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->lowerThanEqual('u.id', 5);
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-55'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->lowerThanEqual('u.id', new Expr('5'))
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-55'), $rows);
 
-        $this->assertEquals($this->variable('variable-56'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->lowerThanEqual('u.id', new Expr('5'));
+        $select->order('id asc');
+        $select->setLimit(5);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-56'), $rows);
     }
 
     public function testGreaterThan()
@@ -1428,31 +1387,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->greaterThan('u.id', 5)
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->greaterThan('u.id', 5);
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-57'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->greaterThan('u.id', new Expr('5'))
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-57'), $rows);
 
-        $this->assertEquals($this->variable('variable-58'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->greaterThan('u.id', new Expr('5'));
+        $select->order('id asc');
+        $select->setLimit(5);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-58'), $rows);
     }
 
     public function testGreaterThanEqual()
@@ -1460,31 +1417,29 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->greaterThanEqual('u.id', 5)
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->greaterThanEqual('u.id', 5);
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-59'), $rows);
+        $rows = $select->fetch()->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->greaterThanEqual('u.id', new Expr('5'))
-            ->order('id asc')
-            ->limit(5)
-            ->fetch()
-            ->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-59'), $rows);
 
-        $this->assertEquals($this->variable('variable-60'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->greaterThanEqual('u.id', new Expr('5'));
+        $select->order('id asc');
+        $select->setLimit(5);
+
+        $rows = $select->fetch()->getData();
+
+        $this->assertEquals($this->getVariable('variable-60'), $rows);
     }
 
     public function testExpr()
@@ -1492,61 +1447,58 @@ class SelectTest extends TestCase
         $this->initDatabase('bookshop');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->expr('u.id >= :from and u.id <= :to')
-            ->order('id asc')
-            ->limit(5)
-            ->fetch(array(
-                'from' => 10,
-                'to' => '20',
-            ))->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->expr('u.id >= :from and u.id <= :to');
+        $select->order('id asc');
+        $select->setLimit(5);
 
-        $this->assertEquals($this->variable('variable-61'), $rows);
+        $rows = $select->fetch(array(
+            'from' => 10,
+            'to' => '20',
+        ))->getData();
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->column('u.id')
-            ->column('u.firstName')
-            ->expr(new Expr('u.id >= :from and u.id <= :to'))
-            ->order('id asc')
-            ->limit(5)
-            ->fetch(array(
-                'from' => 10,
-                'to' => '20',
-            ))->data()
-        ;
+        $this->assertEquals($this->getVariable('variable-61'), $rows);
 
-        $this->assertEquals($this->variable('variable-62'), $rows);
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->column('u.id');
+        $select->column('u.firstName');
+        $select->expr(new Expr('u.id >= :from and u.id <= :to'));
+        $select->order('id asc');
+        $select->setLimit(5);
+
+        $rows = $select->fetch(array(
+            'from' => 10,
+            'to' => '20',
+        ))->getData();
+
+        $this->assertEquals($this->getVariable('variable-62'), $rows);
     }
 
     public function testExists()
     {
         $this->initDatabase('bookshop');
 
-        $exists = (new Select())
-            ->from('users', 'u2')
-            ->expr('u2.firstName = u.firstName')
-            ->group('u2.firstName')
-            ->having('count(u2.firstName) = 2')
-        ;
+        $exists = new Select();
+        $exists->from('users', 'u2');
+        $exists->expr('u2.firstName = u.firstName');
+        $exists->group('u2.firstName');
+        $exists->having('count(u2.firstName) = 2');
 
         // // ---------------
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->columns(array(
-                'u.id',
-                'u.firstName',
-            ))
-            ->order('id asc')
-            // ->limit(5)
-            ->exists($exists)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->columns(array(
+            'u.id',
+            'u.firstName',
+        ));
+        $select->order('id asc');
+        $select->exists($exists);
+
+        $rows = $select->fetch()->getData();
 
         $this->assertEquals(158, count($rows));
     }
@@ -1555,25 +1507,23 @@ class SelectTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $exists = (new Select())
-            ->from('users', 'u2')
-            ->expr('u2.firstName = u.firstName')
-            ->group('u2.firstName')
-            ->having('count(u2.firstName) = 2')
-        ;
+        $exists = new Select();
+        $exists->from('users', 'u2');
+        $exists->expr('u2.firstName = u.firstName');
+        $exists->group('u2.firstName');
+        $exists->having('count(u2.firstName) = 2');
 
-        $rows = (new Select($this->adapter('bookshop')))
-            ->from('users', 'u')
-            ->columns(array(
-                'u.id',
-                'u.firstName',
-            ))
-            ->order('id asc')
-            // ->limit(5)
-            ->notExists($exists)
-            ->fetch()
-            ->data()
-        ;
+        $select = new Select($this->getAdapter('bookshop'));
+        $select->from('users', 'u');
+        $select->columns(array(
+            'u.id',
+            'u.firstName',
+        ));
+
+        $select->order('id asc');
+        $select->notExists($exists);
+
+        $rows = $select->fetch()->getData();
 
         $this->assertEquals(2000 - 158, count($rows));
     }
@@ -1620,11 +1570,11 @@ class SelectTest extends TestCase
 
     // public function testParams()
     // {
-    //     $select = (new Select())
+    //     $select = new Select();
     //         ->from('users')
     //     ;
 
-    //     $select->params(array(
+    //     $select->setParams(array(
     //         'name-not-in' => array(1,2),
     //         'name-in' => array(4,5),
     //         'name-is-not-null' => 1,

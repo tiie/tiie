@@ -11,14 +11,14 @@ class FileReadable extends Validator
         if (!is_string($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
         if (empty($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
@@ -27,7 +27,7 @@ class FileReadable extends Validator
         if (!is_readable($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_FILE_IS_NOT_READABLE,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_FILE_IS_NOT_READABLE, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_FILE_IS_NOT_READABLE, array("value" => (string) $value)),
             );
         }
 

@@ -30,8 +30,8 @@ class Api
 {
     public function response()
     {
-        $accept = $this->accept();
-        $urn = $this->urn();
+        $accept = $this->getAccept();
+        $urn = $this->getUrn();
 
         $data = null;
 
@@ -51,7 +51,7 @@ class Api
         }
     }
 
-    private function accept()
+    private function getAccept()
     {
         if (strpos("application/json", $_SERVER['HTTP_ACCEPT']) >= 0) {
             return "application/json";
@@ -62,7 +62,7 @@ class Api
         }
     }
 
-    private function urn()
+    private function getUrn()
     {
         return $_SERVER['PATH_INFO'];
     }

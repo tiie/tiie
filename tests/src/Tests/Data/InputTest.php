@@ -12,29 +12,29 @@ class InputTest extends TestCase
     {
         $input = new Input;
 
-        $input->input(array(
+        $input->setInput(array(
             "id" => 10,
             "name" => "Paweł"
         ));
 
 
-        // $this->createVariable('variable-130', $input->data());
-        $this->assertEquals($this->variable('variable-130'), $input->data());
+        // $this->createVariable('variable-130', $input->getData());
+        $this->assertEquals($this->getVariable('variable-130'), $input->getData());
 
-        $input->input(array(
+        $input->setInput(array(
             "age" => 10,
         ));
 
-        // $this->createVariable('variable-131', $input->data());
-        $this->assertEquals($this->variable('variable-131'), $input->data());
+        // $this->createVariable('variable-131', $input->getData());
+        $this->assertEquals($this->getVariable('variable-131'), $input->getData());
 
-        $input->input(array(
+        $input->setInput(array(
             "id" => 12,
             "name" => "Paweł"
         ), false);
 
-        // $this->createVariable('variable-132', $input->data());
-        $this->assertEquals($this->variable('variable-132'), $input->data());
+        // $this->createVariable('variable-132', $input->getData());
+        $this->assertEquals($this->getVariable('variable-132'), $input->getData());
     }
 
     /**
@@ -135,7 +135,7 @@ class InputTest extends TestCase
             ),
         ));
 
-        $input->messages(
+        $input->setMessages(
             new class() implements MessagesInterface {
                 public function get(string $code, array $params = array()): ?string
                 {
@@ -144,50 +144,50 @@ class InputTest extends TestCase
             }
         );
 
-        $input->messages()
+        $input->getMessages()
             ->set(ValidatorInterface::ERROR_CODE_NOT_EXISTS, "Brak informacji")
         ;
 
         $input->prepare();
 
-        // $this->createVariable('variable-110', $input->errors());
-        $this->assertEquals($this->variable('variable-110'), $input->errors());
+        // $this->createVariable('variable-110', $input->getErrors());
+        $this->assertEquals($this->getVariable('variable-110'), $input->getErrors());
 
         // -----------------------
         $data['value'] = '';
-        $input->input($data);
+        $input->setInput($data);
 
         $input->prepare();
 
-        // $this->createVariable('variable-111', $input->errors());
-        $this->assertEquals($this->variable('variable-111'), $input->errors());
+        // $this->createVariable('variable-111', $input->getErrors());
+        $this->assertEquals($this->getVariable('variable-111'), $input->getErrors());
 
         // -----------------------
         $data['value'] = 'foo';
-        $input->input($data);
+        $input->setInput($data);
 
         $input->prepare();
 
-        // $this->createVariable('variable-112', $input->errors());
-        $this->assertEquals($this->variable('variable-112'), $input->errors());
+        // $this->createVariable('variable-112', $input->getErrors());
+        $this->assertEquals($this->getVariable('variable-112'), $input->getErrors());
 
         // -----------------------
         $data['object'] = array();
-        $input->input($data);
+        $input->setInput($data);
 
         $input->prepare();
 
-        // $this->createVariable('variable-113', $input->errors());
-        $this->assertEquals($this->variable('variable-113'), $input->errors());
+        // $this->createVariable('variable-113', $input->getErrors());
+        $this->assertEquals($this->getVariable('variable-113'), $input->getErrors());
 
         // -----------------------
         $data['object']['value'] = '';
-        $input->input($data);
+        $input->setInput($data);
 
         $input->prepare();
 
-        // $this->createVariable('variable-114', $input->errors());
-        $this->assertEquals($this->variable('variable-114'), $input->errors());
+        // $this->createVariable('variable-114', $input->getErrors());
+        $this->assertEquals($this->getVariable('variable-114'), $input->getErrors());
     }
 
     public function testSimpleObject()
@@ -202,8 +202,8 @@ class InputTest extends TestCase
             )
         ));
 
-        $input->rule("name", array());
-        $input->rule("client", array(
+        $input->setRule("name", array());
+        $input->setRule("client", array(
             "@type" => Input::INPUT_DATA_TYPE_OBJECT,
             "id" => array(),
             "name" => array(),
@@ -212,7 +212,7 @@ class InputTest extends TestCase
 
         $input->prepare();
 
-        $this->assertEquals($this->variable("variable-8"), $input->data());
+        $this->assertEquals($this->getVariable("variable-8"), $input->getData());
     }
 
     public function testSimpleList()
@@ -238,8 +238,8 @@ class InputTest extends TestCase
             ),
         ));
 
-        $input->rule("name", array());
-        $input->rule("emails", array(
+        $input->setRule("name", array());
+        $input->setRule("emails", array(
             "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
             "id" => array(),
             "email" => array(),
@@ -247,7 +247,7 @@ class InputTest extends TestCase
 
         $input->prepare();
 
-        $this->assertEquals($this->variable("variable-9"), $input->data());
+        $this->assertEquals($this->getVariable("variable-9"), $input->getData());
 
         // case
         $input = new Input(array(
@@ -271,8 +271,8 @@ class InputTest extends TestCase
             ),
         ));
 
-        $input->rule("name", array());
-        $input->rule("emails", array(
+        $input->setRule("name", array());
+        $input->setRule("emails", array(
             "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
             "id" => array(),
             "email" => array(),
@@ -281,7 +281,7 @@ class InputTest extends TestCase
 
         $input->prepare();
 
-        $this->assertEquals($this->variable("variable-10"), $input->data());
+        $this->assertEquals($this->getVariable("variable-10"), $input->getData());
 
         // case
         $input = new Input(array(
@@ -306,7 +306,7 @@ class InputTest extends TestCase
         ));
 
         $validatorEmail = new \Tiie\Validators\Email;
-        $validatorEmail->messages(
+        $validatorEmail->setMessages(
             new class() implements MessagesInterface {
                 public function get(string $code, array $params = array()): ?string
                 {
@@ -315,10 +315,10 @@ class InputTest extends TestCase
             }
         );
 
-        $validatorEmail->message(ValidatorInterface::ERROR_CODE_INVALID, "Invalid data");
+        $validatorEmail->setMessage(ValidatorInterface::ERROR_CODE_INVALID, "Invalid data");
 
-        $input->rule("name", array());
-        $input->rule("emails", array(
+        $input->setRule("name", array());
+        $input->setRule("emails", array(
             "@type" => Input::INPUT_DATA_TYPE_LIST_OF_OBJECTS,
             "id" => array(),
             "email" => array(
@@ -331,6 +331,6 @@ class InputTest extends TestCase
 
         $input->prepare();
 
-        $this->assertEquals($this->variable("variable-11"), $input->errors());
+        $this->assertEquals($this->getVariable("variable-11"), $input->getErrors());
     }
 }

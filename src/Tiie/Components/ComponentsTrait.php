@@ -18,7 +18,7 @@ trait ComponentsTrait
      *
      * @return mixed|null
      */
-    protected function component(string $name, array $params = array())
+    protected function getComponent(string $name, array $params = array())
     {
         global $components;
 
@@ -30,7 +30,7 @@ trait ComponentsTrait
      *
      * @return Supervisor
      */
-    protected function components() : Supervisor
+    protected function getComponents() : Supervisor
     {
         global $components;
 

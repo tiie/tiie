@@ -22,43 +22,37 @@ class Built
         return $this->command;
     }
 
-    public function command(string $command = null)
+    public function setCommand(string $command) : void
     {
-        if (is_null($command)) {
-            return $this->command;
-        }else{
-            $this->command = $command;
+        $this->command = $command;
+    }
 
-            return $this;
+    public function getCommand(string $command = null) : ?string
+    {
+        return $this->command;
+    }
+
+    public function setParam(string $name, $value) : void
+    {
+        $this->params[$name] = $value;
+    }
+
+    public function getParam(string $name)
+    {
+        return isset($this->params[$name]) ? $this->params[$name] : null;
+    }
+
+    public function setParams(array $params, int $merge = 1) : void
+    {
+        if ($merge) {
+            $this->params = array_merge($this->params, $params);
+        }else{
+            $this->params = $params;
         }
     }
 
-    public function param(string $name, $value = null)
+    public function getParams() : array
     {
-        switch (func_num_args()) {
-        case 1:
-            return isset($this->params[$name]) ? $this->params[$name] : null;
-        case 2:
-            $this->params[$name] = $value;
-
-            return $this;
-        default:
-            return null;
-        }
-    }
-
-    public function params(array $params = null, int $merge = 1)
-    {
-        if (!is_null($params)) {
-            if ($merge) {
-                $this->params = array_merge($this->params, $params);
-            }else{
-                $this->params = $params;
-            }
-
-            return $this;
-        }else{
-            return $this->params;
-        }
+        return $this->params;
     }
 }

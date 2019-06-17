@@ -12,17 +12,17 @@ class Result
         $this->variables = $variables;
     }
 
-    public function data(string $format = 'all')
+    public function getData(string $format = 'all')
     {
         return $this->data;
     }
 
-    public function variables()
+    public function getVariables() : array
     {
         return $this->variables;
     }
 
-    public function variable(string $name)
+    public function getVariable(string $name)
     {
         return array_key_exists($name, $this->variables) ? $this->variables[$name] : null;
     }

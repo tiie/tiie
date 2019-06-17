@@ -28,15 +28,13 @@ class Creator implements CreatorInterface
         return $this->model->run(new CommandCreateRecord($this->record), $params);
     }
 
-    public function data(array $data, int $merge = 1) : CreatorInterface
+    public function setData(array $data, int $merge = 1) : void
     {
         if ($merge) {
             $this->data = array_merge($this->data, $data);
         } else {
             $this->data = $data;
         }
-
-        return $this;
     }
 
     public function set(string $name, $value) : CreatorInterface

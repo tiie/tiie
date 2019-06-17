@@ -98,7 +98,7 @@ class Where extends Command
         return $this;
     }
 
-    public function params(array $values = array(), array $fields = array())
+    public function setParams(array $values = array(), array $fields = array()) : void
     {
         $re = '/^(.*?)(-in|In|-not-in|NotIn|-is-null|IsNull|-is-not-null|IsNotNull|-start-with|StartWith|-not-start-with|NotStartWith|-end-with|EndWith|-not-end-with|NotEndWith|-contains|Contains|-not-contains|NotContains|-like|Like|-not-like|NotLike|-equal|Equal|-not-equal|NotEqual|-lower-than-equal|LowerThanEqual|-not-lower-than-equal|NotLowerThanEqual|-lower-than|LowerThan|-not-lower-than|NotLowerThan|-greater-than-equal|GreaterThanEqual|-not-greater-than-equal|NotGreaterThanEqual|-greater-than|GreaterThan|-not-greater-than|NotGreaterThan|-between|Between|-not-between|NotBetween)$/m';
 
@@ -177,7 +177,7 @@ class Where extends Command
             preg_match_all($re, $key, $matches, PREG_SET_ORDER, 0);
 
             if (empty($matches)) {
-                $field = $this->unifiedColumn($key);
+                $field = $this->unifingColumn($key);
 
                 // standard field
                 if (!empty($fields)) {
@@ -225,7 +225,7 @@ class Where extends Command
                 }
             }
 
-            $field = $this->unifiedColumn($matches[0][1]);
+            $field = $this->unifingColumn($matches[0][1]);
             $operation = $operations[$matches[0][2]];
 
             if (!empty($fields)) {
@@ -380,11 +380,9 @@ class Where extends Command
 
             }
         }
-
-        return $this;
     }
 
-    private function unifiedColumn(string $name)
+    private function unifingColumn(string $name)
     {
         $name = explode("-", $name);
 
@@ -538,7 +536,7 @@ class Where extends Command
      *
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
@@ -550,7 +548,7 @@ class Where extends Command
      *
      * // There is no need to check if array has values. If not 1=2 is place
      * // in place of in()
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
@@ -567,7 +565,7 @@ class Where extends Command
      *     ->in('u.id', array(11, 12, 13, 14, 15, 'test'))
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
@@ -597,14 +595,14 @@ class Where extends Command
      *
      * ```php
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->column('u.lastName')
      *     ->notIn('u.id', array(1, 2, 3, 4, 5))
      *     ->order('id asc')
-     *     ->limit(5)
+     *     ->setLimit(5)
      *     ->fetch()
      * ;
      *
@@ -615,13 +613,13 @@ class Where extends Command
      *     ->in('u.id', array(1, 2, 3, 4, 5, 'test'))
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->column('u.lastName')
      *     ->notIn('u.id', $sub)
-     *     ->limit(5)
+     *     ->setLimit(5)
      *     ->order('id asc')
      *     ->fetch()
      * ;
@@ -645,7 +643,7 @@ class Where extends Command
      * Add 'is null' statement to where.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
@@ -653,7 +651,7 @@ class Where extends Command
      *     ->column('u.countryId')
      *     ->isNull('u.countryId')
      *     ->order('id asc')
-     *     ->limit(10)
+     *     ->setLimit(10)
      *     ->fetch()
      * ;
      * ```
@@ -688,7 +686,7 @@ class Where extends Command
      * Add like "%value" to where statement.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.countryId')
@@ -697,11 +695,11 @@ class Where extends Command
      *     ->isNotNull('u.countryId')
      *     ->startWith('u.firstName', 'Ali')
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.countryId')
@@ -710,7 +708,7 @@ class Where extends Command
      *     ->isNotNull('u.countryId')
      *     ->startWith('u.firstName', new Expr('"Aliz"'))
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      * ```
@@ -746,23 +744,23 @@ class Where extends Command
      * Add %value end with statement to where.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->endWith('u.firstName', 'trée')
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->endWith('u.firstName', new Expr('"trée"'))
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      * ```
@@ -797,23 +795,23 @@ class Where extends Command
      * Add 'like %value%' statement too where.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->contains('u.firstName', 'ébec')
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->contains('u.firstName', new Expr('"ébec"'))
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      * ```
@@ -849,23 +847,23 @@ class Where extends Command
      * Add 'like value' statement to where.
      *
      * ```php
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->contains('u.firstName', 'No%l%a')
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      *
-     * $rows = (new Select($this->adapter('bookshop')))
+     * $rows = (new Select($this->getAdapter('bookshop')))
      *     ->from('users', 'u')
      *     ->column('u.id')
      *     ->column('u.firstName')
      *     ->contains('u.firstName', new Expr('"No%l%a"'))
      *     ->order('id asc')
-     *     ->limit(2)
+     *     ->setLimit(2)
      *     ->fetch()
      * ;
      * ```
@@ -1095,7 +1093,7 @@ class Where extends Command
         ), $params);
 
         if (count($this->pointer->childs) > 0) {
-            $built->command($this->buildBrakets($this->pointer, $built, $params));
+            $built->setCommand($this->buildBrakets($this->pointer, $built, $params));
 
             return $built;
         }else{
@@ -1129,9 +1127,9 @@ class Where extends Command
             ) {
                 $bl = $column->build();
 
-                // $params = array_merge($params, $bl->params());
-                $built->params($bl->params());
-                $column = sprintf("(%s)", $bl->command());
+                // $params = array_merge($params, $bl->getParams());
+                $built->setParams($bl->getParams());
+                $column = sprintf("(%s)", $bl->getCommand());
             } else if(is_string($column)) {
                 $t = $this->common->resolveColumn($column);
 
@@ -1169,21 +1167,21 @@ class Where extends Command
             ) {
                 $bl = $value->build();
 
-                $built->params($bl->params());
-                $value = sprintf("(%s)", $bl->command());
+                $built->setParams($bl->getParams());
+                $value = sprintf("(%s)", $bl->getCommand());
             } else if(is_string($value) && in_array($type, array("expr"))) {
                 // Put where directly.
             } else if(is_string($value) && in_array($type, array("startWith", "notStartWith"))) {
-                $built->param($t = $this->uid(), "{$value}%");
+                $built->setParam($t = $this->getUid(), "{$value}%");
                 $value = ":{$t}";
             } else if(is_string($value) && in_array($type, array("endWith", "notEndWith"))) {
-                $built->param($t = $this->uid(), "%{$value}");
+                $built->setParam($t = $this->getUid(), "%{$value}");
                 $value = ":{$t}";
             } else if(is_string($value) && in_array($type, array("contains", "notContains"))) {
-                $built->param($t = $this->uid(), "%{$value}%");
+                $built->setParam($t = $this->getUid(), "%{$value}%");
                 $value = ":{$t}";
             } else if(is_string($value)) {
-                $built->param($t = $this->uid(), $value);
+                $built->setParam($t = $this->getUid(), $value);
                 $value = ":{$t}";
             } else if(is_numeric($value)) {
                 // Omit numeric
@@ -1201,7 +1199,7 @@ class Where extends Command
                         if (is_numeric($v)) {
                             $string .= "{$v},";
                         } else {
-                            $built->param($t = $this->uid(), $v);
+                            $built->setParam($t = $this->getUid(), $v);
                             $string .= ":{$t},";
                         }
                     }
@@ -1213,12 +1211,12 @@ class Where extends Command
                 $end = $value[1];
 
                 if (!is_numeric($value[0])) {
-                    $built->param($t = $this->uid(), $value[0]);
+                    $built->setParam($t = $this->getUid(), $value[0]);
                     $value[0] = ":{$t}";
                 }
 
                 if (!is_numeric($value[1])) {
-                    $built->param($t = $this->uid(), $value[1]);
+                    $built->setParam($t = $this->getUid(), $value[1]);
                     $value[1] = ":{$t}";
                 }
 
@@ -1235,8 +1233,8 @@ class Where extends Command
                     ) {
                         $bl = $v->build();
 
-                        $built->params($bl->params());
-                        $string .= sprintf("(%s) {$operator} ", $bl->command());
+                        $built->setParams($bl->getParams());
+                        $string .= sprintf("(%s) {$operator} ", $bl->getCommand());
                     } else if(is_string($v)) {
                         $string .= sprintf("(%s) {$operator} ", $v);
                     } else {

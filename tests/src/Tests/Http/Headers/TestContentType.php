@@ -20,24 +20,24 @@ class TestContentType extends TestCase
         $contentType->mediaType('application/json');
 
         $this->assertEquals('application/json', $contentType->mediaType());
-        $this->assertEquals('application/json; charset=utf-8; boundary=75', $contentType->value());
+        $this->assertEquals('application/json; charset=utf-8; boundary=75', $contentType->getValue());
     }
 
     public function testCharset()
     {
         $contentType = new ContentType('text/html; charset=utf-8; boundary=75');
 
-        $this->assertEquals('utf-8', $contentType->charset());
+        $this->assertEquals('utf-8', $contentType->getCharset());
     }
 
     public function testCharsetSet()
     {
         $contentType = new ContentType('text/html; charset=utf-8; boundary=75');
 
-        $contentType->charset('ascii');
+        $contentType->setCharset('ascii');
 
-        $this->assertEquals('ascii', $contentType->charset());
-        $this->assertEquals('text/html; charset=ascii; boundary=75', $contentType->value());
+        $this->assertEquals('ascii', $contentType->getCharset());
+        $this->assertEquals('text/html; charset=ascii; boundary=75', $contentType->getValue());
     }
 
     public function testBoundary()
@@ -54,6 +54,6 @@ class TestContentType extends TestCase
         $contentType->boundary('100');
 
         $this->assertEquals('100', $contentType->boundary());
-        $this->assertEquals('text/html; charset=utf-8; boundary=100', $contentType->value());
+        $this->assertEquals('text/html; charset=utf-8; boundary=100', $contentType->getValue());
     }
 }

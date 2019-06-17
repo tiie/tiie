@@ -15,7 +15,7 @@ class Integer extends Number
         $this->unsigned = $unsigned;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validators.Integer.Description)';
     }

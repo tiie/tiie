@@ -87,7 +87,7 @@ class Records implements \Countable, Iterator
      *
      * @return array
      */
-    public function records() : array
+    public function getRecords() : array
     {
         return $this->records;
     }

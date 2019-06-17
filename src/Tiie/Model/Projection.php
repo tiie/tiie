@@ -29,42 +29,24 @@ class Projection
     }
 
     // func_num_args
-    public function params(array $params = null)
+    public function setParams(array $params) : void
     {
-        if(func_num_args() == 0) {
-            return $this->params;
-        } else {
-            $this->params = $params;
-
-            return $this;
-        }
+        $this->params = $params;
     }
 
-    public function param(string $name, $value = null)
+    public function setParam(string $name, $value) : void
     {
-        if(func_num_args() == 1) {
-            return array_key_exists($name, $this->params) ? $this->params[$name] : null;
-        } else {
-            $this->params[$name] = $value;
-
-            return $this;
-        }
+        $this->params[$name] = $value;
     }
 
-    public function field(string $field)
+    public function getParam(string $name)
     {
-
+        return array_key_exists($name, $this->params) ? $this->params[$name] : null;
     }
 
-    public function fields(array $fields = null)
+    public function setFields(array $fields) : void
     {
-        if(func_num_args() == 0) {
-            return $this->fields;
-        } else {
-            $this->fields = $fields;
-
-            return $this;
-        }
+        $this->fields = $fields;
     }
 
     public function sort($sort = null)
@@ -78,25 +60,23 @@ class Projection
         }
     }
 
-    public function size($size = null)
+    public function setSize($size) : void
     {
-        if(func_num_args() == 0) {
-            return $this->size;
-        } else {
-            $this->size = $size;
-
-            return $this;
-        }
+        $this->size = $size;
     }
 
-    public function page($page = null)
+    public function getSize()
     {
-        if(func_num_args() == 0) {
-            return $this->page;
-        } else {
-            $this->page = $page;
+        return $this->size;
+    }
 
-            return $this;
-        }
+    public function setPage($page) : void
+    {
+        $this->page = $page;
+    }
+
+    public function getPage()
+    {
+        return $this->page;
     }
 }

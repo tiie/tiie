@@ -12,7 +12,7 @@ class InvalidData extends \Exception
         $this->errors = $errors;
     }
 
-    public function errors()
+    public function getErrors()
     {
         return $this->errors;
     }

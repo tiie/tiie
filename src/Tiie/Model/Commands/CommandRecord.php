@@ -13,7 +13,7 @@ class CommandRecord extends Command
         $this->record = $record;
     }
 
-    public function record()
+    public function getRecord()
     {
         return $this->record;
     }

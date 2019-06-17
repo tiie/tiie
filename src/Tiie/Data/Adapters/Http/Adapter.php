@@ -129,7 +129,7 @@ class Adapter implements AdapterInterface
 
         $headers = (new Parser())->parse($responseHeaders);
 
-        $contentType = $headers->contentType();
+        $contentType = $headers->getContentType();
 
         if (is_null($contentType)) {
             throw new \Exception("Unknown Content-Type.");
@@ -138,7 +138,7 @@ class Adapter implements AdapterInterface
         $mediaType = $contentType->mediaType();
 
         if (is_null($mediaType)) {
-            throw new \Exception("Unknown media type for {$contentType->value()}.");
+            throw new \Exception("Unknown media type for {$contentType->getValue()}.");
         }
 
         if (!array_key_exists($mediaType, $this->encoders)) {
@@ -167,7 +167,7 @@ class Adapter implements AdapterInterface
 
     }
 
-    public function metadata($object, $id = null)
+    public function getMetadata($object, $id = null)
     {
     }
 

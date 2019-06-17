@@ -13,11 +13,9 @@ class Extension extends Validator
         $this->extensions = $extensions;
     }
 
-    public function extensions(array $extensions = array())
+    public function setExtensions(array $extensions = array()) : void
     {
         $this->extensions = $extensions;
-
-        return $this;
     }
 
     public function validate($value)
@@ -29,14 +27,14 @@ class Extension extends Validator
         if (!is_string($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
         if (empty($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_IS_EMPTY,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
@@ -45,14 +43,14 @@ class Extension extends Validator
         if (count($exploded) == 1) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
         if (!in_array(strtolower($exploded[count($exploded)-1]), $this->extensions)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID_EXTENSION,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID_EXTENSION, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID_EXTENSION, array("value" => (string) $value)),
             );
         }
 

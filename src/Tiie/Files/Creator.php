@@ -56,19 +56,14 @@ class Creator
         }
     }
 
-    public function param($name, $value = null)
+    public function setParam(string $name, $value) : void
     {
-        if (!in_array($name, array_keys($this->params))) {
-            throw new \Exception("Unsported param {$name}.");
-        }
+        $this->params[$name] = $value;
+    }
 
-        if (!is_null($value)) {
-            $this->params[$name] = $value;
-
-            return $this;
-        }else{
-            return isset($this->params[$name]) ? $this->params[$name] : null;
-        }
+    public function getParam(string $name)
+    {
+        return isset($this->params[$name]) ? $this->params[$name] : null;
     }
 
     public function validate()

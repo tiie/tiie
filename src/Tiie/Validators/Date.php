@@ -13,7 +13,7 @@ class Date extends Validator
         $this->format = $format;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validators.Date.Description)';
     }

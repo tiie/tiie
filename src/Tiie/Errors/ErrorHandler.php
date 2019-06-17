@@ -78,20 +78,20 @@ class ErrorHandler
     public function response($error, Request $request) : \Tiie\Response\ResponseInterface
     {
         if ($error instanceof \Tiie\Exceptions\Http\Base) {
-            $this->response->code($error->code());
-            $this->response->data($error->errors());
+            $this->response->setCode($error->getHttpCode());
+            $this->response->setData($error->getErrors());
 
         }else if($error instanceof \Tiie\Exceptions\ValidateException){
             // todo : ValidateException zmianiam na InvalidData
-            $this->response->code('400');
-            $this->response->data($error->errors());
+            $this->response->setCode('400');
+            $this->response->setData($error->getErrors());
         }else if($error instanceof \Tiie\Commands\Exceptions\ValidationFailed){
-            $this->response->code('400');
-            $this->response->data($error->errors());
+            $this->response->setCode('400');
+            $this->response->setData($error->getErrors());
 
         }else if($error instanceof \Tiie\Exceptions\InvalidData){
-            $this->response->code('400');
-            $this->response->data($error->errors());
+            $this->response->setCode('400');
+            $this->response->setData($error->getErrors());
 
         // Router
         }else if(
@@ -99,15 +99,15 @@ class ErrorHandler
             $error instanceof \Tiie\Router\Exceptions\MethodNotFound ||
             $error instanceof \Tiie\Router\Exceptions\RouteNotFound
         ){
-            $this->response->code('404');
-            $this->response->layout('layouts/main.html');
-            $this->response->template('notFound.html');
+            $this->response->setCode('404');
+            $this->response->setLayout('layouts/main.html');
+            $this->response->setTemplate('notFound.html');
         }else if($error instanceof \Tiie\Exceptions\PHPErrorException){
-            $this->response->code(500);
+            $this->response->setCode(500);
 
             $niceTrace = new NiceTrace($error->getTrace());
 
-            $this->response->data(array(
+            $this->response->setData(array(
                 'message' => $error->getMessage(),
                 'code' => $error->getCode(),
                 'file' => $error->getFile(),
@@ -116,11 +116,11 @@ class ErrorHandler
             ));
 
         }else if($error instanceof \Exception){
-            $this->response->code(500);
+            $this->response->setCode(500);
 
             $niceTrace = new NiceTrace($error->getTrace());
 
-            $this->response->data(array(
+            $this->response->setData(array(
                 'message' => $error->getMessage(),
                 'code' => $error->getCode(),
                 'file' => $error->getFile(),
@@ -128,11 +128,11 @@ class ErrorHandler
                 'trace' => $niceTrace->create(),
             ));
         }else if($error instanceof \Error){
-            $this->response->code(500);
+            $this->response->setCode(500);
 
             $niceTrace = new NiceTrace($error->getTrace());
 
-            $this->response->data(array(
+            $this->response->setData(array(
                 'message' => $error->getMessage(),
                 'code' => $error->getCode(),
                 'file' => $error->getFile(),

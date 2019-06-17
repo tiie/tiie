@@ -34,7 +34,7 @@ class StringLength extends Validator
         if (!is_string($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
@@ -43,7 +43,7 @@ class StringLength extends Validator
         if ($len < $this->min) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_LENGTH,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_LENGTH, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_LENGTH, array("value" => (string) $value)),
             );
         }
 
@@ -51,7 +51,7 @@ class StringLength extends Validator
             if ($len > $this->max) {
                 return array(
                     "code" => ValidatorInterface::ERROR_CODE_EXCEEDS_MAXIMUM_LENGTH,
-                    "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_EXCEEDS_MAXIMUM_LENGTH, array("value" => (string) $value)),
+                    "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_EXCEEDS_MAXIMUM_LENGTH, array("value" => (string) $value)),
                 );
             }
         }

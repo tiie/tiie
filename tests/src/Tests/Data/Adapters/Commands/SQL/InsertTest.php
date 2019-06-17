@@ -18,19 +18,19 @@ class InsertTest extends TestCase
         $this->assertEquals('users', $insert->into());
     }
 
-    public function testTable()
-    {
-        $insert = new Insert();
+    // public function testTable()
+    // {
+    //     $insert = new Insert();
 
-        $this->assertEquals($insert, $insert->table('users'));
-        $this->assertEquals('users', $insert->table());
-    }
+    //     $this->assertEquals($insert, $insert->table('users'));
+    //     $this->assertEquals('users', $insert->table());
+    // }
 
     public function testValues()
     {
         $insert = new Insert();
 
-        $insert->values(array(
+        $insert->setValues(array(
             array(
                 'id' => 1,
                 'name' => 'Pawel'
@@ -41,29 +41,29 @@ class InsertTest extends TestCase
             ),
         ));
 
-        // $this->createVariable('variable-63', $insert->values());
-        $this->assertEquals($this->variable('variable-63'), $insert->values());
+        // $this->createVariable('variable-63', $insert->getValues());
+        $this->assertEquals($this->getVariable('variable-63'), $insert->getValues());
 
-        $this->assertEquals($insert, $insert->table('users'));
-        $this->assertEquals('users', $insert->table());
+        // $this->assertEquals($insert, $insert->table('users'));
+        // $this->assertEquals('users', $insert->table());
     }
 
     public function testValue()
     {
         $insert = new Insert();
 
-        $insert->value(array(
+        $insert->addValue(array(
             'id' => 1,
             'name' => 'Pawel'
         ));
 
-        $this->assertEquals($insert, $insert->value(array(
+        $insert->addValue(array(
             'id' => 2,
             'name' => 'Pawel'
-        )));
+        ));
 
-        // $this->createVariable('variable-64', $insert->values());
-        $this->assertEquals($this->variable('variable-64'), $insert->values());
+        // $this->createVariable('variable-64', $insert->getValues());
+        $this->assertEquals($this->getVariable('variable-64'), $insert->getValues());
     }
 
     public function testAdd()
@@ -80,8 +80,8 @@ class InsertTest extends TestCase
             'name' => 'Pawel'
         )));
 
-        // $this->createVariable('variable-65', $insert->values());
-        $this->assertEquals($this->variable('variable-65'), $insert->values());
+        // $this->createVariable('variable-65', $insert->getValues());
+        $this->assertEquals($this->getVariable('variable-65'), $insert->getValues());
     }
 
     public function testColumns()
@@ -91,22 +91,21 @@ class InsertTest extends TestCase
         $this->assertEquals($insert, $insert->columns(array('id', 'name')));
 
         // $this->createVariable('variable-66', $insert->columns());
-        $this->assertEquals($this->variable('variable-66'), $insert->columns());
+        $this->assertEquals($this->getVariable('variable-66'), $insert->columns());
     }
 
     public function testBuilt()
     {
         $insert = new Insert();
 
-        $insert->into('users')
-            ->columns(array('id', 'name'))
-            ->values(array(
-                array(
-                    'id' => 1,
-                    'name' => 'Pawel',
-                )
-            ))
-        ;
+        $insert->into('users');
+        $insert->columns(array('id', 'name'));
+        $insert->setValues(array(
+            array(
+                'id' => 1,
+                'name' => 'Pawel',
+            )
+        ));
 
         $this->assertEquals(true, $insert->build() instanceof Built);
     }
@@ -115,7 +114,7 @@ class InsertTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $insert = new Insert($this->adapter('bookshop'));
+        $insert = new Insert($this->getAdapter('bookshop'));
 
         $insert->into('users')
             ->add(array(
@@ -133,9 +132,9 @@ class InsertTest extends TestCase
             ->execute()
         ;
 
-        $id = $this->adapter('bookshop')->lastId();
+        $id = $this->getAdapter('bookshop')->lastId();
 
-        $rows = (new Select($this->adapter('bookshop')))
+        $rows = (new Select($this->getAdapter('bookshop')))
             ->from('users', 'u')
             ->columns(array(
                 'id',
@@ -151,20 +150,20 @@ class InsertTest extends TestCase
             ))
             ->equal('id', $id)
             ->fetch()
-            ->data()
+            ->getData()
         ;
 
         $this->assertEquals(1, count($rows));
 
         // $this->createVariable('variable-67', $rows[0]);
-        $this->assertEquals($this->variable('variable-67'), $rows[0]);
+        $this->assertEquals($this->getVariable('variable-67'), $rows[0]);
     }
 
     public function testCreateRowWithId()
     {
         $this->initDatabase('bookshop');
 
-        $insert = new Insert($this->adapter('bookshop'));
+        $insert = new Insert($this->getAdapter('bookshop'));
 
         $insert->into('users')
             ->add(array(
@@ -182,7 +181,7 @@ class InsertTest extends TestCase
             ->execute()
         ;
 
-        $rows = (new Select($this->adapter('bookshop')))
+        $rows = (new Select($this->getAdapter('bookshop')))
             ->from('users', 'u')
             ->columns(array(
                 'id',
@@ -198,12 +197,12 @@ class InsertTest extends TestCase
             ))
             ->equal('id', 3000)
             ->fetch()
-            ->data()
+            ->getData()
         ;
 
         $this->assertEquals(1, count($rows));
 
         // $this->createVariable('variable-68', $rows[0]);
-        $this->assertEquals($this->variable('variable-68'), $rows[0]);
+        $this->assertEquals($this->getVariable('variable-68'), $rows[0]);
     }
 }

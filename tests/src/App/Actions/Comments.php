@@ -2,7 +2,7 @@
 namespace App\Actions;
 
 class Comments extends \Tiie\Actions\Rest {
-    public static function metadata()
+    public static function getMetadata()
     {
         return array(
             'pipe' => array(
@@ -28,7 +28,7 @@ class Comments extends \Tiie\Actions\Rest {
         }
     }
 
-    public function collection($params = array())
+    public function getCollection($params = array())
     {
         if (isset($params['cliendId'])) {
             switch ($params['cliendId']) {

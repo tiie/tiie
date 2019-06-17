@@ -143,13 +143,13 @@ class Adapter implements AdapterInterface, MetadataAccessibleInterface
 
         if ($command instanceof Command) {
             $buildCommand = $command->build();
-            $sql = $buildCommand->command();
+            $sql = $buildCommand->getCommand();
 
-            $params = array_merge($params, $buildCommand->params());
+            $params = array_merge($params, $buildCommand->getParams());
         }elseif($command instanceof Built){
-            $sql = $command->command();
+            $sql = $command->getCommand();
 
-            $params = array_merge($params, $command->params());
+            $params = array_merge($params, $command->getParams());
         }elseif(is_string($command)){
             $sql = $command;
         }
@@ -172,12 +172,12 @@ class Adapter implements AdapterInterface, MetadataAccessibleInterface
 
         if ($command instanceof Command) {
             $buildCommand = $command->build();
-            $sql = $buildCommand->command();
+            $sql = $buildCommand->getCommand();
 
-            $params = array_merge($params, $buildCommand->params());
+            $params = array_merge($params, $buildCommand->getParams());
         }elseif ($command instanceof Built){
-            $sql = $command->command();
-            $params = array_merge($params, $command->params());
+            $sql = $command->getCommand();
+            $params = array_merge($params, $command->getParams());
         }elseif(is_string($command)){
             $sql = $command;
         }
@@ -204,13 +204,13 @@ class Adapter implements AdapterInterface, MetadataAccessibleInterface
 
         if ($command instanceof Command) {
             $buildCommand = $command->build();
-            $sql = $buildCommand->command();
+            $sql = $buildCommand->getCommand();
 
-            $params = array_merge($params, $buildCommand->params());
+            $params = array_merge($params, $buildCommand->getParams());
         }elseif($command instanceof Built){
-            $sql = $command->command();
+            $sql = $command->getCommand();
 
-            $params = array_merge($params, $command->params());
+            $params = array_merge($params, $command->getParams());
         }elseif(is_string($command)){
             $sql = $command;
         }
@@ -240,7 +240,7 @@ class Adapter implements AdapterInterface, MetadataAccessibleInterface
     /**
      * {@inheritdoc}
      */
-    public function metadata(string $type, string $id = null)
+    public function getMetadata(string $type, string $id = null)
     {
         $information = array(
             'tables' => array(),
@@ -303,11 +303,11 @@ class Adapter implements AdapterInterface, MetadataAccessibleInterface
             $information['tablesColumns'][$row['TABLE_NAME']][$row['COLUMN_NAME']] = $column;
         }
 
-        // $adapter->metadata('tables');
-        // $adapter->metadata('table');
-        // $adapter->metadata('columns');
-        // $adapter->metadata('columns', 'users');
-        // $adapter->metadata('column', 'users.id');
+        // $adapter->getMetadata('tables');
+        // $adapter->getMetadata('table');
+        // $adapter->getMetadata('columns');
+        // $adapter->getMetadata('columns', 'users');
+        // $adapter->getMetadata('column', 'users.id');
 
         // table
         $rows = $this->fetch("

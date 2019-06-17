@@ -9,13 +9,13 @@ class AdapterTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $adapter = $this->adapter("bookshop");
+        $adapter = $this->getAdapter("bookshop");
 
-        // $this->createVariable('variable-133', $adapter->metadata("tables"));
-        $this->assertEquals($this->variable('variable-133'), $adapter->metadata("tables"));
+        // $this->createVariable('variable-133', $adapter->getMetadata("tables"));
+        $this->assertEquals($this->getVariable('variable-133'), $adapter->getMetadata("tables"));
 
         // Users tables
-        $users = $adapter->metadata("table", "users");
+        $users = $adapter->getMetadata("table", "users");
 
         $this->assertEquals("bookshop", $users["schema"]);
         $this->assertEquals("users", $users["name"]);
@@ -23,10 +23,10 @@ class AdapterTest extends TestCase
         $this->assertEquals("utf8_unicode_ci", $users["collation"]);
         $this->assertEquals("", $users["comment"]);
 
-        // $this->createVariable('variable-135', $adapter->metadata("columns"));
-        $this->assertEquals($this->variable('variable-135'), $adapter->metadata("columns"));
+        // $this->createVariable('variable-135', $adapter->getMetadata("columns"));
+        $this->assertEquals($this->getVariable('variable-135'), $adapter->getMetadata("columns"));
 
-        // $this->createVariable('variable-136', $adapter->metadata("column", "users.id"));
-        $this->assertEquals($this->variable('variable-136'), $adapter->metadata("column", "users.id"));
+        // $this->createVariable('variable-136', $adapter->getMetadata("column", "users.id"));
+        $this->assertEquals($this->getVariable('variable-136'), $adapter->getMetadata("column", "users.id"));
     }
 }

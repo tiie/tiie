@@ -57,7 +57,7 @@ class RequestCreator
 
             // content type
             if (!empty($_SERVER['CONTENT_TYPE'])) {
-                $input = $this->input($_SERVER['CONTENT_TYPE'], $emergency);
+                $input = $this->getInput($_SERVER['CONTENT_TYPE'], $emergency);
             }
 
             if (!empty($_FILES)) {
@@ -98,7 +98,7 @@ class RequestCreator
         }
     }
 
-    private function input($type, $emergency = 0)
+    private function getInput($type, $emergency = 0)
     {
         $body = trim(file_get_contents('php://input'));
 

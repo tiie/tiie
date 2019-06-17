@@ -3,7 +3,7 @@ namespace Tiie\Utils;
 
 class Files
 {
-    public function fileExtension($path)
+    public function getFileExtension($path)
     {
         $exploded = explode('.', $path);
 

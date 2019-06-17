@@ -9,7 +9,7 @@ class RowExistsTest extends \Tests\TestCase
     {
         $this->initDatabase('bookshop');
 
-        $validator = new RowExists($this->adapter('bookshop'), 'users');
+        $validator = new RowExists($this->getAdapter('bookshop'), 'users');
 
         $this->assertEquals(1, is_null($validator->validate(1)));
 

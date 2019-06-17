@@ -27,15 +27,14 @@ abstract class Command
         $this->adapter = $adapter;
     }
 
-    public function adapter(AdapterInterface $adapter = null)
+    public function setAdapter(AdapterInterface $adapter)
     {
-        if (is_null($adapter)) {
-            return $this->adapter;
-        }else{
-            $this->adapter = $adapter;
+        $this->adapter = $adapter;
+    }
 
-            return $this;
-        }
+    public function getAdapter() : ?AdapterInterface
+    {
+        return $this->adapter;
     }
 
     public function execute(array $params = array())
@@ -47,22 +46,21 @@ abstract class Command
         return $this->adapter->execute($this, $params);
     }
 
-    public function bind(string $name, $value = null)
+    public function setBind(string $name, $value = null)
     {
         $this->binds[$name] = $value;
 
         return $this;
     }
 
-    public function binds(array $binds = null)
+    public function setBinds(array $binds) : void
     {
-        if (is_null($binds)) {
-            return $this->binds;
-        }else{
-            $this->binds = $binds;
+        $this->binds = $binds;
+    }
 
-            return $this;
-        }
+    public function getBinds(array $binds = null) : array
+    {
+        return $this->binds;
     }
 
     /**
@@ -70,7 +68,7 @@ abstract class Command
      *
      * @return string
      */
-    protected function uid() : string
+    protected function getUid() : string
     {
         $uid = self::$uid++;
 

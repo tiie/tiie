@@ -12,7 +12,7 @@ interface RecordInterface
      *
      * @return string|NULL
      */
-    public function id() : ?string;
+    public function getId() : ?string;
 
     /**
      * Run specific command on record.
@@ -88,7 +88,7 @@ interface RecordInterface
      */
     public function export(array $params = array()) : array;
 
-    public function data(bool $modyfied = true) : array;
+    public function getData(bool $modyfied = true) : array;
 
     public function setted(string $name, bool $modyfied = true) : bool;
 

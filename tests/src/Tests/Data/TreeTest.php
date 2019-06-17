@@ -42,8 +42,8 @@ class TreeTest extends TestCase
                     ),
         ));
 
-        // $this->createVariable('variable-119', $tree->leafs());
-        $this->assertEquals($this->variable('variable-119'), $tree->leafs());
+        // $this->createVariable('variable-119', $tree->getLeafs());
+        $this->assertEquals($this->getVariable('variable-119'), $tree->getLeafs());
     }
 
     public function testPath()
@@ -91,13 +91,13 @@ class TreeTest extends TestCase
                     ),
         ));
 
-        // $this->createVariable('variable-120', $tree->path(152));
-        $this->assertEquals($this->variable('variable-120'), $tree->path(152));
+        // $this->createVariable('variable-120', $tree->getPath(152));
+        $this->assertEquals($this->getVariable('variable-120'), $tree->getPath(152));
 
-        // $this->createVariable('variable-122', $tree->path(151));
-        $this->assertEquals($this->variable('variable-122'), $tree->path(151));
+        // $this->createVariable('variable-122', $tree->getPath(151));
+        $this->assertEquals($this->getVariable('variable-122'), $tree->getPath(151));
 
-        $this->assertEquals(null, $tree->path(109));
+        $this->assertEquals(null, $tree->getPath(109));
     }
 
     public function testPathInconsistent()
@@ -148,7 +148,7 @@ class TreeTest extends TestCase
         $this->expectException(Notice::class);
 
         // Inconsistent tree.
-        $this->assertEquals(null, $tree->path(47));
+        $this->assertEquals(null, $tree->getPath(47));
     }
 
     public function testFindById()
@@ -185,7 +185,7 @@ class TreeTest extends TestCase
         ));
 
         // $this->createVariable('variable-121', $tree->findById('151'));
-        $this->assertEquals($this->variable('variable-121'), $tree->findById('151'));
+        $this->assertEquals($this->getVariable('variable-121'), $tree->findById('151'));
 
         $this->assertEquals(null, $tree->findById('200'));
     }

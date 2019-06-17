@@ -15,7 +15,7 @@ class Headers
         $name = strtolower($name);
 
         foreach ($this->headers as $header) {
-            if (strtolower($header->name()) == $name) {
+            if (strtolower($header->getName()) == $name) {
                 return $header;
             }
         }
@@ -23,7 +23,7 @@ class Headers
         return null;
     }
 
-    public function contentType()
+    public function getContentType()
     {
         return $this->get('Content-Type');
     }
@@ -33,7 +33,7 @@ class Headers
         $prepared = array();
 
         foreach ($this->headers as $header) {
-            $prepared[$header->name()] = $header->value();
+            $prepared[$header->getName()] = $header->getValue();
         }
 
         return $prepared;

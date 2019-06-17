@@ -13,7 +13,7 @@ class Number extends Validator
         $this->unsigned = $unsigned;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.Number.Description)';
     }

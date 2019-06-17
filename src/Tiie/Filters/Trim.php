@@ -13,7 +13,7 @@ class Trim implements \Tiie\Filters\FilterInterface
         ), $config);
     }
 
-    public static function description()
+    public static function getDescription()
     {
     }
 

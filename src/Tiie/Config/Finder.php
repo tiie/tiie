@@ -10,7 +10,7 @@ class Finder
         $this->path = $path;
     }
 
-    public function path()
+    public function getPath()
     {
         return $this->path;
     }

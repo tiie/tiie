@@ -32,7 +32,7 @@ class ValidationFailed extends Exception
      *
      * @return array
      */
-    public function errors() : array
+    public function getErrors() : array
     {
         return $this->errors;
     }

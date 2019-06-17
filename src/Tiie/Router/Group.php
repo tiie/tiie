@@ -10,7 +10,7 @@ class Group
         $this->data = $data;
     }
 
-    public function name()
+    public function getName() : string
     {
         return $this->data["name"];
     }

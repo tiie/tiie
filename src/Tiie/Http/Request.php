@@ -1,6 +1,10 @@
 <?php
 namespace Tiie\Http;
 
+use UserAgentParser\Exception\NoResultFoundException;
+use UserAgentParser\Provider\WhichBrowser;
+use UserAgentParser\Model\UserAgent;
+
 class Request
 {
     private $method;
@@ -67,18 +71,17 @@ class Request
         return trim($string);
     }
 
-    public function files(array $files = null)
+    public function setFiles(array $files) : void
     {
-        if (is_null($files)) {
-            return $this->files;
-        } else {
-            $this->files = $files;
-
-            return $this;
-        }
+        $this->files = $files;
     }
 
-    public function emergency()
+    public function getFiles() : array
+    {
+        return $this->files;
+    }
+
+    public function getEmergency()
     {
         return $this->emergency;
     }
@@ -103,42 +106,51 @@ class Request
         }
     }
 
-    /**
-     * Set domain or get domain.
-     *
-     * @param string $domain
-     */
-    public function domain(string $domain = null)
+    public function setDomain(string $domain) : void
     {
-        if (is_null($domain)) {
-            return $this->domain;
-        }else{
-            $this->domain = $domain;
-
-            return $this;
-        }
+        $this->domain = $domain;
     }
 
-    public function method(string $method = null)
+    public function getDomain() : ?string
     {
-        if (is_null($method)) {
-            return $this->method;
-        }else{
-            $this->method = $method;
-
-            return $this;
-        }
+        return $this->domain;
     }
 
-    public function urn(string $urn = null)
+    public function setMethod(string $method) : void
     {
-        if (is_null($urn)) {
-            return $this->urn;
-        }else{
-            $this->urn = $urn;
+        $this->method = $method;
+    }
 
-            return $this;
+    public function getMethod() : ?string
+    {
+        return $this->method;
+    }
+
+    public function setUrn(string $urn) : void
+    {
+        $this->urn = $urn;
+    }
+
+    public function getUrn()
+    {
+        return $this->urn;
+    }
+
+    public function getAgentParser() : UserAgent
+    {
+        if (!class_exists(WhichBrowser::class)) {
+            throw new Exception("Please include thadafinser/user-agent-parser and whichbrowser/parser to use agent parser.");
         }
+
+        $provider = new WhichBrowser();
+
+        // try {
+            $result = $provider->parse($this->getHeader("User-Agent"));
+        // } catch (NoResultFoundException $ex){
+        //     // nothing found
+        // }
+
+        return $result;
     }
 
     public function chain()
@@ -146,24 +158,23 @@ class Request
         return $this->chain = clone($this);
     }
 
-    public function params($params = null, int $marge = 1)
+    public function setParams($params = null, int $marge = 1) : void
     {
-        if (is_null($params)) {
-            return $this->params;
-        }else{
-            if ($marge) {
-                $this->params = array_merge($this->params, $params);
-            } else {
-                $this->params = $params;
-            }
-
-            return $this;
+        if ($marge) {
+            $this->params = array_merge($this->params, $params);
+        } else {
+            $this->params = $params;
         }
     }
 
-    public function fields()
+    public function getParams() : array
     {
-        $params = $this->params();
+        return $this->params;
+    }
+
+    public function getFields() : array
+    {
+        $params = $this->getParams();
         $fields = array();
 
         foreach ($params as $key => $value) {
@@ -178,53 +189,52 @@ class Request
         return $fields;
     }
 
-    public function param($name, $value = null)
+    public function setParam($name, $value) : void
     {
-        if (is_null($value)) {
-            if (!array_key_exists($name, $this->params)) {
-                return null;
-            }else{
-                return $this->params[$name];
-            }
-        }else{
-            $this->params[$name] = $value;
-
-            return $this;
-        }
+        $this->params[$name] = $value;
     }
 
-    public function input($name = null)
+    public function getParam(string $name)
     {
-        if (!is_null($name)) {
-            if (is_array($name)) {
-                $this->input = $name;
-            }else{
-                return array_key_exists($name, $this->input) ? $this->input[$name] : null;
-            }
-        }else{
-            return $this->input;
-        }
+        return array_key_exists($name, $this->params) ? $this->params[$name] : null;
     }
 
-    public function id($id = null)
+    public function setInput(array $data) : void
     {
-        if (is_null($id)) {
-            return $this->get('id');
-        }else{
-            return $this->set('id', $id);
-        }
+        $this->input = $data;
     }
 
-    public function lang($lang = null)
+    public function getInput()
     {
-        if (is_null($lang)) {
-            return $this->get('lang');
-        }else{
-            return $this->set('lang', $lang);
-        }
+        return $this->input;
     }
 
-    public function contentType($contentType = null)
+    public function getInputByName(string $name)
+    {
+        return array_key_exists($name, $this->input) ? $this->input[$name] : null;
+    }
+
+    public function setId($id) : void
+    {
+        $this->set('id', $id);
+    }
+
+    public function getId()
+    {
+        return $this->get('id');
+    }
+
+    public function setLang(string $lang) : void
+    {
+        $this->set('lang', $lang);
+    }
+
+    public function getLang() : ?string
+    {
+        return $this->set('lang', $lang);
+    }
+
+    public function getContentType($contentType = null)
     {
         if (is_null($contentType)) {
             return $this->get('contentType');
@@ -233,7 +243,7 @@ class Request
         }
     }
 
-    public function header($name)
+    public function getHeader($name)
     {
         $headers = $this->get('headers');
 
@@ -250,14 +260,14 @@ class Request
      *
      * @return string|null
      */
-    public function ip() : ?string
+    public function getIp() : ?string
     {
         return $this->get('ip');
     }
 
-    public function accept($priorities = array())
+    public function getAccept(array $priorities = array())
     {
-        $accept = $this->header('Accept');
+        $accept = $this->getHeader('Accept');
 
         if (is_null($accept)) {
             return null;

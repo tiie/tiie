@@ -220,11 +220,9 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         return $this;
     }
 
-    public function params(array $values = array(), array $fields = array())
+    public function setParams(array $values, array $fields = array()) : void
     {
-        $this->where->params($values, $fields);
-
-        return $this;
+        $this->where->setParams($values, $fields);
     }
 
     public function lowerThan($column, $value)
@@ -308,12 +306,12 @@ class Delete extends \Tiie\Data\Adapters\Commands\Command
         // where
         $where = $this->where->build($params);
 
-        if (!is_null($where->command())) {
-            $sql .= " WHERE {$where->command()}";
-            $command->params($where->params(), 1);
+        if (!is_null($where->getCommand())) {
+            $sql .= " WHERE {$where->getCommand()}";
+            $command->setParams($where->getParams(), 1);
         }
 
-        $command->command($sql);
+        $command->setCommand($sql);
 
         return $command;
     }

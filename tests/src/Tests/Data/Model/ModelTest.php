@@ -11,7 +11,7 @@ class ModelTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $users = new Users($this->adapter('bookshop'));
+        $users = new Users($this->getAdapter('bookshop'));
 
         $records = $users->find(array(
             'id' => array(1, 2, 3),
@@ -21,16 +21,16 @@ class ModelTest extends TestCase
         $this->assertEquals(true, $records instanceof Records);
 
         // $this->createVariable('variable-104', $records->toArray());
-        $this->assertEquals($this->variable('variable-104'), $records->toArray());
+        $this->assertEquals($this->getVariable('variable-104'), $records->toArray());
     }
 
     // public function testGenerator()
     // {
     //     $this->initDatabase('bookshop');
 
-    //     $users = new Users($this->adapter('bookshop'));
+    //     $users = new Users($this->getAdapter('bookshop'));
 
-    //     foreach ($users->generator() as $record) {
+    //     foreach ($users->getGenerator() as $record) {
     //         // print_r($record);
     //     }
     // }
@@ -39,7 +39,7 @@ class ModelTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $users = new Users($this->adapter('bookshop'));
+        $users = new Users($this->getAdapter('bookshop'));
 
         // get records
         $records = $users->find(array(
@@ -58,14 +58,14 @@ class ModelTest extends TestCase
             }
         }
 
-        $this->assertEquals($this->variable('variable-105'), $recordsIds);
+        $this->assertEquals($this->getVariable('variable-105'), $recordsIds);
     }
 
     public function testFetch()
     {
         $this->initDatabase('bookshop');
 
-        $users = new Users($this->adapter('bookshop'));
+        $users = new Users($this->getAdapter('bookshop'));
 
         // get records
         $rows = $users->fetch(array(
@@ -75,33 +75,33 @@ class ModelTest extends TestCase
         $this->assertEquals(true, is_array($rows));
 
         // $this->createVariable('variable-101', $rows);
-        $this->assertEquals($this->variable('variable-101'), $rows);
+        $this->assertEquals($this->getVariable('variable-101'), $rows);
     }
 
     public function testFetchById()
     {
         $this->initDatabase('bookshop');
 
-        $users = new Users($this->adapter('bookshop'));
+        $users = new Users($this->getAdapter('bookshop'));
 
         // get records
         $rows = $users->fetchById(5);
 
         // $this->createVariable('variable-102', $rows);
-        $this->assertEquals($this->variable('variable-102'), $rows);
+        $this->assertEquals($this->getVariable('variable-102'), $rows);
     }
 
     public function testFetchByIds()
     {
         $this->initDatabase('bookshop');
 
-        $users = new Users($this->adapter('bookshop'));
+        $users = new Users($this->getAdapter('bookshop'));
 
         // get records
         $rows = $users->fetchByIds(array(4, 5));
 
         // $this->createVariable('variable-103', $rows);
-        $this->assertEquals($this->variable('variable-103'), $rows);
+        $this->assertEquals($this->getVariable('variable-103'), $rows);
     }
 
     // public function testRun()
@@ -118,18 +118,18 @@ class ModelTest extends TestCase
 //     {
 //         $this->initDatabase('bookshop');
 //
-//         $users = new Users($this->adapter('bookshop'));
+//         $users = new Users($this->getAdapter('bookshop'));
 //
-//         $record = $users->record(5);
+//         $record = $users->getRecord(5);
 //         $record->set('firstName', 'changed');
 //
 //         $users->save($record);
 //
-//         $record = $users->record(5);
+//         $record = $users->getRecord(5);
 //
 //         $this->assertEquals('changed', $record->get('firstName'));
 //         // $this->createVariable('variable-103', $rows);
-//         // $this->assertEquals($this->variable('variable-103'), $rows);
+//         // $this->assertEquals($this->getVariable('variable-103'), $rows);
 //     }
 //
     // public function testCreate()

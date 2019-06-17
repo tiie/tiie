@@ -8,7 +8,7 @@ trait TimerTrait {
     /**
      * @return Timer
      */
-    protected function timer() : Timer
+    protected function getTimer() : Timer
     {
         global $components;
 

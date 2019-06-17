@@ -22,7 +22,7 @@ class Result implements ResultInterface
     /**
      * @return null
      */
-    public function value()
+    public function getValue()
     {
         return $this->value;
     }

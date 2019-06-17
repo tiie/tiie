@@ -10,7 +10,7 @@ class Route
         $this->data = $data;
     }
 
-    public function id()
+    public function getId()
     {
         return $this->data["id"];
     }

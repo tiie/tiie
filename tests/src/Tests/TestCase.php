@@ -8,12 +8,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     private $adapters = array();
 
-    protected function app()
+    protected function getApp()
     {
         return new \Tiie\App(new \Tiie\Config("./src/App/Config/tests.php"));
     }
 
-    protected function api()
+    protected function getApi()
     {
         $adapter = new AdapterHttp(array(
             'url' => 'localhost',
@@ -24,7 +24,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $adapter;
     }
 
-    protected function adapter(string $name) {
+    protected function getAdapter(string $name)
+    {
         if (!array_key_exists($name, $this->adapters)) {
             if ($name == 'bookshop') {
                 $this->adapters[$name] = new \Tiie\Data\Adapters\MySQL\Adapter(array(
@@ -44,7 +45,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $commands = file_get_contents('./databases/bookshop.sql');
 
-        $this->adapter($name)->execute($commands);
+        $this->getAdapter($name)->execute($commands);
     }
 
     // protected function fetch()
@@ -61,7 +62,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $this;
     }
 
-    protected function variable($name)
+    protected function getVariable($name)
     {
         $file = sprintf("./src/Tests/variables/%s.php", $name);
 

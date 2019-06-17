@@ -47,7 +47,7 @@ class Timer
      *
      * @return string
      */
-    public function id() : string
+    public function getId() : string
     {
         return $this->id;
     }
@@ -71,7 +71,7 @@ class Timer
         $unit->line = $caller['line'];
         $unit->context = $context;
         $unit->childs = array();
-        $unit->start = $this->microtime();
+        $unit->start = $this->getMicrotime();
         $unit->stop = null;
         $unit->time = null;
 
@@ -95,7 +95,7 @@ class Timer
      */
     public function stop() : void
     {
-        $this->pointer->stop = $this->microtime();
+        $this->pointer->stop = $this->getMicrotime();
         $this->pointer->time = ($this->pointer->stop - $this->pointer->start);
 
         if (!empty($this->stack)) {
@@ -103,25 +103,25 @@ class Timer
         }
     }
 
-    private function microtime()
+    private function getMicrotime()
     {
         list($usec, $sec) = explode(" ", microtime());
 
         return ((float)$usec + (float)$sec);
     }
 
-    public function time() : float
+    public function getTime() : float
     {
         if (empty($this->root)) {
             trigger_error("There is no timetraces to count time.", E_USER_NOTICE);
 
-            return 0;
+            return 0.0;
         }
 
         if (is_null($this->root->time)) {
             trigger_error("Timetraces are not closed.", E_USER_NOTICE);
 
-            $this->root->stop = $this->microtime();
+            $this->root->stop = $this->getMicrotime();
             $this->root->time = ($this->pointer->stop - $this->pointer->start);
 
             return $this->root->time;
@@ -135,7 +135,7 @@ class Timer
      *
      * @return stdClass|null
      */
-    public function timetrace()
+    public function getTimetrace()
     {
         return $this->root;
     }

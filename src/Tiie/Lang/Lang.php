@@ -35,7 +35,7 @@ class Lang implements LangInterface
             $value = null;
 
             foreach ($this->params['dictionaries'] as $dictionary) {
-                $value = $this->component($dictionary)->get($lang, $token);
+                $value = $this->getComponent($dictionary)->get($lang, $token);
 
                 if (!is_null($value)) {
                     break;

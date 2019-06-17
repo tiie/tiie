@@ -10,40 +10,40 @@ use Tiie\Data\Adapters\Commands\Built;
 
 class UpdateTest extends TestCase
 {
-    public function testTable()
-    {
-        $update = new Update();
+    // public function testTable()
+    // {
+    //     $update = new Update();
 
-        $this->assertEquals($update, $update->table('users'));
-        $this->assertEquals('users', $update->table());
-    }
+    //     $this->assertEquals($update, $update->table('users'));
+    //     $this->assertEquals('users', $update->table());
+    // }
 
     public function testValues()
     {
         $update = new Update();
 
-        $this->assertEquals($update, $update->values(array(
+        $update->setValues(array(
             'id' => 1,
             'name' => 'Pawel',
-        )));
+        ));
 
-        // $this->createVariable('variable-69', $update->values());
-        $this->assertEquals($this->variable('variable-69'), $update->values());
+        // $this->createVariable('variable-69', $update->getValues());
+        $this->assertEquals($this->getVariable('variable-69'), $update->getValues());
     }
 
     public function testSet()
     {
         $update = new Update();
 
-        $this->assertEquals($update, $update->values(array(
+        $update->setValues(array(
             'id' => 1,
             'name' => 'Pawel',
-        )));
+        ));
 
         $this->assertEquals($update, $update->set('age', 10));
 
-        // $this->createVariable('variable-70', $update->values());
-        $this->assertEquals($this->variable('variable-70'), $update->values());
+        // $this->createVariable('variable-70', $update->getValues());
+        $this->assertEquals($this->getVariable('variable-70'), $update->getValues());
     }
 
     // todo Testowanie method Where w Update.
@@ -74,12 +74,11 @@ class UpdateTest extends TestCase
     {
         $update = new Update();
 
-        $update->table('users')
-            ->values(array(
-                'id' => 1,
-                'name' => 'Pawel',
-            ))
-        ;
+        $update->setTable('users');
+        $update->setValues(array(
+            'id' => 1,
+            'name' => 'Pawel',
+        ));
 
         $this->assertEquals(true, $update->build() instanceof Built);
     }
@@ -88,17 +87,17 @@ class UpdateTest extends TestCase
     {
         $this->initDatabase('bookshop');
 
-        $update = new Update($this->adapter('bookshop'));
+        $update = new Update($this->getAdapter('bookshop'));
 
-        $update->table('users')
-            ->values(array(
-                'lastName' => 'changed',
-            ))
-            ->in('id', array(1, 2, 3))
-            ->execute()
-        ;
+        $update->setTable('users');
+        $update->setValues(array(
+            'lastName' => 'changed',
+        ));
 
-        $rows = (new Select($this->adapter('bookshop')))
+        $update->in('id', array(1, 2, 3));
+        $update->execute();
+
+        $rows = (new Select($this->getAdapter('bookshop')))
             ->from('users', 'u')
             ->columns(array(
                 'id',
@@ -115,12 +114,12 @@ class UpdateTest extends TestCase
             ->order('id asc')
             ->in('id', array(1, 2, 3))
             ->fetch()
-            ->data()
+            ->getData()
         ;
 
         $this->assertEquals(3, count($rows));
 
         $this->createVariable('variable-71', $rows);
-        $this->assertEquals($this->variable('variable-71'), $rows);
+        $this->assertEquals($this->getVariable('variable-71'), $rows);
     }
 }

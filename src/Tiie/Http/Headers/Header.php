@@ -12,32 +12,23 @@ class Header
         $this->value = $value;
     }
 
-    /**
-     * Set value of 'value' if value is given or return present value of
-     * 'value'.
-     *
-     * @param string $value
-     * @return $this|string
-     */
-    public function value(string $value = null)
+    public function setValue(string $value) : void
     {
-        if (func_num_args() == 0) {
-            return $this->value;
-        } else {
-            $this->value = $value;
-
-            return $this;
-        }
+        $this->value = $value;
     }
 
-    public function name(string $name = null)
+    public function getValue() : ?string
     {
-        if (func_num_args() == 0) {
-            return $this->name;
-        } else {
-            $this->name = $name;
+        return $this->value;
+    }
 
-            return $this;
-        }
+    public function setName(string $name) : void
+    {
+        $this->name = $name;
+    }
+
+    public function getName() : string
+    {
+        return $this->name;
     }
 }

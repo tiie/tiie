@@ -33,7 +33,7 @@ class Inputs
     {
         $input = new Input($input, $rules);
 
-        $input->messages($this->messages);
+        $input->setMessages($this->messages);
 
         return $input;
     }

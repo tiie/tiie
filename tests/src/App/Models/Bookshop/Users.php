@@ -27,22 +27,20 @@ class Users extends Model
 
     public function fetch(array $params = array(), array $fields = array(), array $sort = array(), int $size = null, int $page = null) : array
     {
-        $select = (new Select($this->db))
-            ->from('users')
-            ->columns(array(
-                'id',
-                'firstName',
-                'lastName',
-                'countryId',
-            ))
-            ->page($page, $size)
-        ;
-
-        $select->params($params, array(
+        $select = (new Select($this->db));
+        $select->from('users');
+        $select->columns(array(
+            'id',
+            'firstName',
+            'lastName',
+            'countryId',
+        ));
+        $select->setPage($page, $size);
+        $select->setParams($params, array(
             'id'
         ));
 
-        return $select->fetch()->data();
+        return $select->fetch()->getData();
     }
 
     public function run(CommandInterface $command, array $params = array()) : ?ResultInterface
@@ -62,11 +60,11 @@ class Users extends Model
     {
         $this->validateThrow($command, $params);
 
-        $record = $command->record();
+        $record = $command->getRecord();
 
         (new Update($this->db))
             ->set('firstName', $record->get('firstName'))
-            ->equal('id', $record->id())
+            ->equal('id', $record->getId())
             ->execute()
         ;
 

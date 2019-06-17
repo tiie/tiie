@@ -18,12 +18,12 @@ class Command implements CommandInterface {
         $this->params = $params;
     }
 
-    public function name() : string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function params() : array
+    public function getParams() : array
     {
         return $this->params;
     }

@@ -5,7 +5,7 @@ use Tiie\Filters\FilterInterface;
 
 class Filter implements FilterInterface
 {
-    public function description() : ?string
+    public function getDescription() : ?string
     {
         return null;
     }

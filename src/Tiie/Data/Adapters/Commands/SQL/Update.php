@@ -24,48 +24,28 @@ class Update extends Command
      *
      * ```php
      * $update = new Update();
-     * $update->table('users');
+     * $update->setTable('users');
      * ```
      *
      * @param string $table
      * @return $this|string
      *
      */
-    public function table(string $table = null)
+    public function setTable(string $table = null)
     {
-        if (!is_null($table)) {
-            $this->table = $table;
+        $this->table = $table;
 
-            return $this;
-        }else{
-            return $this->table;
-        }
+        return $this;
     }
 
-    /**
-     * Set values for UPDATE statement.
-     *
-     * ```php
-     * $update = new Update();
-     *
-     * $this->assertEquals($update, $update->values(array(
-     *     'id' => 1,
-     *     'name' => 'Pawel',
-     * )));
-     * ```
-     *
-     * @param array $values
-     * @return $this|array
-     */
-    public function values(array $values = null)
+    public function setValues(array $values) : void
     {
-        if (is_null($values)) {
-            return $this->values;
-        }else{
-            $this->values = $values;
+        $this->values = $values;
+    }
 
-            return $this;
-        }
+    public function getValues() : array
+    {
+        return $this->values;
     }
 
     /**
@@ -74,7 +54,7 @@ class Update extends Command
      * ```php
      * $update = new Update();
      *
-     * $update->values(array(
+     * $update->setValues(array(
      *     'id' => 1,
      *     'name' => 'Pawel',
      * ));
@@ -268,9 +248,9 @@ class Update extends Command
             if (is_numeric($value)) {
                 $s = $value;
             }else if(is_string($value)){
-                $uid = $this->uid();
+                $uid = $this->getUid();
                 $s = ":{$uid}";
-                $command->param($uid, $value);
+                $command->setParam($uid, $value);
             }else if(is_null($value)){
                 $s = "null";
             }else{
@@ -288,12 +268,12 @@ class Update extends Command
 
         $where = $this->where->build($params);
 
-        if (!empty($where->command())) {
-            $sql .= "\nWHERE {$where->command()}";
-            $command->params($where->params(), 1);
+        if (!empty($where->getCommand())) {
+            $sql .= "\nWHERE {$where->getCommand()}";
+            $command->setParams($where->getParams(), 1);
         }
 
-        $command->command($sql);
+        $command->setCommand($sql);
 
         return $command;
     }

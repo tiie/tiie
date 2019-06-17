@@ -13,7 +13,7 @@ class Exists extends Validator
         $this->field = $field;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.Exists.Description)';
     }

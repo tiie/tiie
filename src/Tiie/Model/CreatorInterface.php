@@ -30,7 +30,7 @@ interface CreatorInterface
      */
     public function get(string $name);
 
-    public function data(array $data, int $merge = 1) : CreatorInterface;
+    public function setData(array $data, int $merge = 1) : void;
 
     /**
      * Validate creating of model.

@@ -1,30 +1,31 @@
 <?php
 namespace Tests\Components;
 
+use Tests\Components\Email;
+use Tests\Components\Users;
+
 class UsersCategories
 {
     private $email;
     private $users;
 
-    public function users(\Tests\Components\Users $users = null)
+    public function setUsers(Users $users) : void
     {
-        if (is_null($users)) {
-            return $this->users;
-        } else {
-            $this->users = $users;
-
-            return $this;
-        }
+        $this->users = $users;
     }
 
-    public function email(\Tests\Components\Email $email = null)
+    public function getUsers() : ?Users
     {
-        if (is_null($email)) {
-            return $this->email;
-        } else {
-            $this->email = $email;
+        return $this->users;
+    }
 
-            return $this;
-        }
+    public function setEmail(Email $email) : void
+    {
+        $this->email = $email;
+    }
+
+    public function getEmail() : Email
+    {
+        return $this->email;
     }
 }

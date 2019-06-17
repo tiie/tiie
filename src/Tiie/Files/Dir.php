@@ -43,7 +43,7 @@ class Dir
 
             $path = sprintf("%s/%s", $dir, $filename);
 
-            rename($this->path(), sprintf('%s/%s', $dir, $filename));
+            rename($this->getPath(), sprintf('%s/%s', $dir, $filename));
 
             $this->path = sprintf('%s/%s', $dir, $filename);
         }
@@ -51,7 +51,7 @@ class Dir
         return $this;
     }
 
-    public function path()
+    public function getPath()
     {
         return sprintf('%s/%s', $this->dir, $this->filename);
     }
@@ -61,7 +61,7 @@ class Dir
         return $this->dir;
     }
 
-    public function name()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -74,7 +74,7 @@ class Dir
     {
     }
 
-    public function content()
+    public function getContent()
     {
     }
 

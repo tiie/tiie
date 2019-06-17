@@ -14,7 +14,7 @@ interface ResultInterface
      * Returns given value.
      * @return mixed
      */
-    public function value();
+    public function getValue();
 
     /**
      * Returns value as string.

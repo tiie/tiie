@@ -15,7 +15,7 @@ class Files implements DictionaryInterface
 
     public function get(string $lang, string $token) : ?string
     {
-        $path = $this->path($lang, $token);
+        $path = $this->getPath($lang, $token);
 
         if (!array_key_exists($path, $this->cache)) {
             if (!is_file($path)) {
@@ -36,8 +36,8 @@ class Files implements DictionaryInterface
 
     public function remove(string $lang, string $token)
     {
-        if (unlink($this->path($lang, $token)) === false) {
-            throw new \Exception("I can not remove file {$this->path($lang, $token)}");
+        if (unlink($this->getPath($lang, $token)) === false) {
+            throw new \Exception("I can not remove file {$this->getPath($lang, $token)}");
         }
 
         return $this;
@@ -53,7 +53,7 @@ class Files implements DictionaryInterface
      */
     public function create(string $lang, string $token, string $value)
     {
-        $path = $this->path($lang, $token);
+        $path = $this->getPath($lang, $token);
 
         if (file_put_contents($path, $value) === false) {
             throw new \Exception("I can not save value to dictionary {$path}");
@@ -62,7 +62,7 @@ class Files implements DictionaryInterface
         return $this;
     }
 
-    private function path(string $lang, string $token)
+    private function getPath(string $lang, string $token)
     {
         return "{$this->dir}/{$lang}.{$token}";
     }

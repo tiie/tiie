@@ -40,7 +40,7 @@ class Tree
      *
      * @return array
      */
-    public function leafs() : array
+    public function getLeafs() : array
     {
         $leafs = array();
         $keyId = $this->params['keyId'];
@@ -76,7 +76,7 @@ class Tree
      *
      * @return array|null
      */
-    public function path(string $to) : ?array
+    public function getPath(string $to) : ?array
     {
         $toNode = $this->findById($to);
 

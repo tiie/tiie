@@ -21,7 +21,7 @@ class Enum extends Validator
         }
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.Enum.Description)';
     }

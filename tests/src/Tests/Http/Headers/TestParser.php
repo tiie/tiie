@@ -10,7 +10,7 @@ class TestParser extends TestCase
     {
         $parser = new Parser();
 
-        $headers = $parser->parse($this->variable('variable-106'));
+        $headers = $parser->parse($this->getVariable('variable-106'));
 
         // todo Extends unit test for rest headers.
         $this->assertEquals('application/json', $headers->get('Content-Type')->mediaType());

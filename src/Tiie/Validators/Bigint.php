@@ -14,7 +14,7 @@ class Bigint extends Number
         $this->unsigned = $unsigned;
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validators.Bigint.Description)';
     }
@@ -25,7 +25,6 @@ class Bigint extends Number
             return $errors;
         }
 
-        // todo Bigint validate.
         return null;
     }
 }

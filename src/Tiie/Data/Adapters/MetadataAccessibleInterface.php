@@ -18,14 +18,14 @@ interface MetadataAccessibleInterface
      *
      * ```
      * <?php
-     * $adapter->metadata("tables");
-     * $adapter->metadata("table", "users");
-     * $adapter->metadata("columns");
-     * $adapter->metadata("column", "user.id");
+     * $adapter->getMetadata("tables");
+     * $adapter->getMetadata("table", "users");
+     * $adapter->getMetadata("columns");
+     * $adapter->getMetadata("column", "user.id");
      * ```
      * @param string $type
      * @param string|null $id
      * @return mixed
      */
-    public function metadata(string $type, string $id = null);
+    public function getMetadata(string $type, string $id = null);
 }

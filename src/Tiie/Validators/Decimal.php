@@ -20,7 +20,7 @@ class Decimal extends Validator
         }
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.Decimal.Description)';
     }

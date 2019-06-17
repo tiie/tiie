@@ -26,7 +26,7 @@ class Min extends Validator
         if (!is_numeric($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
@@ -35,14 +35,14 @@ class Min extends Validator
 
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
         if ($value <  $this->min) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_VALUE,
-                "error" => $this->messages()->get(ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_VALUE, array("value" => (string) $value)),
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_NOT_REACH_MINIMUM_VALUE, array("value" => (string) $value)),
             );
         }
 

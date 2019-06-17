@@ -18,12 +18,12 @@ class Base extends \Exception
         $this->code = $code;
     }
 
-    public function errors()
+    public function getErrors()
     {
         return $this->errors;
     }
 
-    public function code()
+    public function getHttpCode()
     {
         return $this->code;
     }

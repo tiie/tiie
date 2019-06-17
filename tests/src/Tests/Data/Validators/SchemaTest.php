@@ -9,7 +9,7 @@ class SchemaTest extends \Tests\TestCase
     // {
     //     $this->initDatabase('bookshop');
 
-    //     $validator = new Schema($this->adapter('bookshop'), 'users.id');
+    //     $validator = new Schema($this->getAdapter('bookshop'), 'users.id');
 
     //     $this->assertEquals(null, $validator->validate("1"));
 

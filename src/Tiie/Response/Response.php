@@ -5,6 +5,7 @@ use Tiie\Model\RecordInterface;
 use Tiie\Model\Records;
 use Tiie\Http\Request;
 use Tiie\OpenGraph\Preparator as OpenGraphPreparator;
+use Tiie\Response\Engines\Engines;
 
 /**
  * Mechanizm do obsługi odpowiedzi.
@@ -51,48 +52,44 @@ class Response implements ResponseInterface
         $this->openGraph = new OpenGraphPreparator();
 
         if (!empty($this->params["headers"])) {
-            $this->headers($this->params["headers"]);
+            $this->setHeaders($this->params["headers"]);
         }
     }
 
-    public function variable(string $name, $value, string $type = "js") : ResponseInterface
+    public function setVariable(string $name, $value, string $type = "js") : void
     {
         $this->variables[] = array(
             "name" => $name,
             "value" => $value,
             "type" => $type,
         );
-
-        return $this;
     }
 
-    public function title(string $title) : Response
+    public function setTitle(string $title) : void
     {
-        $this->openGraph->title($title);
+        $this->openGraph->setTitle($title);
 
         $this->title = $title;
-
-        return $this;
     }
 
-    public function openGraph() : OpenGraphPreparator
+    public function getOpenGraph() : OpenGraphPreparator
     {
         return $this->openGraph;
     }
 
     public function includeOpenGraph()
     {
-        if (!empty($this->title)) $this->openGraph->title($this->title);
-        if (!empty($this->description)) $this->openGraph->description($this->description);
+        if (!empty($this->title)) $this->openGraph->setTitle($this->title);
+        if (!empty($this->description)) $this->openGraph->setDescription($this->description);
 
         $this->openGraphInlude = true;
 
         return $this;
     }
 
-    public function description(string $description) : Response
+    public function setDescription(string $description) : Response
     {
-        $this->openGraph->description($description);
+        $this->openGraph->setDescription($description);
 
         $this->description = $description;
 
@@ -229,85 +226,57 @@ class Response implements ResponseInterface
         }
     }
 
-    public function template($template = null)
+    public function setTemplate(string $template) : void
     {
-        if (is_null($template)) {
-            return $this->template;
-        }else{
-            $this->template = $template;
+        $this->template = $template;
+    }
 
-            return $this;
-        }
+    public function getTemplate() : ?string
+    {
+        return $this->template;
     }
 
     /**
      * Set engines manager.
-     *
-     * @return $this
      */
-    public function engines($engines = null)
+    public function setEngines(Engines $engines) : void
     {
-        if (is_null($engines)) {
-            return $this->engines;
-        }else{
-            $this->engines = $engines;
-
-            return $this;
-        }
+        $this->engines = $engines;
     }
 
-    public function layout($layout = null)
+    public function setLayout(string $layout) : void
     {
-        if (is_null($layout)) {
-            return $this->layout;
-        }else{
-            $this->layout = $layout;
-
-            return $this;
-        }
+        $this->layout = $layout;
     }
 
-    public function action($action = null)
+    public function getLayout() : ?string
     {
-        if (is_null($action)) {
-            return $this->action;
-        }else{
-            $this->action = $action;
-
-            return $this;
-        }
+        return $this->layout;
     }
 
-    public function engine($engine = null)
+    public function setAction($action) : void
     {
-        if (is_null($engine)) {
-            return $this->engine;
-        }else{
-            $this->engine = $engine;
-
-            return $this;
-        }
+        $this->action = $action;
     }
 
-    /**
-     * Ustawia parametry odpowiedzi. Parameetry są głównie wykorzystywane w
-     * momencie tworzenia odpowiedzi. Parametrem może być np. ścieżka do
-     * szablonu twiga. Lub layout jaki ma być zastosowany.
-     *
-     * @param string $name
-     * @param string $value
-     * @return $this|mixed Jeśli zostanie podane $value zwracany jest $this, w
-     * innym przypadku wartość ustawiona pod podaną nazwą.
-     */
-    public function param($name, $value = null)
+    public function getAction()
     {
-        if (is_null($value)) {
-            return array_key_exists($name, $this->params) ? $this->params[$name] : null;
-        }else{
-            $this->params[$name] = $value;
+        return $this->action;
+    }
 
-            return $this;
-        }
+    public function setEngine($engine = null) : void
+    {
+        $this->engine = $engine;
+    }
+
+    public function setParam(string $name, $value) : void
+    {
+        $this->params[$name] = $value;
+    }
+
+    public function getParam(string $name)
+    {
+        return array_key_exists($name, $this->params) ? $this->params[$name] : null;
     }
 
     /**
@@ -324,7 +293,7 @@ class Response implements ResponseInterface
         // get first engine
         $engine = $engines[array_keys($engines)[0]];
 
-        $accept = $this->accept($request);
+        $accept = $this->getAccept($request);
 
         if (!empty($engines[$accept["contentType"]])) {
             $engine = $engines[$accept["contentType"]];
@@ -346,18 +315,17 @@ class Response implements ResponseInterface
      *
      * @see \Tiie\Response\ResponseInterface::header()
      */
-    public function header(string $name, $value = null)
+    public function setHeader(string $name, $value) : void
     {
-        if (is_null($value)) {
-            if (array_key_exists($name, $this->headers)) {
-                return $this->headers[$name];
-            }else{
-                return null;
-            }
-        }else{
-            $this->headers[$name] = $value;
+        $this->headers[$name] = $value;
+    }
 
-            return $this;
+    public function getHeader(string $name) : ?string
+    {
+        if (array_key_exists($name, $this->headers)) {
+            return $this->headers[$name];
+        }else{
+            return null;
         }
     }
 
@@ -366,15 +334,14 @@ class Response implements ResponseInterface
      *
      * @see \Tiie\Response\ResponseInterface::headers()
      */
-    public function headers(array $headers = null)
+    public function setHeaders(array $headers) : void
     {
-        if (is_null($headers)) {
-            return $this->headers;
-        }else{
-            $this->headers = $headers;
+        $this->headers = $headers;
+    }
 
-            return $this;
-        }
+    public function getHeaders() : array
+    {
+        return $this->headers;
     }
 
     /**
@@ -382,15 +349,14 @@ class Response implements ResponseInterface
      *
      * @see \Tiie\Response\ResponseInterface::code()
      */
-    public function code(string $code = null)
+    public function setCode(string $code) : void
     {
-        if (is_null($code)) {
-            return $this->code;
-        }else{
-            $this->code = $code;
+        $this->code = $code;
+    }
 
-            return $this;
-        }
+    public function getCode()
+    {
+        return $this->code;
     }
 
     /**
@@ -398,11 +364,9 @@ class Response implements ResponseInterface
      *
      * @see \Tiie\Response\ResponseInterface::set()
      */
-    public function set(string $name, $value, string $scope = self::VALUE_SCOPE_CONTENT) : ResponseInterface
+    public function set(string $name, $value, string $scope = self::VALUE_SCOPE_CONTENT) : void
     {
         $this->data[$scope][$name] = $value;
-
-        return $this;
     }
 
     /**
@@ -415,51 +379,18 @@ class Response implements ResponseInterface
         return array_key_exists($name, $this->data[$scope]) ? $this->data[$scope][$name] : null;
     }
 
-    public function record(RecordInterface $record = null, string $scope = self::VALUE_SCOPE_CONTENT)
+    public function setRecord(RecordInterface $record = null, string $scope = self::VALUE_SCOPE_CONTENT) : void
     {
         if (is_null($record)) {
-            $this->data(null, 0, $scope);
+            $this->setData(null, 0, $scope);
         } else {
-            $this->data($record->toArray(), 0, $scope);
+            $this->setData($record->toArray(), 0, $scope);
         }
-
-        return $this;
     }
 
-    public function records(Records $records, string $scope = self::VALUE_SCOPE_CONTENT)
+    public function setRecords(Records $records, string $scope = self::VALUE_SCOPE_CONTENT) : void
     {
-        $this->data($records->toArray(), 0, $scope);
-
-        return $this;
-    }
-
-    /**
-     * Pozwala na ustawienie danych do odpowiedzi.
-     *
-     * @param null|array $data
-     * @return null|array|$this
-     */
-    public function data(array $data = null, int $merge = 1, string $scope = self::VALUE_SCOPE_CONTENT)
-    {
-        if (func_num_args() == 0) {
-            return $this->data[$scope];
-        } else {
-            if ($merge) {
-                if (is_null($data)) {
-                    $this->data[$scope] = $data;
-                } else {
-                    if (is_null($this->data[$scope])) {
-                        $this->data[$scope] = $data;
-                    } else {
-                        $this->data[$scope] = array_merge($this->data[$scope], $data);
-                    }
-                }
-            } else {
-                $this->data[$scope] = $data;
-            }
-
-            return $this;
-        }
+        $this->setData($records->toArray(), 0, $scope);
     }
 
     /**
@@ -483,7 +414,7 @@ class Response implements ResponseInterface
      * Count and return information about accept content type, langue, charset
      * etc.
      */
-    private function accept($request)
+    private function getAccept(Request $request)
     {
         $accept = array(
             "lang" => null,
@@ -492,7 +423,7 @@ class Response implements ResponseInterface
 
         // lang
         if (!empty($this->params["lang"]["negotiation"])) {
-            $lang = $request->header("Accept-Language");
+            $lang = $request->getHeader("Accept-Language");
             $priorities = $this->params["lang"]["priorities"];
 
             if (is_null($lang)) {
@@ -518,7 +449,7 @@ class Response implements ResponseInterface
         if (!empty($this->params["contentType"]["negotiation"])) {
             // jest wlaczony mechanizm negocjacji
             // pobieram naglowek Accept z zadania
-            $contentType = $request->header("Accept");
+            $contentType = $request->getHeader("Accept");
             $priorities = $this->params["contentType"]["priorities"];
 
             if (is_null($contentType)) {
@@ -543,11 +474,11 @@ class Response implements ResponseInterface
         return $accept;
     }
 
-    public function counter($number, $page = null, $pageSize = null)
+    public function getCounter($number, $page = null, $pageSize = null)
     {
         if (is_array($page)) {
             if (isset($page["page"]) && isset($page["pageSize"])) {
-                return $this->counter($number, $page["page"], $page["pageSize"]);
+                return $this->getCounter($number, $page["page"], $page["pageSize"]);
             }
         }
 

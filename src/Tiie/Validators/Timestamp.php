@@ -11,7 +11,7 @@ class Timestamp extends Number
         parent::__construct(1);
     }
 
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.Timestamp.Description)';
     }

@@ -9,7 +9,7 @@ return array(
     },
     'after' => function($component, \Tiie\Components\Scope $components, array $params = array()) {
 
-        $component->email($components->get('@email'));
-        $component->users($components->get('model.users'));
+        $component->setEmail($components->get('@email'));
+        $component->setUsers($components->get('model.users'));
     },
 );

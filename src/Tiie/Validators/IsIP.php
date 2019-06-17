@@ -6,7 +6,7 @@ use Tiie\Validators\Validator;
 
 class IsIP extends Validator
 {
-    public function description()
+    public function getDescription()
     {
         return '@(Tiie.Data.Validator.IsIP.Description)';
     }

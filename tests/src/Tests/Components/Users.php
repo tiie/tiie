@@ -1,6 +1,9 @@
 <?php
 namespace Tests\Components;
 
+use Tests\Components\UsersCategories;
+use Tests\Components\Email;
+
 class Users
 {
     private $email;
@@ -11,25 +14,23 @@ class Users
         $this->email = $email;
     }
 
-    public function categories(\Tests\Components\UsersCategories $categories = null)
+    public function setCategories(UsersCategories $categories) : void
     {
-        if (is_null($categories)) {
-            return $this->categories;
-        } else {
-            $this->categories = $categories;
-
-            return $this;
-        }
+        $this->categories = $categories;
     }
 
-    public function email(\Tests\Components\Email $email = null)
+    public function getCategories() : ?UsersCategories
     {
-        if (is_null($email)) {
-            return $this->email;
-        } else {
-            $this->email = $email;
+        return $this->categories;
+    }
 
-            return $this;
-        }
+    public function setEmail(Email $email) : void
+    {
+        $this->email = $email;
+    }
+
+    public function getEmail() : Email
+    {
+        return $this->email;
     }
 }

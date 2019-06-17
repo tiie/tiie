@@ -17,17 +17,15 @@ class Preparator
         "localeAlternate" => "locale:alternate",
     );
 
-    public function title(string $title)
+    public function setTitle(string $title) : void
     {
         $this->objects[] = array(
             "type" => "title",
             "value" => $title,
         );
-
-        return $this;
     }
 
-    public function description(string $description)
+    public function setDescription(string $description)
     {
         $this->objects[] = array(
             "type" => "description",
@@ -37,34 +35,28 @@ class Preparator
         return $this;
     }
 
-    public function type(string $type)
+    public function setType(string $type) : void
     {
         $this->objects[] = array(
             "type" => "type",
             "value" => $type,
         );
-
-        return $this;
     }
 
-    public function url(string $url)
+    public function setUrl(string $url) : void
     {
         $this->objects[] = array(
             "type" => "url",
             "value" => $url,
         );
-
-        return $this;
     }
 
-    public function siteName(string $siteName)
+    public function setSiteName(string $siteName) : void
     {
         $this->objects[] = array(
             "type" => "siteName",
             "value" => $siteName,
         );
-
-        return $this;
     }
 
     public function addImage(array $image)
@@ -97,14 +89,12 @@ class Preparator
         return $this;
     }
 
-    public function locale(string $locale)
+    public function setLocale(string $locale) : void
     {
         $this->objects[] = array(
             "type" => "locale",
             "value" => $locale,
         );
-
-        return $this;
     }
 
     public function addLocaleAlternate(string $locale)

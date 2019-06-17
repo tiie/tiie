@@ -7,7 +7,7 @@ use Tiie\Components\Supervisor as Components;
 
 class ComponentsTest extends TestCase
 {
-    private function components()
+    private function getComponents()
     {
         $components = new Components(array(
             'dirs' => array(
@@ -20,28 +20,28 @@ class ComponentsTest extends TestCase
 
     // public function testGet()
     // {
-    //     $components = $this->components();
+    //     $components = $this->getComponents();
 
     //     $this->assertEquals(Client::class, get_class($components->get('model.client')));
     // }
 
     public function testSelfDependentComponents()
     {
-        $components = $this->components();
+        $components = $this->getComponents();
 
         $users = $components->get('model.users');
 
-        $this->assertEquals($users->email(), $users->categories()->email());
-        $this->assertEquals($users, $users->categories()->users());
+        $this->assertEquals($users->getEmail(), $users->getCategories()->getEmail());
+        $this->assertEquals($users, $users->getCategories()->getUsers());
     }
 
     public function testSelfDependentComponentRevert()
     {
-        $components = $this->components();
+        $components = $this->getComponents();
 
         $categories = $components->get('model.users.categories');
 
-        $this->assertEquals($categories->email(), $categories->users()->email());
-        $this->assertEquals($categories, $categories->users()->categories());
+        $this->assertEquals($categories->getEmail(), $categories->getUsers()->getEmail());
+        $this->assertEquals($categories, $categories->getUsers()->getCategories());
     }
 }

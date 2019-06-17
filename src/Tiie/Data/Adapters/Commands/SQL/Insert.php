@@ -7,7 +7,7 @@ use Tiie\Data\Adapters\Commands\Built;
 /**
  *
  * ```php
- * $insert = new Insert($this->adapter('bookshop'));
+ * $insert = new Insert($this->getAdapter('bookshop'));
  *
  * $insert->into('users')
  *     ->add(array(
@@ -52,9 +52,9 @@ class Insert extends Command
     /**
      * @see Insert::into()
      */
-    public function table(string $table = null)
+    public function setTable(string $table = null) : void
     {
-        return $this->into($table);
+        $this->into($table);
     }
 
     /**
@@ -63,12 +63,12 @@ class Insert extends Command
      * ```php
      * $insert = new Insert();
      *
-     * $insert->value(array(
+     * $insert->addValue(array(
      *     'id' => 1,
      *     'name' => 'Pawel'
      * ));
      *
-     * $insert->value(array(
+     * $insert->addValue(array(
      *     'id' => 2,
      *     'name' => 'Pawel'
      * ));
@@ -77,29 +77,19 @@ class Insert extends Command
      * @param array $value
      * @return $this
      */
-    public function value(array $value) : Insert
+    public function addValue(array $value) : void
     {
         $this->values[] = $value;
-
-        return $this;
     }
 
-    /**
-     * Set values for insert.
-     *
-     * @param array $values
-     * @param int $overwrite
-     * @return $this|array
-     */
-    public function values(array $values = null, int $overwrite = 1)
+    public function setValues(array $values) : void
     {
-        if (!is_null($values)) {
-            $this->values = $values;
+        $this->values = $values;
+    }
 
-            return $this;
-        }else{
-            return $this->values;
-        }
+    public function getValues() : array
+    {
+        return $this->values;
     }
 
     /**
@@ -173,8 +163,8 @@ class Insert extends Command
                     if (is_numeric($value)) {
                         $t .= "{$value},";
                     }else{
-                        $uid = $this->uid();
-                        $command->param($uid, $value);
+                        $uid = $this->getUid();
+                        $command->setParam($uid, $value);
                         $t .= ":{$uid},";
                     }
                 }
@@ -186,7 +176,7 @@ class Insert extends Command
             $svalues = trim($svalues, ',');
         }
 
-        $command->command("insert into {$params['quote']}{$this->table}{$params['quote']} ({$scolumns}) values {$svalues}");
+        $command->setCommand("insert into {$params['quote']}{$this->table}{$params['quote']} ({$scolumns}) values {$svalues}");
 
         return $command;
     }

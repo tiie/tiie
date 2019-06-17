@@ -1,6 +1,10 @@
 <?php
 namespace Tiie;
 
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
 define("FLAT_TRUE", "1");
 define("FLAT_FALSE", "0");
 
@@ -146,8 +150,6 @@ class App
 
             $response = $this->response($this->router->run(), $this->request);
 
-            $this->components->get("@performance")->save();
-
             return $response;
         } catch (Exception $error) {
             return $this->_error($error);
@@ -174,8 +176,8 @@ class App
         $group = $this->router->group();
 
         if (!is_null($group)) {
-            $this->config->merge(new ConfigFinder("config.{$group->name()}"));
-            $this->config->merge(new ConfigFinder("config.{$group->name()}.{$this->env->get("name")}"));
+            $this->config->merge(new ConfigFinder("config.{$group->getName()}"));
+            $this->config->merge(new ConfigFinder("config.{$group->getName()}.{$this->env->get("name")}"));
         }
 
         // Reload services
@@ -221,6 +223,14 @@ class App
      */
     public function _error($error)
     {
+        print_r(array(
+            $error->getMessage(),
+            $error->getFile(),
+            $error->getLine(),
+
+            $error->getTrace()[0],
+        ));
+
         $request = $this->request;
 
         try {
@@ -280,6 +290,10 @@ class App
 
             echo $result['body'];
 
+            // Stop timer
+            $this->components->get("@performance.timer")->stop();
+            $this->components->get("@performance")->save();
+
             return null;
         } elseif ($this->params['output'] == 'return') {
             foreach ($config->get('response.headers', array()) as $header => $value) {
@@ -287,6 +301,10 @@ class App
                     $result['headers'][$header] = $value;
                 }
             }
+
+            // Stop timer
+            $this->components->get("@performance.timer")->stop();
+            $this->components->get("@performance")->save();
 
             return $result;
         } elseif ($this->params['output'] == 'std') {
@@ -299,15 +317,21 @@ class App
                 }
             }
 
+            // Stop timer
+            $this->components->get("@performance.timer")->stop();
+            $this->components->get("@performance")->save();
+
             return $result;
         } else {
+            // Stop timer
+            $this->components->get("@performance.timer")->stop();
             $this->components->get("@performance")->save();
 
             throw new Exception("Unknown type of output '{$this->params['output']}'.");
         }
     }
 
-    public function component(string $name)
+    public function getComponent(string $name)
     {
         return $this->components->get($name);
     }

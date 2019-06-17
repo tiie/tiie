@@ -32,9 +32,10 @@ interface ValidatorInterface
     const ERROR_CODE_FILE_UPLOAD_ERR_CANT_WRITE = "FileUploadErrCantWrite";
     const ERROR_CODE_FILE_UPLOAD_ERR_EXTENSION = "FileUploadErrExtension";
 
-    public function description();
+    public function getDescription();
 
-    public function messages(MessagesInterface $messages = null);
+    public function setMessages(MessagesInterface $messages) : void;
+    public function getMessages() : MessagesInterface;
 
     /**
      * Check if given value is valid. If jest then null value should be
