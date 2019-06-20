@@ -123,7 +123,7 @@ class Common
         }
     }
 
-    public function resolveOrder($order)
+    public function resolveOrder($order) : array
     {
         if (is_string($order)) {
             $column = $this->removeDuplicateCharacters(trim($order), array(" "));

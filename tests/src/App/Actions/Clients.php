@@ -1,11 +1,17 @@
 <?php
 namespace App\Actions;
 
+use Tiie\Components\ComponentsTrait;
+use Tiie\Http\Request;
+use Tiie\Response\Response;
+
 class Clients
 {
-    public function get(\Tiie\Http\Request $request)
+    use ComponentsTrait;
+
+    public function get(Request $request)
     {
-        $response = new \Tiie\Response\Response();
+        $response = new Response();
         $response->setData(null);
 
         foreach ($this->getCollection() as $client) {
@@ -17,7 +23,7 @@ class Clients
         return $response;
     }
 
-    public function getCollection($params = array())
+    public function getCollection(array $params = array())
     {
         return array(
             array(

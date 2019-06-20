@@ -380,9 +380,11 @@ class Adapter implements AdapterInterface, MetadataAccessibleInterface
     /**
      * {@inheritdoc}
      */
-    public function lastId() : string
+    public function lastId() : ?string
     {
-        return $this->fetch("select last_insert_id() as id")->format('row')['id'];
+        $lastId = $this->fetch("select last_insert_id() as id")->format('row')['id'];
+
+        return empty($lastId) ? null : $lastId;
     }
 
     private function prepare($sql, $params = array())

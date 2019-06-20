@@ -231,7 +231,7 @@ class Request
 
     public function getLang() : ?string
     {
-        return $this->set('lang', $lang);
+        return $this->get("lang");
     }
 
     public function getContentType($contentType = null)

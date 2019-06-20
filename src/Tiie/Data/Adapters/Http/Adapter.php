@@ -171,7 +171,11 @@ class Adapter implements AdapterInterface
     {
     }
 
-    public function lastId()
+    /**
+     * {@inheritdoc}
+     */
+    public function lastId() : ?string
     {
+        return null;
     }
 }

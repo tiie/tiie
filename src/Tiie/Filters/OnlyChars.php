@@ -1,8 +1,6 @@
 <?php
 namespace Tiie\Filters;
 
-use Tiie\Filters\Finder;
-
 class OnlyChars extends Filter
 {
     const SET_ASCII_LETTERS = "a-zA-Z";

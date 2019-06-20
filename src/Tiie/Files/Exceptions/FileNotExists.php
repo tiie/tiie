@@ -1,7 +1,7 @@
 <?php
 namespace Tiie\Exceptions;
 
-class DataNotFound extends \Exception
+class FileNotExists extends \Exception
 {
 
 }

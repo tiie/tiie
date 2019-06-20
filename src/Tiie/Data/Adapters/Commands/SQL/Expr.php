@@ -6,16 +6,19 @@ use Tiie\Data\Adapters\Commands\Built;
 
 class Expr extends Command
 {
+    /**
+     * @var string
+     */
     private $expr;
 
-    function __construct($expr)
+    function __construct(string $expr)
     {
         parent::__construct();
 
         $this->expr = $expr;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
         return $this->expr;
     }

@@ -10,9 +10,9 @@
 namespace Tiie;
 
 use Symfony\Component\Yaml\Yaml;
-use Tiie\Config\Finder;
 use Tiie\Config\Exceptions\FileUnreadable as ExceptionFileUnreadable;
 use Tiie\Config\Exceptions\UnsupportedFromat as ExceptionUnsupportedFromat;
+use Tiie\Config\Finder;
 
 /**
  * Basic class for managing config.
@@ -42,14 +42,21 @@ use Tiie\Config\Exceptions\UnsupportedFromat as ExceptionUnsupportedFromat;
  */
 class Config implements \ArrayAccess
 {
+    /**
+     * @var array
+     */
     private $config = array();
+
+    /**
+     * @var string
+     */
     private $directory;
 
     /**
-     * @param mixed $config - Options in one of allowed formats.
-     * you will not use it.
+     * Config constructor.
+     *
+     * @param string $directory
      */
-    // function __construct($config = null)
     function __construct(string $directory)
     {
         $this->directory = $directory;
@@ -62,16 +69,13 @@ class Config implements \ArrayAccess
      * Loads config.
      *
      * @param mixed $config - Options in one of allowed formats.
-     * @return $this
      *
-     * @throws \Tiie\Config\Exceptions\FileUnreadable
-     * @throws \Tiie\Config\Exceptions\UnsupportedFromat
+     * @throws ExceptionFileUnreadable
+     * @throws ExceptionUnsupportedFromat
      */
-    public function load($config)
+    public function load($config) : void
     {
         $this->config = $this->read($config);
-
-        return $this;
     }
 
     /**
@@ -80,10 +84,10 @@ class Config implements \ArrayAccess
      * @param mixed $config
      * @return array
      *
-     * @throws \Tiie\Config\Exceptions\FileUnreadable
-     * @throws \Tiie\Config\Exceptions\UnsupportedFromat
+     * @throws ExceptionFileUnreadable
+     * @throws ExceptionUnsupportedFromat
      */
-    private function read($config)
+    private function read($config) : array
     {
         // Config is other Config
         if ($config instanceof Config) {
@@ -150,7 +154,16 @@ class Config implements \ArrayAccess
         return $this->parse($config);
     }
 
-    private function parse(array $config)
+    /**
+     * Looking for derectives and parse them.
+     *
+     * @param array $config
+     *
+     * @return array
+     * @throws ExceptionFileUnreadable
+     * @throws ExceptionUnsupportedFromat
+     */
+    private function parse(array $config) : array
     {
         foreach ($config as $key => $value) {
             if (is_array($value)) {
@@ -167,7 +180,14 @@ class Config implements \ArrayAccess
         return $config;
     }
 
-    private function getPath(string $path)
+    /**
+     * Prase key and return path to config.
+     *
+     * @param string $path
+     *
+     * @return null|string
+     */
+    private function getPath(string $path) : ?string
     {
         if (is_readable("{$this->directory}/{$path}")) {
             return "{$this->directory}/{$path}";
@@ -198,21 +218,24 @@ class Config implements \ArrayAccess
 
     public function offsetSet($offset, $value)
     {
-        if (is_null($offset)) {
-            throw new \InvalidArgumentException(sprintf('\Tiie\Config does not support appends.'));
-        } else {
-            $this->set($offset, $value);
-        }
+        trigger_error("Setting of config is not allowe", E_USER_NOTICE);
+
+        // ...
+        // if (is_null($offset)) {
+        //     throw new \InvalidArgumentException(sprintf('\Tiie\Config does not support appends.'));
+        // } else {
+        //     $this->set($offset, $value);
+        // }
     }
 
     public function offsetExists($offset)
     {
-        return $this->defined($offset);
+        return $this->isDefined($offset);
     }
 
     public function offsetUnset($offset)
     {
-        throw new \Exception('TODO');
+        // ...
     }
 
     public function offsetGet($offset)
@@ -226,14 +249,13 @@ class Config implements \ArrayAccess
      * parameter. This behavior can be changed by setting 'reverse' to '1'
      *
      * @param mixed $config - Options in one of allowed formats.
-     * @param int $reverse - Setting this configion causes the config from the
+     * @param bool $reverse - Setting this configion causes the config from the
      * parameters to be written by the base config.
-     * @return $this
      *
-     * @throws \Tiie\Config\Exceptions\FileUnreadable
-     * @throws \Tiie\Config\Exceptions\UnsupportedFromat
+     * @throws ExceptionFileUnreadable
+     * @throws ExceptionUnsupportedFromat
      */
-    public function merge($config, $reverse = false) : Config
+    public function merge($config, bool $reverse = false) : void
     {
         $config = $this->read($config);
 
@@ -242,8 +264,6 @@ class Config implements \ArrayAccess
         }else{
             $this->config = $this->arrayMerge($this->config, $config);
         }
-
-        return $this;
     }
 
     private function arrayMerge(array $a = array(), array $b = array())
@@ -282,50 +302,40 @@ class Config implements \ArrayAccess
         return $a;
     }
 
-    /**
-     * Save config under given path.
-     *
-     * @param string $path
-     */
-    public function export(string $path)
-    {
-        // create dir, if not exists
-        $dir = explode("/", $path);
-        array_pop($dir);
+    // /**
+    //  * Save config under given path.
+    //  *
+    //  * @param string $path
+    //  * @throws \Exception
+    //  */
+    // public function export(string $path)
+    // {
+    //     // create dir, if not exists
+    //     $dir = explode("/", $path);
+    //     array_pop($dir);
 
-        $dir = implode("/", $dir);
+    //     $dir = implode("/", $dir);
 
-        // error_reporting(E_ALL);
-        if ($dir != '') {
-            if (!is_dir($dir)) {
-                mkdir($dir, 0777, 1);
-            }
+    //     // error_reporting(E_ALL);
+    //     if ($dir != '') {
+    //         if (!is_dir($dir)) {
+    //             mkdir($dir, 0777, 1);
+    //         }
 
-            if (!is_dir($dir)) {
-                throw new \Exception("I can not create dir for export ${dir}");
-            }
-        }
+    //         if (!is_dir($dir)) {
+    //             throw new \Exception("I can not create dir for export ${dir}");
+    //         }
+    //     }
 
-        // create file
-        $file = sprintf('<?php return %s;', var_export($this->config, 1));
+    //     // create file
+    //     $file = sprintf('<?php return %s;', var_export($this->config, 1));
 
-        if (file_put_contents($path, $file) == false) {
-            throw new \Exception("I can't export config to {$path}.");
-        }
+    //     if (file_put_contents($path, $file) == false) {
+    //         throw new \Exception("I can't export config to {$path}.");
+    //     }
 
-        return $this;
-    }
-
-    /**
-     * Checks if an configion has been defined. (! = Null)
-     *
-     * @param $key
-     * @return bool
-     */
-    public function defined($key)
-    {
-        return !is_null($this->get($key));
-    }
+    //     return $this;
+    // }
 
     /**
      * Returns array of all config.
@@ -340,32 +350,53 @@ class Config implements \ArrayAccess
     /**
      * If value under name is array then keys of that array will be return.
      *
+     * @param string $name
+     *
      * @return array
      */
-    public function getKeys($name) : array
+    public function getKeys(string $name) : array
     {
         $value = $this->get($name);
 
         if (!is_array($value)) {
-            throw new \Exception(sprintf('Value of %s is not array.', $name));
+            return array();
         }
 
         return array_keys($value);
     }
 
-    public function is($key)
+    /**
+     * Get value under given key and cast to bool.
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function is(string $key) : bool
     {
         return (bool)$this->get($key);
+    }
+
+    /**
+     * Checks if an configion has been defined. (! = Null)
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function isDefined(string $key) : bool
+    {
+        return !is_null($this->get($key));
     }
 
     /**
      * Returns the value of the key-data configion.
      *
      * @param string $key
-     * @param mixed $default - Return if key is not defined.
-     * @return mixed
+     *
+     * @return string|array|null
      */
-    public function get($key, $default = null)
+    public function get(string $key)
     {
         if (is_array($key)) {
             $key = call_user_func_array('sprintf', $key);
@@ -378,6 +409,10 @@ class Config implements \ArrayAccess
         $founded = false;
 
         for ($i=0; $i < $ckeys; $i++) {
+            if (array_key_exists("_{$tkeys[$i]}", $vpointer)) {
+                $tkeys[$i] = "_{$tkeys[$i]}";
+            }
+
             if (array_key_exists($tkeys[$i], $vpointer)) {
                 $vpointer = $vpointer[$tkeys[$i]];
 
@@ -399,11 +434,7 @@ class Config implements \ArrayAccess
 
             return $vpointer;
         }else{
-            if (func_num_args() == 1) {
-                throw new \Exception("config key : {$key} not found");
-            }else{
-                return $default;
-            }
+            return null;
         }
     }
 
@@ -418,37 +449,34 @@ class Config implements \ArrayAccess
     //     return $root->get($key, $default);
     // }
 
-    /**
-     * Set value under specific key.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return self
-     */
-    public function set($key, $value)
-    {
-        $tkeys = explode('.', $key);
-        $ckeys = count($tkeys);
+    // /**
+    //  * Set value under specific key.
+    //  *
+    //  * @param string $key
+    //  * @param mixed $value
+    //  * @return self
+    //  */
+    // public function set($key, $value) : void
+    // {
+    //     $tkeys = explode('.', $key);
+    //     $ckeys = count($tkeys);
 
-        $vpointer = &$this->config;
-        $founded = false;
+    //     $vpointer = &$this->config;
 
-        for ($i=0; $i < ($ckeys - 1); $i++) {
-            $tkey = $tkeys[$i];
+    //     for ($i=0; $i < ($ckeys - 1); $i++) {
+    //         $tkey = $tkeys[$i];
 
-            if (!array_key_exists($tkey, $vpointer)) {
-                $vpointer[$tkey] = array();
-            }elseif (!is_array($vpointer[$tkey])){
-                $vpointer[$tkey] = array();
-            }
+    //         if (!array_key_exists($tkey, $vpointer)) {
+    //             $vpointer[$tkey] = array();
+    //         }elseif (!is_array($vpointer[$tkey])){
+    //             $vpointer[$tkey] = array();
+    //         }
 
-            $vpointer = &$vpointer[$tkey];
-        }
+    //         $vpointer = &$vpointer[$tkey];
+    //     }
 
-        $vpointer[$tkeys[$ckeys-1]] = $value;
-
-        return $this;
-    }
+    //     $vpointer[$tkeys[$ckeys-1]] = $value;
+    // }
 
     private function getFileExtension($path){
         $texploded = explode('.', $path);
@@ -457,19 +485,20 @@ class Config implements \ArrayAccess
     }
 
     /**
-     * Return new other object of config under key.
+     * Return new object of config under key.
      *
      * @param string $key
-     * @return \Tiie\Config
+     *
+     * @return Config
      */
-    public function getConfig($key)
+    public function getConfig(string $key) : Config
     {
         $config = $this->get($key);
 
         if (is_null($config)) {
             return null;
         }else{
-            return new static($config, $this);
+            return new static($config);
         }
     }
 }

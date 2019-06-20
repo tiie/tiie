@@ -12,9 +12,9 @@ class Built
         $this->params = $params;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
-        return $this->toString();
+        return $this->command;
     }
 
     public function toString()

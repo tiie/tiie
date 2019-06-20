@@ -121,7 +121,7 @@ class App
      * @param array $params
      * @param Request|null $request
      *
-     * @return mixed|void
+     * @return mixed
      */
     public function run(array $params = array(), Request $request = null)
     {
@@ -140,7 +140,7 @@ class App
                 $this->request = $request;
             }
         } catch (Exception $error) {
-            return $this->_error($error);
+            $this->_error($error);
         }
 
         try {
@@ -148,11 +148,9 @@ class App
 
             $this->loadMode();
 
-            $response = $this->response($this->router->run(), $this->request);
-
-            return $response;
+            return $this->response($this->router->run(), $this->request);
         } catch (Exception $error) {
-            return $this->_error($error);
+            $this->_error($error);
         }
     }
 
@@ -221,16 +219,8 @@ class App
      *
      * @param mixed $error
      */
-    public function _error($error)
+    public function _error($error) : void
     {
-        print_r(array(
-            $error->getMessage(),
-            $error->getFile(),
-            $error->getLine(),
-
-            $error->getTrace()[0],
-        ));
-
         $request = $this->request;
 
         try {

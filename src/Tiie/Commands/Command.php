@@ -9,7 +9,14 @@ namespace Tiie\Commands;
  */
 class Command implements CommandInterface {
 
+    /**
+     * @var string
+     */
     private $name;
+
+    /**
+     * @var array
+     */
     private $params;
 
     function __construct(string $name = null, array $params = array())
@@ -28,7 +35,7 @@ class Command implements CommandInterface {
         return $this->params;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
         return $this->name;
     }

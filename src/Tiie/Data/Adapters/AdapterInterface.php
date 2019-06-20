@@ -26,5 +26,5 @@ interface AdapterInterface
      *
      * @return string
      */
-    public function lastId() : string;
+    public function lastId() : ?string;
 }

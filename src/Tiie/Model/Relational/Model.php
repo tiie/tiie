@@ -1,28 +1,15 @@
 <?php
 namespace Tiie\Model\Relational;
 
-use Tiie\Model\Record;
-use Tiie\Model\Records;
-use Tiie\Model\RecordInterface;
-use Tiie\Model\ModelInterface;
-use Tiie\Model\CreatorInterface;
-use Tiie\Model\Creator;
-use Tiie\Model\Projection;
-use Tiie\Model\Relational\SelectableInterface;
-use Tiie\Model\Pagination;
 use Tiie\Data\Adapters\Commands\SQL\Delete;
-use Tiie\Data\Adapters\Commands\SQL\Expr;
 use Tiie\Data\Adapters\Commands\SQL\Insert;
 use Tiie\Data\Adapters\Commands\SQL\Select;
-use Tiie\Data\Adapters\Commands\SQL\Update;
-use Tiie\Data\Adapters\Commands\SQL\Where;
 use Tiie\Model\Commands\CreateRecord as CommandCreateRecord;
 use Tiie\Model\Commands\RemoveRecord as CommandRemoveRecord;
 use Tiie\Model\Commands\SaveRecord as CommandSaveRecord;
 
 use Tiie\Commands\CommandInterface;
 use Tiie\Commands\Result\ResultInterface;
-use Tiie\Commands\Exceptions\ValidationFailed;
 
 use Tiie\Model\Model as DataModel;
 
@@ -113,7 +100,7 @@ abstract class Model extends DataModel implements SelectableInterface
             $delete->equal($field, $record->get($field));
         }
 
-        $statement->execute();
+        $delete->execute();
 
         return null;
     }

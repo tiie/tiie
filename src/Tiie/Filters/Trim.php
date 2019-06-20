@@ -1,7 +1,7 @@
 <?php
 namespace Tiie\Filters;
 
-class Trim implements \Tiie\Filters\FilterInterface
+class Trim implements FilterInterface
 {
     private $config = array();
 
@@ -13,11 +13,12 @@ class Trim implements \Tiie\Filters\FilterInterface
         ), $config);
     }
 
-    public static function getDescription()
+    public function getDescription() : ?string
     {
+        return null;
     }
 
-    public static function filter($value)
+    public function filter(string $value) : ?string
     {
         return trim($value);
     }

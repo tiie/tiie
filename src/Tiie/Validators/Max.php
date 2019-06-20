@@ -26,7 +26,7 @@ class Max extends Validator
         if (!is_numeric($value)) {
             return array(
                 "code" => ValidatorInterface::ERROR_CODE_INVALID,
-                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),;
+                "error" => $this->getMessages()->get(ValidatorInterface::ERROR_CODE_INVALID, array("value" => (string) $value)),
             );
         }
 
