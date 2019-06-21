@@ -13,6 +13,5 @@ If this project interested you and you would like to add your brick, I invite yo
     * Model
     * Response
     * Request
-    * Request
 * Examples
     * [RestAPI](doc/examples/rest-api/)
